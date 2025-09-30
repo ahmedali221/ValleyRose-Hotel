@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "Valley Rose Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for Valley Rose hotel & restaurant backend"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"Passw0rd!\",\n  \"role\": \"admin\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Passw0rd!\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        { "name": "List Rooms", "request": { "method": "GET", "url": "{{baseUrl}}/api/rooms" } },
+        { "name": "Get Room", "request": { "method": "GET", "url": "{{baseUrl}}/api/rooms/{{roomId}}" } },
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/api/rooms",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Deluxe Single", "type": "text" },
+                { "key": "description", "value": "Cozy room", "type": "text" },
+                { "key": "pricePerNight", "value": "120", "type": "text" },
+                { "key": "ratingSuggestion", "value": "4", "type": "text" },
+                { "key": "type", "value": "Single", "type": "text" },
+                { "key": "coverImage", "type": "file", "src": [] },
+                { "key": "thumbnailImage", "type": "file", "src": [] },
+                { "key": "serviceGallery", "type": "file", "src": [] }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Room",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": "{{baseUrl}}/api/rooms/{{roomId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Room",
+          "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": "{{baseUrl}}/api/rooms/{{roomId}}" }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": "{{baseUrl}}/api/customers" } },
+        { "name": "Create", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}/api/customers", "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"phoneNumber\": \"+123456\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Offline Reservations",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": "{{baseUrl}}/api/offline-reservations" } },
+        { "name": "Create", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}/api/offline-reservations", "body": { "mode": "raw", "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"roomType\": \"Single\",\n  \"checkInDate\": \"2025-10-01\",\n  \"checkOutDate\": \"2025-10-03\",\n  \"customerId\": \"{{customerId}}\",\n  \"numberOfGuests\": 2\n}" } } },
+        { "name": "Update Status", "request": { "method": "PATCH", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}/api/offline-reservations/{{reservationId}}/status", "body": { "mode": "raw", "raw": "{\n  \"status\": \"Cancelled\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": "{{baseUrl}}/api/payments" } },
+        { "name": "Create", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}/api/payments", "body": { "mode": "raw", "raw": "{\n  \"reservationId\": \"{{reservationId}}\",\n  \"customerId\": \"{{customerId}}\",\n  \"amount\": 240,\n  \"currency\": \"EUR\",\n  \"paymentMethod\": \"Cash\",\n  \"paymentStatus\": \"Paid\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        { "name": "Get Daily", "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/api/analytics?date=2025-10-01", "host": ["{{baseUrl}}"], "path": ["api","analytics"], "query": [{"key":"date","value":"2025-10-01"}] } } }
+      ]
+    },
+    {
+      "name": "Meals",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/meals?type=Meal&recommended=true" } },
+        { "name": "Create", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}/api/meals", "body": { "mode": "raw", "raw": "{\n  \"title\": \"Steak\",\n  \"description\": \"Grilled\",\n  \"thumbnail\": \"https://...\",\n  \"type\": \"Meal\",\n  \"isRecommended\": true\n}" } } },
+        { "name": "Toggle Recommended", "request": { "method": "PATCH", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": "{{baseUrl}}/api/meals/{{mealId}}/toggle-recommended" } }
+      ]
+    },
+    {
+      "name": "Weekly Menu",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/weekly-menu" } },
+        { "name": "Upsert Day", "request": { "method": "PUT", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}/api/weekly-menu", "body": { "mode": "raw", "raw": "{\n  \"day\": \"Monday\",\n  \"meals\": [\"{{mealId}}\"],\n  \"soups\": [\"{{mealId}}\"]\n}" } } }
+      ]
+    },
+    {
+      "name": "Restaurant Gallery",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/restaurant-gallery" } },
+        { "name": "Add Image", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": "{{baseUrl}}/api/restaurant-gallery", "body": { "mode": "formdata", "formdata": [ { "key": "image", "type": "file", "src": [] }, { "key": "caption", "type": "text", "value": "Dining hall" } ] } } }
+      ]
+    },
+    {
+      "name": "Restaurant Main Menu",
+      "item": [
+        { "name": "Get", "request": { "method": "GET", "url": "{{baseUrl}}/api/restaurant-main-menu" } },
+        { "name": "Upload PDF", "request": { "method": "POST", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": "{{baseUrl}}/api/restaurant-main-menu", "body": { "mode": "formdata", "formdata": [ { "key": "pdf", "type": "file", "src": [] } ] } } }
+      ]
+    }
+  ]
+}
+
+
