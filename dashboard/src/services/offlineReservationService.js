@@ -62,4 +62,44 @@ export const offlineReservationService = {
       throw err;
     }
   },
+
+  // List all reservations
+  listReservations: async (params = {}) => {
+    try {
+      const res = await api.get('/offline-reservations', { params });
+      return res.data;
+    } catch (e) {
+      throw new Error(e.response?.data?.message || 'Failed to fetch reservations');
+    }
+  },
+
+  // Get single reservation
+  getReservation: async (id) => {
+    try {
+      const res = await api.get(`/offline-reservations/${id}`);
+      return res.data;
+    } catch (e) {
+      throw new Error(e.response?.data?.message || 'Failed to fetch reservation');
+    }
+  },
+
+  // Update reservation status
+  updateReservationStatus: async (id, status) => {
+    try {
+      const res = await api.patch(`/offline-reservations/${id}/status`, { status });
+      return res.data;
+    } catch (e) {
+      throw new Error(e.response?.data?.message || 'Failed to update reservation status');
+    }
+  },
+
+  // Delete reservation
+  deleteReservation: async (id) => {
+    try {
+      const res = await api.delete(`/offline-reservations/${id}`);
+      return res.data;
+    } catch (e) {
+      throw new Error(e.response?.data?.message || 'Failed to delete reservation');
+    }
+  },
 };

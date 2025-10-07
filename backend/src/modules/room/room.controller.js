@@ -210,6 +210,24 @@ async function getRoomTypes(req, res) {
   }
 }
 
+async function debugRooms(req, res) {
+  try {
+    const rooms = await Room.find({});
+    console.log('All rooms in database:', rooms);
+    res.json({
+      success: true,
+      rooms: rooms,
+      count: rooms.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch rooms',
+      error: error.message
+    });
+  }
+}
+
 module.exports = { 
   createValidators, 
   createRoom, 
@@ -217,7 +235,8 @@ module.exports = {
   getRoom, 
   updateRoom, 
   deleteRoom,
-  getRoomTypes 
+  getRoomTypes,
+  debugRooms
 };
 
 

@@ -16,7 +16,7 @@ const HeaderHero = () => {
     <div className="relative">
       {/* Background Image Container */}
       <div 
-        className="w-full h-screen bg-cover bg-center relative" 
+        className="w-full h-[80vh] bg-cover bg-center relative" 
         style={{ backgroundImage: `url(${banner})` }}
       >
         {/* Header/Navigation - Positioned absolutely on top of the background */}
@@ -100,12 +100,12 @@ const HeaderHero = () => {
             </h1>
             <p className="text-white text-xl mb-8">Bei Toni</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <a href="/book" className="bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-6 rounded-md transition duration-300">
+              <Link to="/booking" className="bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-6 rounded-md transition duration-300">
                 Book a Room
-              </a>
-              <a href="/check" className="bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-6 rounded-md transition duration-300">
+              </Link>
+              <Link to="/check" className="bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-6 rounded-md transition duration-300">
                 Check Reservation
-              </a>
+              </Link>
             </div>
           </div>
         </div>

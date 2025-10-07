@@ -10,6 +10,10 @@ const OfflineReservationSchema = new mongoose.Schema(
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true },
     numberOfGuests: { type: Number, required: true, min: 1 },
     status: { type: String, enum: ['Confirmed', 'Cancelled', 'CheckedIn'], default: 'Confirmed' },
+    cost: { type: Number, required: true, min: 0 },
+    nights: { type: Number, required: true, min: 1 },
+    paymentMethod: { type: String, default: 'Credit Card' },
+    paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed', 'Refunded'], default: 'Paid' },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

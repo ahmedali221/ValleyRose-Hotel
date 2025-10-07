@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import singleRoom from '../../../assets/rooms/single.png';
 import doubleRoom from '../../../assets/rooms/double.png';
 import masterRoom from '../../../assets/rooms/master.png';
@@ -117,6 +118,22 @@ const StaySection = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Booking CTA */}
+        <motion.div 
+          className="text-center mt-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
+          <Link
+            to="/booking"
+            className="inline-block bg-purple-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl"
+          >
+            Book Your Stay Now
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

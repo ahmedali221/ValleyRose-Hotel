@@ -22,7 +22,7 @@ const reservationService = {
   // Cancel reservation
   cancelReservation: async (reservationId) => {
     try {
-      const response = await axios.patch(`/api/offline-reservations/${reservationId}/status`, {
+      const response = await axios.patch(`/offline-reservations/public/${reservationId}/status`, {
         status: 'Cancelled'
       });
       return response.data;

@@ -6,6 +6,19 @@ export const bookingService = {
   getBookings: async (params = {}) => {
     try {
       const response = await api.get('/offline-reservations', { params });
+      // The backend returns { data: bookings, pagination: {...} }
+      // Return the data array directly for compatibility with existing code
+      return response.data.data || response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch bookings');
+    }
+  },
+
+  // Get all bookings with pagination info
+  getBookingsWithPagination: async (params = {}) => {
+    try {
+      const response = await api.get('/offline-reservations', { params });
+      // Return the full response including pagination info
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch bookings');

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { offlineReservationService } from '../../services/offlineReservationService';
 
 const OfflineReservationPage = () => {
+  const [view, setView] = useState('create'); // 'create' or 'manage'
   const [step, setStep] = useState(1);
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -9,6 +10,12 @@ const OfflineReservationPage = () => {
   const [success, setSuccess] = useState(null);
   const [availabilityChecked, setAvailabilityChecked] = useState(false);
   const [availableRooms, setAvailableRooms] = useState([]);
+  
+  // Reservations management state
+  const [reservations, setReservations] = useState([]);
+  const [reservationsLoading, setReservationsLoading] = useState(false);
+  const [pagination, setPagination] = useState({ current: 1, total: 1, count: 0, totalItems: 0 });
+  const [statusFilter, setStatusFilter] = useState('');
 
   const [form, setForm] = useState({
     roomType: 'Single Room',
@@ -33,6 +40,33 @@ const OfflineReservationPage = () => {
     };
     loadCustomers();
   }, []);
+
+  // Load reservations when view changes to manage
+  useEffect(() => {
+    if (view === 'manage') {
+      loadReservations();
+    }
+  }, [view, statusFilter, pagination.current]);
+
+  const loadReservations = async () => {
+    setReservationsLoading(true);
+    try {
+      const params = {
+        page: pagination.current,
+        limit: 10,
+        ...(statusFilter && { status: statusFilter })
+      };
+      const response = await offlineReservationService.listReservations(params);
+      console.log('Reservations response:', response);
+      setReservations(response.data || []);
+      setPagination(response.pagination || { current: 1, total: 1, count: 0, totalItems: 0 });
+    } catch (e) {
+      console.error('Failed to load reservations:', e);
+      setError('Failed to load reservations');
+    } finally {
+      setReservationsLoading(false);
+    }
+  };
 
   // Reset availability when form criteria changes
   useEffect(() => {
@@ -144,6 +178,47 @@ const OfflineReservationPage = () => {
     });
   };
 
+  // Reservation management functions
+  const handleStatusChange = async (reservationId, newStatus) => {
+    try {
+      await offlineReservationService.updateReservationStatus(reservationId, newStatus);
+      loadReservations(); // Reload the list
+    } catch (e) {
+      console.error('Failed to update status:', e);
+      setError('Failed to update reservation status');
+    }
+  };
+
+  const handleDeleteReservation = async (reservationId) => {
+    if (window.confirm('Are you sure you want to delete this reservation?')) {
+      try {
+        await offlineReservationService.deleteReservation(reservationId);
+        loadReservations(); // Reload the list
+      } catch (e) {
+        console.error('Failed to delete reservation:', e);
+        setError('Failed to delete reservation');
+      }
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Confirmed': return 'bg-green-100 text-green-800';
+      case 'Cancelled': return 'bg-red-100 text-red-800';
+      case 'CheckedIn': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   const canProceedToStep2 = availabilityChecked && availableRooms.length > 0;
 
   return (
@@ -151,11 +226,35 @@ const OfflineReservationPage = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <div className="flex-1 flex items-center justify-center p-8">
-          <div className="w-full max-w-md">
+          <div className={`w-full ${view === 'manage' ? 'max-w-6xl' : 'max-w-md'}`}>
             
             {/* Header */}
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-semibold text-gray-900 mb-2">offline Room Reservations</h1>
+              <h1 className="text-2xl font-semibold text-gray-900 mb-4">Offline Room Reservations</h1>
+              
+              {/* View Toggle */}
+              <div className="flex bg-gray-200 rounded-lg p-1 mb-6">
+                <button
+                  onClick={() => setView('create')}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    view === 'create' 
+                      ? 'bg-white text-purple-600 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Create Reservation
+                </button>
+                <button
+                  onClick={() => setView('manage')}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    view === 'manage' 
+                      ? 'bg-white text-purple-600 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Manage Reservations
+                </button>
+              </div>
             </div>
 
             {/* Error Message */}
@@ -165,8 +264,11 @@ const OfflineReservationPage = () => {
               </div>
             )}
 
-            {/* Step 1: Room Selection and Availability Check */}
-      {step === 1 && (
+            {/* Create Reservation View */}
+            {view === 'create' && (
+              <>
+                {/* Step 1: Room Selection and Availability Check */}
+                {step === 1 && (
               <div className="space-y-6">
                 {/* Room Type */}
             <div>
@@ -402,7 +504,185 @@ const OfflineReservationPage = () => {
                 >
                   Done
                 </button>
-          </div>
+              </div>
+            )}
+              </>
+            )}
+
+            {/* Manage Reservations View */}
+            {view === 'manage' && (
+              <div>
+                {/* Filters */}
+                <div className="mb-6 flex gap-4 items-center">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="CheckedIn">Checked In</option>
+                  </select>
+                  
+                  <button
+                    onClick={loadReservations}
+                    disabled={reservationsLoading}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                  >
+                    {reservationsLoading ? 'Loading...' : 'Refresh'}
+                  </button>
+                </div>
+
+                {/* Reservations Table */}
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Reservation
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Customer
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Room & Dates
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Cost
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {reservations.map((reservation) => (
+                          <tr key={reservation._id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {reservation.reservationNumber}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {formatDate(reservation.createdAt)}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {reservation.customerId?.firstName} {reservation.customerId?.lastName}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {reservation.customerId?.email}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {reservation.roomType}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {formatDate(reservation.checkInDate)} - {formatDate(reservation.checkOutDate)}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {reservation.numberOfGuests} guests
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {reservation.cost ? `${reservation.cost}€` : 'N/A'}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {reservation.nights ? `${reservation.nights} nights` : 'N/A'}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(reservation.status)}`}>
+                                {reservation.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                              {reservation.status !== 'Cancelled' && (
+                                <button
+                                  onClick={() => handleStatusChange(reservation._id, 'Cancelled')}
+                                  className="text-red-600 hover:text-red-900"
+                                >
+                                  Cancel
+                                </button>
+                              )}
+                              {reservation.status === 'Confirmed' && (
+                                <button
+                                  onClick={() => handleStatusChange(reservation._id, 'CheckedIn')}
+                                  className="text-blue-600 hover:text-blue-900"
+                                >
+                                  Check In
+                                </button>
+                              )}
+                              <button
+                                onClick={() => handleDeleteReservation(reservation._id)}
+                                className="text-red-600 hover:text-red-900"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  {pagination.total > 1 && (
+                    <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                      <div className="flex-1 flex justify-between sm:hidden">
+                        <button
+                          onClick={() => setPagination(prev => ({ ...prev, current: prev.current - 1 }))}
+                          disabled={pagination.current === 1}
+                          className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          onClick={() => setPagination(prev => ({ ...prev, current: prev.current + 1 }))}
+                          disabled={pagination.current === pagination.total}
+                          className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                        >
+                          Next
+                        </button>
+                      </div>
+                      <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-sm text-gray-700">
+                            Showing <span className="font-medium">{((pagination.current - 1) * 10) + 1}</span> to{' '}
+                            <span className="font-medium">{Math.min(pagination.current * 10, pagination.totalItems)}</span> of{' '}
+                            <span className="font-medium">{pagination.totalItems}</span> results
+                          </p>
+                        </div>
+                        <div>
+                          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                            <button
+                              onClick={() => setPagination(prev => ({ ...prev, current: prev.current - 1 }))}
+                              disabled={pagination.current === 1}
+                              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                            >
+                              Previous
+                            </button>
+                            <button
+                              onClick={() => setPagination(prev => ({ ...prev, current: prev.current + 1 }))}
+                              disabled={pagination.current === pagination.total}
+                              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                            >
+                              Next
+                            </button>
+                          </nav>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
 
           </div>

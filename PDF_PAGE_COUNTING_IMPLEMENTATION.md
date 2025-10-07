@@ -174,3 +174,5 @@ If you encounter issues:
 4. Test with the provided test script
 
 The implementation should now automatically count PDF pages and display the correct pagination! 🎉
+
+

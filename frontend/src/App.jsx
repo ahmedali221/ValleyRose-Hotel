@@ -7,6 +7,7 @@ import Footer from './components/footer'
 import HeaderHero from './components/HeaderHero'
 import Restaurant from './pages/restaurant/restaurant'
 import CheckReservation from './pages/checkReservation/checkReservation'
+import BookingPage from './pages/booking/BookingPage'
 
 function App() {
   return (
@@ -15,10 +16,11 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<HomePage />} />
-  <Route path="/hotel" element={<Hotel />} />
-  <Route path="/restaurant" element={<Restaurant />} />
-  <Route path="/contact" element={<ContactUs />} />
-  <Route path="/check" element={<CheckReservation />} />
+        <Route path="/hotel" element={<Hotel />} />
+        <Route path="/restaurant" element={<Restaurant />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/check" element={<CheckReservation />} />
+        <Route path="/booking" element={<BookingPage />} />
       </Routes>
     </div>
     <Footer/>

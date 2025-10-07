@@ -58,6 +58,19 @@ async function deleteCustomer(req, res) {
   res.json({ success: true });
 }
 
-module.exports = { createValidators, createCustomer, listCustomers, getCustomer, updateCustomer, deleteCustomer };
+async function createCustomerPublic(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  
+  try {
+    const doc = await Customer.create(req.body);
+    res.status(201).json(doc);
+  } catch (error) {
+    console.error('Public customer creation error:', error);
+    res.status(500).json({ message: 'Failed to create customer', error: error.message });
+  }
+}
+
+module.exports = { createValidators, createCustomer, createCustomerPublic, listCustomers, getCustomer, updateCustomer, deleteCustomer };
 
 

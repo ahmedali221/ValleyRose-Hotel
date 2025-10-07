@@ -9,6 +9,7 @@ const ManageBookingsPage = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [showAllMonths, setShowAllMonths] = useState(false);
   
   // Search and filter states
   const [searchFilters, setSearchFilters] = useState({
@@ -34,13 +35,14 @@ const ManageBookingsPage = () => {
 
   useEffect(() => {
     filterBookings();
-  }, [bookings, searchFilters, currentMonth, currentYear, activeStatusFilter]);
+  }, [bookings, searchFilters, currentMonth, currentYear, activeStatusFilter, showAllMonths]);
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
       setError('');
-      const response = await bookingService.getBookings();
+      // Request all bookings by setting a high limit
+      const response = await bookingService.getBookings({ limit: 1000 });
       const bookingData = response.data || response;
       setBookings(Array.isArray(bookingData) ? bookingData : []);
     } catch (error) {
@@ -79,11 +81,13 @@ const ManageBookingsPage = () => {
       );
     }
 
-    // Filter by month and year
-    filtered = filtered.filter(booking => {
-      const checkInDate = new Date(booking.checkInDate);
-      return checkInDate.getMonth() === currentMonth && checkInDate.getFullYear() === currentYear;
-    });
+    // Filter by month and year (only if not showing all months)
+    if (!showAllMonths) {
+      filtered = filtered.filter(booking => {
+        const checkInDate = new Date(booking.checkInDate);
+        return checkInDate.getMonth() === currentMonth && checkInDate.getFullYear() === currentYear;
+      });
+    }
 
     setFilteredBookings(filtered);
   };
@@ -533,42 +537,56 @@ const ManageBookingsPage = () => {
           <div className="flex items-center space-x-4">
             <button 
               onClick={() => navigateMonth('prev')}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              disabled={showAllMonths}
+              className={`p-2 rounded-lg ${showAllMonths ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
             >
               <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
               </svg>
             </button>
             <h3 className="text-xl font-semibold text-gray-900">
-              {months[currentMonth]} {currentYear}
+              {showAllMonths ? 'All Months' : `${months[currentMonth]} ${currentYear}`}
             </h3>
             <button 
               onClick={() => navigateMonth('next')}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              disabled={showAllMonths}
+              className={`p-2 rounded-lg ${showAllMonths ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
             >
               <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </button>
           </div>
+          <button
+            onClick={() => setShowAllMonths(!showAllMonths)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              showAllMonths 
+                ? 'bg-purple-600 text-white' 
+                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            {showAllMonths ? 'Show Current Month' : 'Show All Months'}
+          </button>
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-10 gap-2 mb-8">
-          {generateCalendarDays().map(({ day, isToday, hasBooking }) => (
-            <button
-              key={day}
-              className={`
-                w-12 h-12 rounded-lg text-sm font-medium transition-colors
-                ${isToday ? 'bg-green-500 text-white' : 
-                  hasBooking ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' : 
-                  'bg-gray-100 text-gray-700 hover:bg-gray-200'}
-              `}
-            >
-              {day}
-            </button>
-          ))}
-        </div>
+        {!showAllMonths && (
+          <div className="grid grid-cols-10 gap-2 mb-8">
+            {generateCalendarDays().map(({ day, isToday, hasBooking }) => (
+              <button
+                key={day}
+                className={`
+                  w-12 h-12 rounded-lg text-sm font-medium transition-colors
+                  ${isToday ? 'bg-green-500 text-white' : 
+                    hasBooking ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' : 
+                    'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                `}
+              >
+                {day}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Bookings List */}
         <div className="space-y-4">
