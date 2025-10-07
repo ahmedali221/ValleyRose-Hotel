@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="600px" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Event Space</title>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect fill="#F8F8F8" x="0" y="0" width="800" height="600"></rect>
+        <g transform="translate(100, 100)">
+            <!-- Building outline -->
+            <rect stroke="#333333" stroke-width="4" x="0" y="0" width="600" height="400" rx="8"></rect>
+            
+            <!-- Windows -->
+            <rect fill="#B3D9FF" stroke="#333333" stroke-width="2" x="50" y="50" width="80" height="120"></rect>
+            <rect fill="#B3D9FF" stroke="#333333" stroke-width="2" x="180" y="50" width="80" height="120"></rect>
+            <rect fill="#B3D9FF" stroke="#333333" stroke-width="2" x="340" y="50" width="80" height="120"></rect>
+            <rect fill="#B3D9FF" stroke="#333333" stroke-width="2" x="470" y="50" width="80" height="120"></rect>
+            
+            <!-- Door -->
+            <rect fill="#8B4513" stroke="#333333" stroke-width="2" x="260" y="250" width="80" height="150"></rect>
+            <circle fill="#FFD700" cx="325" cy="325" r="5"></circle>
+            
+            <!-- Tables -->
+            <circle fill="#FFFFFF" stroke="#333333" stroke-width="2" cx="150" cy="200" r="30"></circle>
+            <circle fill="#FFFFFF" stroke="#333333" stroke-width="2" cx="450" cy="200" r="30"></circle>
+            <circle fill="#FFFFFF" stroke="#333333" stroke-width="2" cx="150" cy="320" r="30"></circle>
+            <circle fill="#FFFFFF" stroke="#333333" stroke-width="2" cx="450" cy="320" r="30"></circle>
+            
+            <!-- Stage -->
+            <rect fill="#D3D3D3" stroke="#333333" stroke-width="2" x="200" y="100" width="200" height="80"></rect>
+            <text font-family="Arial" font-size="24" font-weight="bold" fill="#333333" x="260" y="150">STAGE</text>
+        </g>
+    </g>
+</svg>

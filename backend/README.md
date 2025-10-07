@@ -1,6 +1,6 @@
 ## Postman
 Import `postman/ValleyRose.postman_collection.json` into Postman. Set variables:
-- baseUrl: `http://localhost:4000`
+- baseUrl: `http://localhost:3000`
 - token: paste JWT from login
 ## Setup
 

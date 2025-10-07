@@ -4,7 +4,7 @@ const OfflineReservationSchema = new mongoose.Schema(
   {
     reservationNumber: { type: String, required: true, unique: true },
     roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
-    roomType: { type: String, enum: ['Single', 'Double', 'Triple'], required: true },
+    roomType: { type: String, enum: ['Single Room', 'Double Room', 'Triple Room', 'Apartment', 'Suite'], required: true },
     checkInDate: { type: Date, required: true },
     checkOutDate: { type: Date, required: true },
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true },

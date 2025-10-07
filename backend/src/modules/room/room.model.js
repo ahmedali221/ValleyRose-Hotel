@@ -10,11 +10,23 @@ const ImageSchema = new mongoose.Schema(
 
 const RoomSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true, trim: true },
-    description: { type: String, trim: true },
+    // Bilingual title fields
+    title: {
+      english: { type: String, required: true, trim: true },
+      german: { type: String, required: true, trim: true }
+    },
+    // Bilingual description fields
+    description: {
+      english: { type: String, trim: true },
+      german: { type: String, trim: true }
+    },
     pricePerNight: { type: Number, required: true, min: 0 },
     ratingSuggestion: { type: Number, min: 1, max: 5 },
-    type: { type: String, enum: ['Single', 'Double', 'Triple'], required: true },
+    type: { 
+      type: String, 
+      enum: ['Single Room', 'Double Room', 'Triple Room', 'Apartment', 'Suite'], 
+      required: true 
+    },
     coverImage: ImageSchema,
     thumbnailImage: ImageSchema,
     serviceGallery: { type: [ImageSchema], default: [] },

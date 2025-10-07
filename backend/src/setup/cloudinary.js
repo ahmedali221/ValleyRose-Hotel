@@ -19,7 +19,12 @@ const storage = new CloudinaryStorage({
   params: async (_req, file) => {
     const folder = process.env.CLOUDINARY_FOLDER || 'valleyrose';
     // Let Cloudinary infer format and handle non-images like PDFs
-    return { folder, resource_type: 'auto' };
+    return { 
+      folder, 
+      resource_type: 'auto',
+      access_mode: 'public', // Ensure files are publicly accessible
+      type: 'upload' // Use 'upload' type for public assets
+    };
   },
 });
 

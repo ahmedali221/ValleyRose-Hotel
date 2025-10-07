@@ -11,7 +11,27 @@ const createValidators = [
 async function createCustomer(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  
+  // Log the customer data being sent for creation
+  console.log('Creating customer with data:', {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    phoneNumber: req.body.phoneNumber,
+    timestamp: new Date().toISOString()
+  });
+  
   const doc = await Customer.create(req.body);
+  
+  // Log successful customer creation
+  console.log('Customer created successfully:', {
+    customerId: doc._id,
+    firstName: doc.firstName,
+    lastName: doc.lastName,
+    email: doc.email,
+    createdAt: doc.createdAt
+  });
+  
   res.status(201).json(doc);
 }
 

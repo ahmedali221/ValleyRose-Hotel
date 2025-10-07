@@ -5,6 +5,7 @@ const upload = multer({ storage });
 const { authenticate, authorize } = require('../../middleware/auth');
 const ctrl = require('./room.controller');
 
+router.get('/types', ctrl.getRoomTypes);
 router.get('/', ctrl.listRooms);
 router.get('/:id', ctrl.getRoom);
 

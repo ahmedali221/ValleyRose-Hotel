@@ -1,0 +1,420 @@
+import React, { useEffect, useState } from 'react';
+import { offlineReservationService } from '../../services/offlineReservationService';
+
+const OfflineReservationPage = () => {
+  const [step, setStep] = useState(1);
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(null);
+  const [availabilityChecked, setAvailabilityChecked] = useState(false);
+  const [availableRooms, setAvailableRooms] = useState([]);
+
+  const [form, setForm] = useState({
+    roomType: 'Single Room',
+    checkInDate: '',
+    checkOutDate: '',
+    customerId: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    numberOfGuests: 1,
+  });
+
+  useEffect(() => {
+    const loadCustomers = async () => {
+      try {
+        const customerList = await offlineReservationService.listCustomers();
+        setCustomers(Array.isArray(customerList) ? customerList : (customerList?.data ?? []));
+      } catch (e) {
+        console.error('Failed to load customers:', e);
+      }
+    };
+    loadCustomers();
+  }, []);
+
+  // Reset availability when form criteria changes
+  useEffect(() => {
+    setAvailabilityChecked(false);
+    setAvailableRooms([]);
+  }, [form.roomType, form.checkInDate, form.checkOutDate]);
+
+  const handleCheckAvailability = async () => {
+    if (!form.roomType || !form.checkInDate || !form.checkOutDate) {
+      setError('Please select room type, check-in date, and check-out date');
+      return;
+    }
+
+    if (new Date(form.checkInDate) >= new Date(form.checkOutDate)) {
+      setError('Check-out date must be after check-in date');
+      return;
+    }
+
+    if (new Date(form.checkInDate) < new Date().setHours(0, 0, 0, 0)) {
+      setError('Check-in date cannot be in the past');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    
+    try {
+      const result = await offlineReservationService.checkAvailability(
+        form.roomType,
+        form.checkInDate,
+        form.checkOutDate
+      );
+      
+      setAvailableRooms(result.availableRooms || []);
+      setAvailabilityChecked(true);
+      
+      if (result.availableCount === 0) {
+        setError('No rooms available for the selected dates and room type');
+      }
+    } catch (e) {
+      setError(e.message);
+      setAvailabilityChecked(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateCustomerIfNeeded = async () => {
+    if (form.customerId) return form.customerId;
+    const created = await offlineReservationService.createCustomer({
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      phoneNumber: form.phone,
+    });
+    return created._id;
+  };
+
+  const submitReservation = async () => {
+    if (availableRooms.length === 0) {
+      setError('No available rooms to reserve');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    
+    try {
+      const customerId = await handleCreateCustomerIfNeeded();
+      
+      // Select the first available room
+      const selectedRoom = availableRooms[0];
+      
+      const payload = {
+        roomId: selectedRoom._id,
+        roomType: form.roomType,
+        checkInDate: form.checkInDate,
+        checkOutDate: form.checkOutDate,
+        customerId,
+        numberOfGuests: Number(form.numberOfGuests) || 1,
+      };
+      
+      const created = await offlineReservationService.createOfflineReservation(payload);
+      setSuccess(created);
+      setStep(4);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setStep(1);
+    setSuccess(null);
+    setError('');
+    setAvailabilityChecked(false);
+    setAvailableRooms([]);
+    setForm({
+      roomType: 'Single Room',
+      checkInDate: '',
+      checkOutDate: '',
+      customerId: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      numberOfGuests: 1,
+    });
+  };
+
+  const canProceedToStep2 = availabilityChecked && availableRooms.length > 0;
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-semibold text-gray-900 mb-2">offline Room Reservations</h1>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Step 1: Room Selection and Availability Check */}
+      {step === 1 && (
+              <div className="space-y-6">
+                {/* Room Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
+                  <select 
+                    value={form.roomType} 
+                    onChange={(e) => setForm({ ...form, roomType: e.target.value })} 
+                    className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
+                  >
+                    <option value="Single Room">Single</option>
+                    <option value="Double Room">Double</option>
+                    <option value="Triple Room">Triple</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Suite">Suite</option>
+              </select>
+            </div>
+                
+                {/* Check-in Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Check-in Date</label>
+                  <div className="relative">
+                    <input 
+                      type="date" 
+                      value={form.checkInDate} 
+                      onChange={(e) => setForm({ ...form, checkInDate: e.target.value })} 
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 pl-12"
+                      min={new Date().toISOString().split('T')[0]}
+                      placeholder="dd / mm / yyyy"
+                    />
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                  </div>
+              </div>
+
+                {/* Check-out Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Check-out Date</label>
+                  <div className="relative">
+                    <input 
+                      type="date" 
+                      value={form.checkOutDate} 
+                      onChange={(e) => setForm({ ...form, checkOutDate: e.target.value })} 
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 pl-12"
+                      min={form.checkInDate || new Date().toISOString().split('T')[0]}
+                      placeholder="dd / mm / yyyy"
+                    />
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+              </div>
+            </div>
+          </div>
+
+                {/* Buttons */}
+                <div className="flex gap-4 mt-8">
+                  <button 
+                    onClick={handleCheckAvailability}
+                    disabled={loading || !form.roomType || !form.checkInDate || !form.checkOutDate}
+                    className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Checking...' : 'Check Availability'}
+                  </button>
+                  <button 
+                    onClick={() => setStep(2)}
+                    disabled={!canProceedToStep2}
+                    className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+          </div>
+        </div>
+      )}
+
+            {/* Step 2: Customer Details */}
+      {step === 2 && (
+              <div className="space-y-6">
+                {/* First Name and Last Name */}
+                <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">First name</label>
+                    <input 
+                      value={form.firstName} 
+                      onChange={(e) => setForm({ ...form, firstName: e.target.value })} 
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                      placeholder="First name"
+                    />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Second name</label>
+                    <input 
+                      value={form.lastName} 
+                      onChange={(e) => setForm({ ...form, lastName: e.target.value })} 
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                      placeholder="Second name"
+                    />
+                  </div>
+            </div>
+
+                {/* Email */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email address <span className="text-gray-400 text-xs">( Confirmation email sent to this address )</span>
+                  </label>
+                  <input 
+                    type="email" 
+                    value={form.email} 
+                    onChange={(e) => setForm({ ...form, email: e.target.value })} 
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                    placeholder="example@example.com"
+                  />
+            </div>
+
+                {/* Phone and Guests */}
+                <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input 
+                      value={form.phone} 
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })} 
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                      placeholder="+43  Phone Number"
+                    />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Number of Guests</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      value={form.numberOfGuests} 
+                      onChange={(e) => setForm({ ...form, numberOfGuests: e.target.value })} 
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                      placeholder="Number of Guests"
+                    />
+            </div>
+          </div>
+
+                {/* Buttons */}
+                <div className="flex gap-4 mt-8">
+                  <button 
+                    onClick={() => setStep(1)} 
+                    className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg"
+                  >
+                    Check Availability
+                  </button>
+                  <button 
+                    onClick={() => setStep(3)}
+                    disabled={!form.firstName || !form.lastName || !form.email || !form.phone}
+                    className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+          </div>
+        </div>
+      )}
+
+            {/* Step 3: Confirmation */}
+      {step === 3 && (
+              <div className="space-y-6">
+                {/* Reservation Summary */}
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Reservation Summary</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Room Type:</span>
+                      <span className="text-gray-900">{form.roomType}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Check-in:</span>
+                      <span className="text-gray-900">{new Date(form.checkInDate).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Check-out:</span>
+                      <span className="text-gray-900">{new Date(form.checkOutDate).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Guest:</span>
+                      <span className="text-gray-900">{form.firstName} {form.lastName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Guests:</span>
+                      <span className="text-gray-900">{form.numberOfGuests}</span>
+                    </div>
+                  </div>
+          </div>
+
+                {/* Buttons */}
+                <div className="flex gap-4 mt-8">
+                  <button 
+                    onClick={() => setStep(2)} 
+                    className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg"
+                  >
+                    Check Availability
+                  </button>
+                  <button 
+                    disabled={loading} 
+                    onClick={submitReservation} 
+                    className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Creating...' : 'Next'}
+                  </button>
+          </div>
+        </div>
+      )}
+
+            {/* Step 4: Success */}
+      {step === 4 && success && (
+              <div className="text-center space-y-6">
+                {/* Success Icon */}
+                <div className="mx-auto w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Success Message */}
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-2">Reservation is Confirmed!</h2>
+                  <p className="text-gray-600">
+                    Reservation Number : <span className="text-purple-600 font-semibold">{success.reservationNumber}</span>
+                  </p>
+                </div>
+
+                {/* Done Button */}
+                <button 
+                  onClick={resetForm} 
+                  className="w-full px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                >
+                  Done
+                </button>
+          </div>
+            )}
+
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center py-4">
+          <p className="text-xs text-gray-500">© 2022-2025 by ValleyRose.com, Inc.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default OfflineReservationPage;

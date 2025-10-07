@@ -4,7 +4,7 @@ const Room = require('../room/room.model');
 
 const createValidators = [
   body('roomId').isMongoId(),
-  body('roomType').isIn(['Single', 'Double', 'Triple']),
+  body('roomType').isIn(['Single Room', 'Double Room', 'Triple Room', 'Apartment', 'Suite']),
   body('checkInDate').isISO8601(),
   body('checkOutDate').isISO8601(),
   body('customerId').isMongoId(),
@@ -30,20 +30,86 @@ function generateReservationNumber() {
 async function createReservation(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  const { roomId, roomType, checkInDate, checkOutDate } = req.body;
+  
+  const { roomId, roomType, checkInDate, checkOutDate, customerId, numberOfGuests } = req.body;
+  
+  // Log the reservation data being sent for creation
+  console.log('Creating reservation with data:', {
+    roomId,
+    roomType,
+    checkInDate,
+    checkOutDate,
+    customerId,
+    numberOfGuests,
+    timestamp: new Date().toISOString()
+  });
+  
   const room = await Room.findById(roomId);
   if (!room) return res.status(404).json({ message: 'Room not found' });
   if (room.type !== roomType) return res.status(400).json({ message: 'Room type mismatch' });
+  
   const available = await isRoomAvailable(roomId, checkInDate, checkOutDate);
   if (!available) return res.status(409).json({ message: 'Room not available for selected dates' });
+  
   const reservationNumber = generateReservationNumber();
   const doc = await OfflineReservation.create({ ...req.body, reservationNumber });
+  
+  // Log successful reservation creation with customer reference
+  console.log('Reservation created successfully:', {
+    reservationId: doc._id,
+    reservationNumber: doc.reservationNumber,
+    customerId: doc.customerId,
+    roomId: doc.roomId,
+    roomType: doc.roomType,
+    checkInDate: doc.checkInDate,
+    checkOutDate: doc.checkOutDate,
+    numberOfGuests: doc.numberOfGuests,
+    status: doc.status,
+    createdAt: doc.createdAt
+  });
+  
   res.status(201).json(doc);
 }
 
-async function listReservations(_req, res) {
-  const items = await OfflineReservation.find().populate('roomId').populate('customerId').sort({ createdAt: -1 });
-  res.json(items);
+async function listReservations(req, res) {
+  try {
+    let query = {};
+    
+    // Filter by status if provided
+    if (req.query.status && req.query.status.trim() !== '') {
+      query.status = req.query.status;
+    }
+    
+    // Add pagination support
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    
+    // Get total count for pagination
+    const totalItems = await OfflineReservation.countDocuments(query);
+    const totalPages = Math.ceil(totalItems / limit);
+    
+    const items = await OfflineReservation.find(query)
+      .populate('roomId')
+      .populate('customerId')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    // Send response with pagination info
+    res.json({
+      data: items,
+      pagination: {
+        current: page,
+        total: totalPages,
+        count: items.length,
+        totalItems
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching reservations:', error);
+    res.status(500).json({ message: 'Failed to fetch reservations' });
+  }
 }
 
 async function getReservation(req, res) {
@@ -66,6 +132,156 @@ async function deleteReservation(req, res) {
   res.json({ success: true });
 }
 
-module.exports = { createValidators, createReservation, listReservations, getReservation, updateStatus, deleteReservation, isRoomAvailable };
+// Check availability for rooms of a specific type within date range
+async function checkAvailability(req, res) {
+  try {
+    const { roomType, checkInDate, checkOutDate } = req.query;
+    
+    if (!roomType || !checkInDate || !checkOutDate) {
+      return res.status(400).json({ 
+        message: 'Room type, check-in date, and check-out date are required' 
+      });
+    }
+
+    // Validate dates
+    const startDate = new Date(checkInDate);
+    const endDate = new Date(checkOutDate);
+    
+    if (startDate >= endDate) {
+      return res.status(400).json({ 
+        message: 'Check-out date must be after check-in date' 
+      });
+    }
+
+    if (startDate < new Date().setHours(0, 0, 0, 0)) {
+      return res.status(400).json({ 
+        message: 'Check-in date cannot be in the past' 
+      });
+    }
+
+    // Find all rooms of the specified type
+    const rooms = await Room.find({ type: roomType });
+    
+    if (rooms.length === 0) {
+      return res.json({
+        success: true,
+        availableRooms: [],
+        totalRooms: 0,
+        availableCount: 0
+      });
+    }
+
+    // Check availability for each room
+    const availableRooms = [];
+    for (const room of rooms) {
+      const isAvailable = await isRoomAvailable(room._id, checkInDate, checkOutDate);
+      if (isAvailable) {
+        availableRooms.push({
+          _id: room._id,
+          title: room.title,
+          type: room.type,
+          pricePerNight: room.pricePerNight,
+          coverImage: room.coverImage
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      availableRooms,
+      totalRooms: rooms.length,
+      availableCount: availableRooms.length,
+      checkInDate,
+      checkOutDate,
+      roomType
+    });
+
+  } catch (error) {
+    console.error('Availability check error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to check availability',
+      error: error.message
+    });
+  }
+}
+
+async function searchReservationByNumber(req, res) {
+  try {
+    console.log('Search endpoint hit - no auth required');
+    const { reservationNumber } = req.params;
+    
+    if (!reservationNumber) {
+      console.log('No reservation number provided');
+      return res.status(400).json({ 
+        success: false,
+        message: 'Reservation number is required' 
+      });
+    }
+
+    // URL decode the reservation number in case it contains encoded characters
+    const decodedReservationNumber = decodeURIComponent(reservationNumber);
+    
+    console.log('Raw reservation number:', reservationNumber);
+    console.log('Decoded reservation number:', decodedReservationNumber);
+
+    // Search for reservation by reservation number
+    const reservation = await OfflineReservation.findOne({ reservationNumber: decodedReservationNumber })
+      .populate('roomId')
+      .populate('customerId');
+
+    if (!reservation) {
+      console.log('No reservation found for:', decodedReservationNumber);
+      return res.status(404).json({ 
+        success: false,
+        message: 'Reservation not found' 
+      });
+    }
+
+    // Format the response to match frontend expectations
+    const formattedReservation = {
+      _id: reservation._id,
+      reservationNumber: reservation.reservationNumber,
+      customer: {
+        firstName: reservation.customerId.firstName,
+        lastName: reservation.customerId.lastName,
+        email: reservation.customerId.email,
+        phoneNumber: reservation.customerId.phoneNumber
+      },
+      roomType: reservation.roomType,
+      numberOfGuests: reservation.numberOfGuests,
+      checkInDate: reservation.checkInDate,
+      checkOutDate: reservation.checkOutDate,
+      status: reservation.status,
+      cost: reservation.roomId?.price || 0, // Assuming room has price field
+      paymentMethod: 'Credit Card (Visa)', // Default for now
+      createdAt: reservation.createdAt
+    };
+
+    res.json({
+      success: true,
+      data: formattedReservation
+    });
+  } catch (error) {
+    console.error('Search reservation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to search reservation',
+      error: error.message
+    });
+  }
+}
+
+module.exports = { 
+  createValidators, 
+  createReservation, 
+  listReservations, 
+  getReservation, 
+  updateStatus, 
+  deleteReservation, 
+  isRoomAvailable,
+  checkAvailability,
+  searchReservationByNumber
+};
 
 
