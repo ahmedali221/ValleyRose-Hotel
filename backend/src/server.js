@@ -33,10 +33,13 @@ app.use('/api/restaurant-gallery', restaurantGalleryRoutes);
 app.use('/api/restaurant-main-menu', restaurantMainMenuRoutes);
 
 
-const PORT = process.env.PORT || 4000;
-connect().then(() => {
-  app.listen(PORT, () => console.log(`API listening on :${PORT}`));
-});
+// For Vercel deployment
+module.exports = app;
 
-
-
+// For local development
+if (require.main === module) {
+  const PORT = process.env.PORT || 4000;
+  connect().then(() => {
+    app.listen(PORT, () => console.log(`API listening on :${PORT}`));
+  });
+}
