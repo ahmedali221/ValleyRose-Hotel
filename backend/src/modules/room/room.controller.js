@@ -38,7 +38,7 @@ const createValidators = [
   // Other validations
   body('pricePerNight').isFloat({ min: 0 }).withMessage('Price per night must be a positive number'),
   body('ratingSuggestion').optional().isFloat({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
-  body('type').isIn(['Single Room', 'Double Room', 'Triple Room', 'Apartment', 'Suite']).withMessage('Invalid room type'),
+  body('type').isIn(['Single Room', 'Double Room', 'Triple Room']).withMessage('Invalid room type'),
 ];
 
 async function createRoom(req, res) {
@@ -196,7 +196,7 @@ async function deleteRoom(req, res) {
 
 async function getRoomTypes(req, res) {
   try {
-    const roomTypes = ['Single Room', 'Double Room', 'Triple Room', 'Apartment', 'Suite'];
+    const roomTypes = ['Single Room', 'Double Room', 'Triple Room'];
     res.json({
       success: true,
       data: roomTypes

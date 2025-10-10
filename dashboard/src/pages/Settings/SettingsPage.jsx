@@ -182,21 +182,21 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="content-section-heavy border-b border-gray-200 px-6 py-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+          <h1 className="text-2xl font-bold valley-rose-text title-font">Settings</h1>
           <div className="flex space-x-6">
             <button 
               onClick={() => setActiveTab('admins')}
-              className={`font-medium ${activeTab === 'admins' ? 'text-purple-600' : 'text-gray-600 hover:text-purple-600'}`}
+              className={`font-medium ${activeTab === 'admins' ? 'valley-rose-text' : 'text-gray-600 hover:valley-rose-text'}`}
             >
               Admins
             </button>
             <button 
               onClick={() => setActiveTab('password')}
-              className={`font-medium ${activeTab === 'password' ? 'text-purple-600' : 'text-gray-600 hover:text-purple-600'}`}
+              className={`font-medium ${activeTab === 'password' ? 'valley-rose-text' : 'text-gray-600 hover:valley-rose-text'}`}
             >
               Change Password
             </button>
@@ -247,10 +247,10 @@ const SettingsPage = () => {
                   </div>
                 ) : (
                   admins.map((admin) => (
-                  <div key={admin.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
+                  <div key={admin.id} className="content-section-heavy p-4 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <h3 className="text-lg font-semibold text-gray-900">{admin.name}</h3>
-                      <div className="flex items-center text-purple-600">
+                      <div className="flex items-center valley-rose-text">
                         <span className="mr-2">📧</span>
                         <span>{admin.email}</span>
                       </div>
@@ -343,7 +343,18 @@ const SettingsPage = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`px-8 py-3 font-medium rounded-lg text-white ${loading ? 'bg-purple-400 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'}`}
+                    className={`px-8 py-3 font-medium rounded-lg text-white ${loading ? 'cursor-not-allowed' : ''}`}
+                    style={loading ? {backgroundColor: 'var(--primary-color)', opacity: 0.6} : {backgroundColor: 'var(--primary-color)'}}
+                    onMouseEnter={(e) => {
+                      if (!loading) {
+                        e.target.style.backgroundColor = 'var(--primary-hover)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!loading) {
+                        e.target.style.backgroundColor = 'var(--primary-color)';
+                      }
+                    }}
                   >
                     {loading ? (
                       <div className="flex items-center">
@@ -427,7 +438,18 @@ const SettingsPage = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`px-8 py-3 font-medium rounded-lg text-white ${loading ? 'bg-purple-400 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'}`}
+                    className={`px-8 py-3 font-medium rounded-lg text-white ${loading ? 'cursor-not-allowed' : ''}`}
+                    style={loading ? {backgroundColor: 'var(--primary-color)', opacity: 0.6} : {backgroundColor: 'var(--primary-color)'}}
+                    onMouseEnter={(e) => {
+                      if (!loading) {
+                        e.target.style.backgroundColor = 'var(--primary-hover)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!loading) {
+                        e.target.style.backgroundColor = 'var(--primary-color)';
+                      }
+                    }}
                   >
                     {loading ? 'Changing...' : 'Change Password'}
                   </button>
@@ -439,7 +461,7 @@ const SettingsPage = () => {
       </div>
 
       {/* Footer */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4">
+      <div className="content-section-heavy border-t border-gray-200 px-6 py-4">
         <p className="text-center text-sm text-gray-500">
           © 2022-2025 by ValleyRose.com, Inc.
         </p>

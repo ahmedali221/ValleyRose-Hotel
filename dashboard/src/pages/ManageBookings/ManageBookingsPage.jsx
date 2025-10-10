@@ -9,12 +9,12 @@ const ManageBookingsPage = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [showAllMonths, setShowAllMonths] = useState(false);
   
   // Search and filter states
   const [searchFilters, setSearchFilters] = useState({
     roomType: '',
-    reservationCode: ''
+    reservationCode: '',
+    selectedDate: null
   });
   
   // Status filter state
@@ -35,7 +35,7 @@ const ManageBookingsPage = () => {
 
   useEffect(() => {
     filterBookings();
-  }, [bookings, searchFilters, currentMonth, currentYear, activeStatusFilter, showAllMonths]);
+  }, [bookings, searchFilters, currentMonth, currentYear, activeStatusFilter]);
 
   const fetchBookings = async () => {
     try {
@@ -81,11 +81,12 @@ const ManageBookingsPage = () => {
       );
     }
 
-    // Filter by month and year (only if not showing all months)
-    if (!showAllMonths) {
+    // Filter by selected date (if specified)
+    if (searchFilters.selectedDate) {
       filtered = filtered.filter(booking => {
         const checkInDate = new Date(booking.checkInDate);
-        return checkInDate.getMonth() === currentMonth && checkInDate.getFullYear() === currentYear;
+        checkInDate.setHours(0, 0, 0, 0);
+        return checkInDate.getTime() === searchFilters.selectedDate.getTime();
       });
     }
 
@@ -281,7 +282,14 @@ const ManageBookingsPage = () => {
         <p className="text-red-600 mb-4">{error}</p>
         <button 
           onClick={fetchBookings}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          className="px-4 py-2 text-white rounded-lg"
+          style={{backgroundColor: 'var(--primary-color)'}}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = 'var(--primary-hover)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = 'var(--primary-color)';
+          }}
         >
           Try Again
         </button>
@@ -299,17 +307,17 @@ const ManageBookingsPage = () => {
         <div className="mb-6">
           <button 
             onClick={handleBackToList}
-            className="flex items-center text-purple-600 hover:text-purple-700 mb-4"
+            className="flex items-center valley-rose-text hover:text-purple-700 mb-4"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
             </svg>
             Back to Manage Bookings
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Bookings</h1>
+          <h1 className="text-3xl font-bold valley-rose-text title-font">Manage Bookings</h1>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="content-section-heavy rounded-lg shadow-sm border border-gray-200 p-8">
           {/* Reservation Number */}
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-700">{selectedBooking.reservationNumber}</h2>
@@ -453,13 +461,13 @@ const ManageBookingsPage = () => {
   // Main Booking List View
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Manage Bookings</h1>
+      <h1 className="text-3xl font-bold valley-rose-text title-font mb-8">Manage Bookings</h1>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="content-section-heavy rounded-lg shadow-sm border border-gray-200 p-6">
         {/* Status Filter Tabs */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
-            <div className="w-4 h-6 bg-purple-600 rounded-sm mr-3"></div>
+            <div className="w-4 h-6 rounded-sm mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
             <h2 className="text-lg font-semibold text-gray-900">Filter by Status</h2>
           </div>
           <div className="flex space-x-4">
@@ -469,9 +477,10 @@ const ManageBookingsPage = () => {
                 onClick={() => handleStatusFilterChange(filter)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   activeStatusFilter === filter.toLowerCase().replace(' ', '-')
-                    ? 'bg-purple-600 text-white'
+                    ? 'text-white'
                     : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
                 }`}
+                style={activeStatusFilter === filter.toLowerCase().replace(' ', '-') ? {backgroundColor: 'var(--primary-color)'} : {}}
               >
                 {filter}
               </button>
@@ -482,111 +491,149 @@ const ManageBookingsPage = () => {
          {/* Search Section */}
          <div className="mb-8">
            <div className="flex items-center mb-6">
-             <div className="w-4 h-6 bg-purple-600 rounded-sm mr-3"></div>
+             <div className="w-4 h-6 rounded-sm mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
              <h2 className="text-lg font-semibold text-gray-900">Searching</h2>
            </div>
            
-           <div className="flex items-end gap-4">
-             {/* Room Type */}
-             <div className="flex-1">
-               <label className="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
-               <select 
-                 value={searchFilters.roomType}
-                 onChange={(e) => setSearchFilters({...searchFilters, roomType: e.target.value})}
-                 className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
-               >
-                 <option value="">Single</option>
-                 <option value="Single Room">Single Room</option>
-                 <option value="Double Room">Double Room</option>
-                 <option value="Triple Room">Triple Room</option>
-                 <option value="Apartment">Apartment</option>
-                 <option value="Suite">Suite</option>
-               </select>
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+             {/* Left Column - Room Type and Reservation Code */}
+             <div className="space-y-4 ">
+               {/* Room Type */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
+                 <select 
+                   value={searchFilters.roomType}
+                   onChange={(e) => setSearchFilters({...searchFilters, roomType: e.target.value})}
+                   className="w-full px-4 py-3 text-white rounded-lg focus:outline-none focus:ring-2 appearance-none cursor-pointer"
+                   style={{backgroundColor: 'var(--primary-color)', '--tw-ring-color': 'var(--primary-color)'}}
+                 >
+                   <option value="">Single</option>
+                   <option value="Single Room">Single Room</option>
+                   <option value="Double Room">Double Room</option>
+                   <option value="Triple Room">Triple Room</option>
+                 </select>
+               </div>
+    {/* OR Text */}
+    <div className="text-center">
+                 <span className="text-gray-400 text-sm font-medium">or</span>
+               </div>
+             <div className="flex flex-row justify-between space-x-4">
+            
+
+               {/* Reservation Code */}
+               <div className="flex-1">
+                 <input
+                   type="text"
+                   placeholder="reservation code"
+                   value={searchFilters.reservationCode}
+                   onChange={(e) => setSearchFilters({...searchFilters, reservationCode: e.target.value})}
+                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 placeholder-gray-400"
+                   style={{'--tw-ring-color': 'var(--primary-color)'}}
+                 />
+               </div>
+
+                    {/* Search Button */}
+                    <div className="flex-1">
+                 <button 
+                   onClick={handleSearch}
+                   className="w-full px-8 py-3 text-white rounded-lg font-medium"
+                   style={{backgroundColor: 'var(--primary-color)'}}
+                   onMouseEnter={(e) => {
+                     e.target.style.backgroundColor = 'var(--primary-hover)';
+                   }}
+                   onMouseLeave={(e) => {
+                     e.target.style.backgroundColor = 'var(--primary-color)';
+                   }}
+                 >
+                   Search
+                 </button>
+               </div>
              </div>
 
-             {/* OR Text */}
-             <div className="flex items-center pb-3">
-               <span className="text-gray-400 text-sm font-medium">or</span>
+          
              </div>
 
-             {/* Reservation Code */}
-             <div className="flex-1">
-               <input
-                 type="text"
-                 placeholder="reservation code"
-                 value={searchFilters.reservationCode}
-                 onChange={(e) => setSearchFilters({...searchFilters, reservationCode: e.target.value})}
-                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
-               />
-             </div>
-
-             {/* Search Button */}
+             {/* Right Column - Date Selection */}
              <div>
-               <button 
-                 onClick={handleSearch}
-                 className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
-               >
-                 Search
-               </button>
+               <div className="flex items-center justify-between mb-4">
+                 <button 
+                   onClick={() => navigateMonth('prev')}
+                   className="p-2 rounded-lg hover:bg-gray-100"
+                 >
+                   <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                   </svg>
+                 </button>
+                 <h3 className="text-lg font-semibold text-gray-900">
+                   {months[currentMonth]}
+                 </h3>
+                 <button 
+                   onClick={() => navigateMonth('next')}
+                   className="p-2 rounded-lg hover:bg-gray-100"
+                 >
+                   <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                   </svg>
+                 </button>
+               </div>
+
+               {/* Calendar Grid */}
+               <div className="grid grid-cols-10 gap-2 mb-4">
+                 {generateCalendarDays().map(({ day, isToday, hasBooking }) => {
+                   const dateObj = new Date(currentYear, currentMonth, day);
+                   dateObj.setHours(0, 0, 0, 0);
+                   const isSelected = searchFilters.selectedDate && 
+                     searchFilters.selectedDate.getTime() === dateObj.getTime();
+                   
+                   return (
+                     <button
+                       key={day}
+                       onClick={() => {
+                         const newDate = new Date(currentYear, currentMonth, day);
+                         newDate.setHours(0, 0, 0, 0);
+                         setSearchFilters({
+                           ...searchFilters, 
+                           selectedDate: isSelected ? null : newDate
+                         });
+                       }}
+                       className={`
+                         w-10 h-10 rounded-lg text-sm font-medium transition-colors
+                         ${isSelected ? 'bg-purple-500 text-white' :
+                           isToday ? 'bg-green-500 text-white' : 
+                           hasBooking ? 'text-white hover:opacity-80' : 
+                           'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                       `}
+                       style={hasBooking && !isToday && !isSelected ? {backgroundColor: 'var(--primary-color)'} : {}}
+                     >
+                       {day}
+                     </button>
+                   );
+                 })}
+               </div>
+
+               {/* Calendar Legend */}
+               <div className="flex flex-wrap gap-3 text-xs">
+                 <div className="flex items-center space-x-2">
+                   <div className="w-4 h-4 rounded bg-green-500"></div>
+                   <span className="text-gray-600">Today</span>
+                 </div>
+                 <div className="flex items-center space-x-2">
+                   <div className="w-4 h-4 rounded text-white" style={{backgroundColor: 'var(--primary-color)'}}></div>
+                   <span className="text-gray-600">Has Bookings</span>
+                 </div>
+                 <div className="flex items-center space-x-2">
+                   <div className="w-4 h-4 rounded bg-purple-500"></div>
+                   <span className="text-gray-600">Selected</span>
+                 </div>
+                 <div className="flex items-center space-x-2">
+                   <div className="w-4 h-4 rounded bg-gray-100 border border-gray-300"></div>
+                   <span className="text-gray-600">Available</span>
+                 </div>
+               </div>
              </div>
            </div>
          </div>
 
-        {/* Calendar Section */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-4">
-            <button 
-              onClick={() => navigateMonth('prev')}
-              disabled={showAllMonths}
-              className={`p-2 rounded-lg ${showAllMonths ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
-            >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-            </button>
-            <h3 className="text-xl font-semibold text-gray-900">
-              {showAllMonths ? 'All Months' : `${months[currentMonth]} ${currentYear}`}
-            </h3>
-            <button 
-              onClick={() => navigateMonth('next')}
-              disabled={showAllMonths}
-              className={`p-2 rounded-lg ${showAllMonths ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
-            >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
-          </div>
-          <button
-            onClick={() => setShowAllMonths(!showAllMonths)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              showAllMonths 
-                ? 'bg-purple-600 text-white' 
-                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
-            }`}
-          >
-            {showAllMonths ? 'Show Current Month' : 'Show All Months'}
-          </button>
-        </div>
-
-        {/* Calendar Grid */}
-        {!showAllMonths && (
-          <div className="grid grid-cols-10 gap-2 mb-8">
-            {generateCalendarDays().map(({ day, isToday, hasBooking }) => (
-              <button
-                key={day}
-                className={`
-                  w-12 h-12 rounded-lg text-sm font-medium transition-colors
-                  ${isToday ? 'bg-green-500 text-white' : 
-                    hasBooking ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' : 
-                    'bg-gray-100 text-gray-700 hover:bg-gray-200'}
-                `}
-              >
-                {day}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Bookings List */}
         <div className="space-y-4">

@@ -4,9 +4,9 @@ import Sidebar from './Sidebar';
 
 const Layout = () => {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto content-section">
         <Outlet />
       </main>
     </div>

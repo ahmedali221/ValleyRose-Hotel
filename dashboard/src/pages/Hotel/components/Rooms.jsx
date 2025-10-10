@@ -4,6 +4,7 @@ import { hotelService } from '../../../services/hotelService';
 
 const Rooms = () => {
   const [rooms, setRooms] = useState([]);
+  const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [pagination, setPagination] = useState({
@@ -19,8 +20,24 @@ const Rooms = () => {
   });
 
   useEffect(() => {
+    fetchRoomTypes();
+    fetchRooms();
+  }, []);
+
+  useEffect(() => {
     fetchRooms();
   }, [filters]);
+
+  const fetchRoomTypes = async () => {
+    try {
+      const response = await hotelService.getRoomTypes();
+      setRoomTypes(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch room types:', error);
+      // Fallback to default room types if API fails
+      setRoomTypes(['Single Room', 'Double Room', 'Triple Room']);
+    }
+  };
 
   const fetchRooms = async () => {
     try {
@@ -63,7 +80,7 @@ const Rooms = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{borderColor: 'var(--primary-color)'}}></div>
       </div>
     );
   }
@@ -74,7 +91,14 @@ const Rooms = () => {
         <p className="text-red-600 mb-4">{error}</p>
         <button 
           onClick={fetchRooms}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          className="px-4 py-2 text-white rounded-lg"
+          style={{backgroundColor: 'var(--primary-color)'}}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = 'var(--primary-hover)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = 'var(--primary-color)';
+          }}
         >
           Try Again
         </button>
@@ -86,17 +110,18 @@ const Rooms = () => {
     <div>
       {/* Room Type Filters */}
       <div className="flex space-x-4 mb-6">
-        {['All Rooms', 'Single', 'Double', 'Triple', 'Apartment'].map((filter) => (
+        {['All Rooms', ...roomTypes].map((filter) => (
           <button
             key={filter}
             onClick={() => handleFilterChange(filter)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-2xl text-sm font-medium transition-colors ${
               (filter === 'All Rooms' && !filters.type) || filters.type === filter
-                ? 'bg-purple-600 text-white'
+                ? 'text-white'
                 : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
             }`}
+            style={((filter === 'All Rooms' && !filters.type) || filters.type === filter) ? {backgroundColor: 'var(--primary-color)'} : {}}
           >
-            {filter}
+            {filter === 'All Rooms' ? 'All Rooms' : filter}
           </button>
         ))}
       </div>
@@ -121,10 +146,10 @@ const Rooms = () => {
                   width: '85%',
                   borderBottomLeftRadius: 0, // matches rounded-lg
                   borderBottomRightRadius: '0.75rem'  ,
-                  backgroundColor: '#9333ea', // Tailwind purple-600
+                  backgroundColor: 'var(--primary-color)', // Use CSS custom property
                 }}
               >
-                <h3 className="text-lg font-semibold text-white">{getDisplayTitle(room)}</h3>
+                <h3 className="text-xs text-white">{getDisplayTitle(room)}</h3>
                 <div className="flex items-center text-sm text-white">
                   <span className="text-yellow-400 mr-1">★</span>
                   ({getDisplayRating(room)})
@@ -156,7 +181,14 @@ const Rooms = () => {
           <button 
             onClick={() => handlePageChange(pagination.current - 1)}
             disabled={pagination.current === 1}
-            className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-10 h-10 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{backgroundColor: 'var(--primary-color)', color: 'white'}}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = 'var(--primary-hover)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'var(--primary-color)';
+            }}
           >
             <span className="text-sm">‹</span>
           </button>
@@ -166,9 +198,10 @@ const Rooms = () => {
               onClick={() => handlePageChange(page)}
               className={`w-10 h-10 rounded-full text-sm font-medium flex items-center justify-center ${
                 page === pagination.current
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white text-purple-600 border border-purple-200 hover:bg-purple-50'
+                  ? 'text-white'
+                  : 'bg-white border hover:bg-gray-50'
               }`}
+              style={page === pagination.current ? {backgroundColor: 'var(--primary-color)'} : {color: 'var(--primary-color)', borderColor: 'var(--primary-color)'}}
             >
               {page}
             </button>
@@ -176,7 +209,14 @@ const Rooms = () => {
           <button 
             onClick={() => handlePageChange(pagination.current + 1)}
             disabled={pagination.current === pagination.total}
-            className="w-10 h-10 rounded-full bg-purple-600 text-white hover:bg-purple-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-10 h-10 rounded-full text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{backgroundColor: 'var(--primary-color)'}}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = 'var(--primary-hover)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'var(--primary-color)';
+            }}
           >
             <span className="text-sm">›</span>
           </button>

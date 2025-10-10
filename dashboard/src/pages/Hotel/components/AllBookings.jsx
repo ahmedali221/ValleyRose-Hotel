@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { bookingService } from '../../../services/bookingService';
-
+import { offlineReservationService } from '../../../services/offlineReservationService';
+import { Mail01Icon,CallIcon,MeetingRoomIcon,UserIcon,EuroIcon,CalendarCheckOut01Icon,CalendarCheckIn01Icon  } from 'hugeicons-react';
 const AllBookings = () => {
   const [allBookings, setAllBookings] = useState([]); // Store all bookings
   const [bookings, setBookings] = useState([]); // Store filtered bookings
@@ -49,7 +49,7 @@ const AllBookings = () => {
     try {
       setLoading(true);
       setError('');
-      const response = await bookingService.getBookings({ status: '', page: 1, limit: 1000 });
+      const response = await offlineReservationService.listReservations({ status: '', page: 1, limit: 1000 });
       const fetchedBookings = response.data || response;
       setAllBookings(Array.isArray(fetchedBookings) ? fetchedBookings : []);
       
@@ -67,7 +67,7 @@ const AllBookings = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Failed to fetch bookings:', error);
+      console.error('Failed to fetch reservations:', error);
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ const AllBookings = () => {
       setError('');
       
       // Try server-side filtering for specific status
-      const response = await bookingService.getBookings(filters);
+      const response = await offlineReservationService.listReservations(filters);
       const fetchedBookings = response.data || response;
       
       setBookings(Array.isArray(fetchedBookings) ? fetchedBookings : []);
@@ -94,7 +94,7 @@ const AllBookings = () => {
       }
     } catch (error) {
       setError(error.message);
-      console.error('Failed to fetch bookings with server filtering:', error);
+      console.error('Failed to fetch reservations with server filtering:', error);
       
       // If server-side filtering fails, use client-side filtering
       if (allBookings.length > 0) {
@@ -156,15 +156,15 @@ const AllBookings = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'Confirmed':
-        return 'bg-blue-500';
+        return '#28B800';
       case 'CheckedIn':
-        return 'bg-green-500';
+        return '#28B800';
       case 'Cancelled':
-        return 'bg-red-500';
+        return '#ED0000';
       case 'Pending':
-        return 'bg-yellow-500';
+        return '#FFA500';
       default:
-        return 'bg-gray-500';
+        return '#6B7280';
     }
   };
 
@@ -187,12 +187,12 @@ const AllBookings = () => {
     }).toUpperCase();
   };
 
-  const getCustomerInfo = (booking) => {
-    if (booking.customerId) {
+  const getCustomerInfo = (reservation) => {
+    if (reservation.customerId) {
       return {
-        name: `${booking.customerId.firstName || ''} ${booking.customerId.lastName || ''}`.trim() || 'Guest',
-        email: booking.customerId.email || 'N/A',
-        phone: booking.customerId.phoneNumber || booking.customerId.phone || 'N/A'
+        name: `${reservation.customerId.firstName || ''} ${reservation.customerId.lastName || ''}`.trim() || 'Guest',
+        email: reservation.customerId.email || 'N/A',
+        phone: reservation.customerId.phoneNumber || reservation.customerId.phone || 'N/A'
       };
     }
     return {
@@ -202,23 +202,23 @@ const AllBookings = () => {
     };
   };
 
-  const getRoomInfo = (booking) => {
-    if (booking.roomId) {
+  const getRoomInfo = (reservation) => {
+    if (reservation.roomId) {
       return {
-        type: booking.roomId.title?.english || booking.roomId.type || 'Room',
-        price: booking.roomId.pricePerNight ? `€ ${booking.roomId.pricePerNight}` : 'N/A'
+        type: reservation.roomId.title?.english || reservation.roomId.type || reservation.roomType || 'Room',
+        price: reservation.cost ? `€ ${reservation.cost}` : (reservation.roomId.pricePerNight ? `€ ${reservation.roomId.pricePerNight}` : 'N/A')
       };
     }
     return {
-      type: booking.roomType || 'Room',
-      price: 'N/A'
+      type: reservation.roomType || 'Room',
+      price: reservation.cost ? `€ ${reservation.cost}` : 'N/A'
     };
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{borderColor: 'var(--primary-color)'}}></div>
       </div>
     );
   }
@@ -229,7 +229,14 @@ const AllBookings = () => {
         <p className="text-red-600 mb-4">{error}</p>
         <button 
           onClick={fetchBookings}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          className="px-4 py-2 text-white rounded-lg"
+          style={{backgroundColor: 'var(--primary-color)'}}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = 'var(--primary-hover)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = 'var(--primary-color)';
+          }}
         >
           Try Again
         </button>
@@ -247,70 +254,98 @@ const AllBookings = () => {
             onClick={() => handleFilterChange(filter)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === filter.toLowerCase().replace(' ', '-')
-                ? 'bg-purple-600 text-white'
+                ? 'text-white'
                 : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
             }`}
+            style={activeFilter === filter.toLowerCase().replace(' ', '-') ? {backgroundColor: 'var(--primary-color)'} : {}}
           >
             {filter}
           </button>
         ))}
       </div>
 
-      {/* Booking Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      {/* Reservation Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
         {bookings.length === 0 ? (
           <div className="col-span-full text-center py-8">
-            <p className="text-gray-500">No bookings found</p>
+            <p className="text-gray-500">No reservations found</p>
           </div>
         ) : (
-          bookings.map((booking) => {
-            const customer = getCustomerInfo(booking);
-            const room = getRoomInfo(booking);
+          bookings.map((reservation) => {
+            const customer = getCustomerInfo(reservation);
+            const room = getRoomInfo(reservation);
             
             return (
-              <div key={booking._id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div className="flex justify-between items-start mb-4">
+              <div key={reservation._id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 relative">
+                <span 
+                  className="px-3 py-1 text-white text-xs font-medium absolute top-0 right-0"
+                  style={{
+                    backgroundColor: getStatusColor(reservation.status),
+                    borderRadius: '0 8px 0 8px',
+                    zIndex: 10
+                  }}
+                >
+                  {getStatusLabel(reservation.status)}
+                </span>
+                
+                {/* Customer Name */}
+                <div className="mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">{customer.name}</h3>
-                  <span className={`px-3 py-1 rounded-full text-white text-xs font-medium ${getStatusColor(booking.status)}`}>
-                    {getStatusLabel(booking.status)}
-                  </span>
                 </div>
                 
+                {/* Contact Information */}
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-purple-600">
-                    <span className="mr-2">📧</span>
+                  <div className="flex items-center space-x-5">
+                <div className="flex items-center text-sm text-gray-600 space-x-2">
+                    <Mail01Icon style={{color: 'var(--primary-color)', marginRight: '0.5rem'}} />
                     {customer.email}
                   </div>
-                  <div className="flex items-center text-sm text-purple-600">
-                    <span className="mr-2">📞</span>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CallIcon style={{color: 'var(--primary-color)', marginRight: '0.5rem'}} />
                     {customer.phone}
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <span className="mr-2">🚪</span>
+                </div>
+                </div>
+                
+                {/* Booking Details */}
+                <div className="space-y-2 mb-4">
+                <div className="flex items-center space-x-5">
+                <div className="flex items-center text-sm text-gray-600">
+                    <MeetingRoomIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
                     {room.type}
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
-                    <span className="mr-2">👤</span>
-                    {booking.numberOfGuests} Guests
+                    <UserIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                    {reservation.numberOfGuests} Guests
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <EuroIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                    {room.price}
                   </div>
                 </div>
+
                 
-                <div className="flex justify-between items-center mb-4">
-                  <div className="text-lg font-bold text-gray-900">{room.price}</div>
+                </div>
+                
+                {/* Reservation Number */}
+                <div className="mb-4">
                   <div className="text-sm text-gray-500">
-                    #{booking.reservationNumber}
+                    {reservation.reservationNumber}
                   </div>
                 </div>
                 
+                {/* Check-in/Check-out Dates */}
                 <div className="space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <span className="mr-2">📅</span>
-                    Check-In: {formatDate(booking.checkInDate)}
+                 <div className="flex items-center space-x-5">
+                 <div className="flex items-center text-sm text-gray-600">
+                    <CalendarCheckIn01Icon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                    Check-In: {formatDate(reservation.checkInDate)}
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
-                    <span className="mr-2">📅</span>
-                    Check-Out: {formatDate(booking.checkOutDate)}
+                    <CalendarCheckOut01Icon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                    Check-Out: {formatDate(reservation.checkOutDate)}
                   </div>
+                 </div>
                 </div>
               </div>
             );
@@ -334,9 +369,10 @@ const AllBookings = () => {
               onClick={() => handlePageChange(page)}
               className={`w-10 h-10 rounded-lg text-sm font-medium ${
                 page === pagination.current
-                  ? 'bg-purple-600 text-white'
+                  ? 'text-white'
                   : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
               }`}
+              style={page === pagination.current ? {backgroundColor: 'var(--primary-color)'} : {}}
             >
               {page}
             </button>

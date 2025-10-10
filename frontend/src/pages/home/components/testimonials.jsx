@@ -47,8 +47,8 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="bg-gray-50 py-16 px-8">
-      <div className="max-w-8xl mx-auto">
+    <section className="content-section py-12 px-4 sm:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div 
           className="text-center mb-12"
@@ -58,13 +58,13 @@ const Testimonials = () => {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="text-4xl font-medium mb-2"
+            className="text-3xl sm:text-4xl font-medium mb-2 title-font"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="text-purple-500">Our Clients</span> Rate Us
+            <span className="valley-rose-text">Our Clients</span> Rate Us
           </motion.h2>
           <motion.p 
             className="text-gray-600"
@@ -78,7 +78,7 @@ const Testimonials = () => {
         </motion.div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div 
               key={testimonial.id} 

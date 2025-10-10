@@ -1,1 +1,65 @@
 @import "tailwindcss";
+
+/* Local Redressed Font */
+@font-face {
+  font-family: 'Redressed';
+  src: url('/Amiri,Redressed/Redressed/Redressed-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Global roses background for all pages */
+body {
+  background-image: url('./assets/banners/roses.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
+
+/* Main App Theme */
+:root {
+  --primary-color: #9962B9;
+  --primary-hover: #8a4db8;
+}
+
+/* Primary Button Styles */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  color: white;
+}
+
+/* Valley Rose Text Color */
+.valley-rose-text {
+  color: var(--primary-color);
+}
+
+/* Title Font - Redressed */
+.title-font {
+  font-family: 'Redressed', cursive;
+  font-weight: 400;
+}
+
+/* Ensure content sections have proper background for readability */
+.content-section {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(1px);
+}
+
+/* For sections that need more opacity */
+.content-section-light {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* For sections that need less opacity */
+.content-section-heavy {
+  background-color: rgba(255, 255, 255, 0.98);
+}

@@ -99,6 +99,32 @@ export const restaurantService = {
     }
   },
 
+  // Add meal to specific day
+  addMealToDay: async (day, mealId, type = 'meals') => {
+    try {
+      const response = await api.post(`/weekly-menu/${day}/add-meal`, {
+        mealId,
+        type,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to add meal to day');
+    }
+  },
+
+  // Remove meal from specific day
+  removeMealFromDay: async (day, mealId, type = 'meals') => {
+    try {
+      const response = await api.post(`/weekly-menu/${day}/remove-meal`, {
+        mealId,
+        type,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to remove meal from day');
+    }
+  },
+
   // Get recommendations
   getRecommendations: async () => {
     try {

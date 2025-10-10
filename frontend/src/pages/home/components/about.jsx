@@ -4,8 +4,8 @@ import right from "../../../assets/header/right.png";
 
 export default function About() {
   return (
-    <div className=" mt-20 bg-gray-50 p-8">
-      <div className="max-w-8xl mx-auto">
+    <div className="content-section p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div 
           className="mb-8"
@@ -14,25 +14,25 @@ export default function About() {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <motion.h1 
-            className="text-5xl font-bold mb-2"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 title-font"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Welcome to <span className="text-purple-500">Valley Rose Hotel!</span>
+            Welcome to <span className="valley-rose-text">Valley Rose Hotel!</span>
           </motion.h1>
           <motion.p 
-            className="text-gray-600 text-lg"
+            className="text-gray-600 text-base sm:text-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Where Every Stay <span className="text-purple-500 font-semibold">Blooms</span> with Comfort
+            Where Every Stay <span className="valley-rose-text font-semibold">Blooms</span> with Comfort
           </motion.p>
         </motion.div>
 
         {/* Main Content */}
-        <div className="grid md:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
           {/* Left Column - Text Content */}
           <motion.div 
             className="space-y-6"
@@ -66,20 +66,20 @@ export default function About() {
 
             {/* Buttons */}
             <motion.div 
-              className="flex gap-4 pt-4"
+              className="flex flex-col sm:flex-row gap-4 pt-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.2 }}
             >
               <motion.button 
-                className="bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-md"
+                className="btn-primary px-6 sm:px-8 py-3 rounded-lg font-semibold shadow-md"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Book a Room
               </motion.button>
               <motion.button 
-                className="bg-white hover:bg-gray-100 text-purple-500 px-8 py-3 rounded-lg font-semibold transition-colors border-2 border-gray-200"
+                className="bg-white hover:bg-gray-100 valley-rose-text px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors border-2 border-gray-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >

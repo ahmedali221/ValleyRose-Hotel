@@ -22,26 +22,34 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-80 bg-gray-100 h-screen flex flex-col">
+    <div className="w-80 content-section-heavy h-screen flex flex-col">
       {/* Header */}
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-purple-600 font-serif">Valley Rose</h1>
-        <p className="text-sm font-semibold text-black">Dashboard</p>
+        <h1 className="text-2xl font-bold valley-rose-text title-font">Valley Rose</h1>
+        <p className="text-sm font-semibold text-gray-700">Dashboard</p>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4">
         <ul className="space-y-1">
           {navigationItems.map((item) => {
+            const active = isActive(item.href);
             return (
               <li key={item.name}>
                 <Link
                   to={item.href}
                   className={`block px-4 py-3 rounded-lg transition-colors duration-200 ${
-                    isActive(item.href)
-                      ? 'bg-purple-100 text-purple-700'
-                      : 'text-black hover:bg-gray-200'
+                    active
+                      ? 'text-black'
+                      : 'text-gray-700 hover:bg-gray-200'
                   }`}
+                  style={
+                    active
+                      ? {
+                          backgroundColor: 'rgba(153, 98, 185, 0.15)' // 15% opacity of var(--primary-color)
+                        }
+                      : {}
+                  }
                 >
                   {item.name}
                 </Link>
@@ -56,9 +64,10 @@ const Sidebar = () => {
             to="/settings"
             className={`block px-4 py-3 rounded-lg transition-colors duration-200 ${
               isActive('/settings')
-                ? 'bg-purple-100 text-purple-700'
-                : 'text-black hover:bg-gray-200'
+                ? 'text-black'
+                : 'text-gray-700 hover:bg-gray-200'
             }`}
+            style={isActive('/settings') ? {backgroundColor: 'var(--primary-color)'} : {}}
           >
             Settings
           </Link>

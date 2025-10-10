@@ -222,7 +222,7 @@ const OfflineReservationPage = () => {
   const canProceedToStep2 = availabilityChecked && availableRooms.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen flex">
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <div className="flex-1 flex items-center justify-center p-8">
@@ -230,7 +230,7 @@ const OfflineReservationPage = () => {
             
             {/* Header */}
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-semibold text-gray-900 mb-4">Offline Room Reservations</h1>
+              <h1 className="text-2xl font-semibold valley-rose-text title-font mb-4">Offline Room Reservations</h1>
               
               {/* View Toggle */}
               <div className="flex bg-gray-200 rounded-lg p-1 mb-6">
@@ -238,9 +238,10 @@ const OfflineReservationPage = () => {
                   onClick={() => setView('create')}
                   className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     view === 'create' 
-                      ? 'bg-white text-purple-600 shadow-sm' 
+                      ? 'bg-white shadow-sm' 
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
+                  style={view === 'create' ? {color: 'var(--primary-color)'} : {}}
                 >
                   Create Reservation
                 </button>
@@ -248,9 +249,10 @@ const OfflineReservationPage = () => {
                   onClick={() => setView('manage')}
                   className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     view === 'manage' 
-                      ? 'bg-white text-purple-600 shadow-sm' 
+                      ? 'bg-white shadow-sm' 
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
+                  style={view === 'manage' ? {color: 'var(--primary-color)'} : {}}
                 >
                   Manage Reservations
                 </button>
@@ -276,7 +278,8 @@ const OfflineReservationPage = () => {
                   <select 
                     value={form.roomType} 
                     onChange={(e) => setForm({ ...form, roomType: e.target.value })} 
-                    className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
+                    className="w-full px-4 py-3 text-white rounded-lg focus:outline-none focus:ring-2 appearance-none"
+                    style={{backgroundColor: 'var(--primary-color)', '--tw-ring-color': 'var(--primary-color)'}}
                   >
                     <option value="Single Room">Single</option>
                     <option value="Double Room">Double</option>
@@ -294,11 +297,12 @@ const OfflineReservationPage = () => {
                       type="date" 
                       value={form.checkInDate} 
                       onChange={(e) => setForm({ ...form, checkInDate: e.target.value })} 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 pl-12"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 pl-12"
+                      style={{'--tw-ring-color': 'var(--primary-color)'}}
                       min={new Date().toISOString().split('T')[0]}
                       placeholder="dd / mm / yyyy"
                     />
-                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 style={{color: 'var(--primary-color)'}}">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                       </svg>
@@ -318,7 +322,7 @@ const OfflineReservationPage = () => {
                       min={form.checkInDate || new Date().toISOString().split('T')[0]}
                       placeholder="dd / mm / yyyy"
                     />
-                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 style={{color: 'var(--primary-color)'}}">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                       </svg>
@@ -338,7 +342,16 @@ const OfflineReservationPage = () => {
                   <button 
                     onClick={() => setStep(2)}
                     disabled={!canProceedToStep2}
-                    className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="flex-1 px-6 py-3 text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    style={!canProceedToStep2 ? {} : {backgroundColor: 'var(--primary-color)'}}
+                    onMouseEnter={(e) => {
+                      if (!canProceedToStep2) return;
+                      e.target.style.backgroundColor = 'var(--primary-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!canProceedToStep2) return;
+                      e.target.style.backgroundColor = 'var(--primary-color)';
+                    }}
                   >
                     Next
                   </button>
@@ -420,7 +433,14 @@ const OfflineReservationPage = () => {
                   <button 
                     onClick={() => setStep(3)}
                     disabled={!form.firstName || !form.lastName || !form.email || !form.phone}
-                    className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="flex-1 px-6 py-3 text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    style={{backgroundColor: 'var(--primary-color)'}}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = 'var(--primary-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'var(--primary-color)';
+                    }}
                   >
                     Next
                   </button>
@@ -432,7 +452,7 @@ const OfflineReservationPage = () => {
       {step === 3 && (
               <div className="space-y-6">
                 {/* Reservation Summary */}
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="content-section-light p-6 rounded-lg">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Reservation Summary</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
@@ -469,7 +489,14 @@ const OfflineReservationPage = () => {
                   <button 
                     disabled={loading} 
                     onClick={submitReservation} 
-                    className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="flex-1 px-6 py-3 text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    style={{backgroundColor: 'var(--primary-color)'}}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = 'var(--primary-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'var(--primary-color)';
+                    }}
                   >
                     {loading ? 'Creating...' : 'Next'}
                   </button>
@@ -500,7 +527,14 @@ const OfflineReservationPage = () => {
                 {/* Done Button */}
                 <button 
                   onClick={resetForm} 
-                  className="w-full px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                  className="w-full px-8 py-3 text-white rounded-lg"
+                  style={{backgroundColor: 'var(--primary-color)'}}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = 'var(--primary-hover)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'var(--primary-color)';
+                  }}
                 >
                   Done
                 </button>
@@ -528,14 +562,21 @@ const OfflineReservationPage = () => {
                   <button
                     onClick={loadReservations}
                     disabled={reservationsLoading}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                    className="px-4 py-2 text-white rounded-lg disabled:opacity-50"
+                    style={{backgroundColor: 'var(--primary-color)'}}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = 'var(--primary-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'var(--primary-color)';
+                    }}
                   >
                     {reservationsLoading ? 'Loading...' : 'Refresh'}
                   </button>
                 </div>
 
                 {/* Reservations Table */}
-                <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="content-section-heavy rounded-lg shadow overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">

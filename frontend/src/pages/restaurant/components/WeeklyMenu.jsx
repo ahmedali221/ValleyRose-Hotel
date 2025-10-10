@@ -8,6 +8,40 @@ const WeeklyMenu = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Calculate current week dates dynamically
+  const getCurrentWeekDates = () => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+    // Calculate the start of the week (Saturday)
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - currentDay - 1); // Go back to Saturday
+
+    const daysArray = [];
+    const dayNames = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+
+      const fullName = dayNames[i];
+      const dateStr = date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      daysArray.push({
+        fullName: fullName,
+        date: dateStr
+      });
+    }
+
+    return daysArray;
+  };
+
+  const currentWeekDates = getCurrentWeekDates();
+
   useEffect(() => {
     const fetchWeeklyMenu = async () => {
       try {
@@ -35,8 +69,8 @@ const WeeklyMenu = () => {
 
   return (
     <section 
-      className="relative py-16 px-6 overflow-hidden  bg-cover bg-center"
- 
+      className="relative py-12 px-4 sm:px-6 overflow-hidden"
+     
     >
     <motion.div 
       initial={{ opacity: 0, scale: 0.8 }}
@@ -60,16 +94,16 @@ const WeeklyMenu = () => {
             whileHover={{ scale: 1.02 }}
           >
             <motion.h2 
-              className="text-3xl lg:text-4xl font-bold mb-6"
+              className="text-3xl lg:text-4xl font-bold mb-6 title-font"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <span className="text-white">New Taste</span>{' '}
-              <span className="text-purple-500">Every</span>
+              <span className="valley-rose-text">Every</span>
               <br />
-              <span className="text-purple-500">Week.</span>
+              <span className="valley-rose-text">Week.</span>
             </motion.h2>
             <motion.p 
               className="text-gray-300 leading-relaxed text-sm lg:text-base"
@@ -94,14 +128,14 @@ const WeeklyMenu = () => {
             whileHover={{ scale: 1.02 }}
           >
             <motion.h2 
-              className="text-3xl lg:text-4xl font-bold mb-6 lg:mb-8"
+              className="text-3xl lg:text-4xl font-bold mb-6 lg:mb-8 title-font"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
               <span className="text-white">Weekly</span>{' '}
-              <span className="text-purple-500">Menu</span>
+              <span className="valley-rose-text">Menu</span>
             </motion.h2>
 
             {/* Loading State */}
@@ -162,7 +196,7 @@ const WeeklyMenu = () => {
                           {dayMenu.day}
                         </h3>
                         <span className="text-gray-400 text-xs lg:text-sm">
-                          {formatDate(dayMenu.createdAt)}
+                          {currentWeekDates.find(d => d.fullName === dayMenu.day)?.date || ''}
                         </span>
                       </div>
 

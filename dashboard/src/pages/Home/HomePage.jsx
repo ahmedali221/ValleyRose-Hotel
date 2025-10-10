@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { homeService } from '../../services/homeService';
+import { Mail01Icon, CallIcon, MeetingRoomIcon, UserIcon, EuroIcon, CalendarCheckOut01Icon, CalendarCheckIn01Icon, Calendar03Icon, Hotel01Icon, UserMultiple02Icon, MoneyBag01Icon } from 'hugeicons-react';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -39,25 +40,25 @@ const HomePage = () => {
     {
       title: "Total Bookings",
       value: analytics.totalBookings?.toString() || "0",
-      icon: "👤",
+      icon: <Calendar03Icon size={32} style={{color: 'var(--primary-color)'}} />,
       description: "See how many bookings have been made across all rooms."
     },
     {
       title: "Available Rooms",
       value: analytics.availableRooms?.toString() || "0",
-      icon: "📅",
+      icon: <Hotel01Icon size={32} style={{color: 'var(--primary-color)'}} />,
       description: "how many rooms are still open for today's check-in."
     },
     {
       title: "Current Guests",
       value: analytics.currentGuests?.toString() || "0",
-      icon: "👥",
+      icon: <UserMultiple02Icon size={32} style={{color: 'var(--primary-color)'}} />,
       description: "Track how many guests are currently staying at the hotel."
     },
     {
       title: "Total Earnings",
-      value: `${analytics.totalEarnings || 0}${analytics.currency === 'EUR' ? '€' : ''}`,
-      icon: "💰",
+      value: `${analytics.totalEarnings || 0}`,
+      icon: <EuroIcon size={32} style={{color: 'var(--primary-color)'}} />,
       description: "total revenue your hotel has made from all completed bookings."
     }
   ] : [];
@@ -104,23 +105,23 @@ const HomePage = () => {
   const formattedBookings = recentBookings.map(formatBookingData);
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="content-section-heavy border-b border-gray-200 px-6 py-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold valley-rose-text title-font">
             Welcome Back {user?.name || 'Mr.toni'}
           </h1>
           <div className="flex space-x-6">
-            <a href="#hotel-insights" className="text-purple-600 hover:text-purple-800 font-medium">
+            <a href="#hotel-insights" className="valley-rose-text hover:text-purple-800 font-medium">
               Hotel Insights
             </a>
-            <a href="#recent-bookings" className="text-purple-600 hover:text-purple-800 font-medium">
+            <a href="#recent-bookings" className="valley-rose-text hover:text-purple-800 font-medium">
               Recent Bookings
             </a>
             <button 
               onClick={() => window.location.reload()} 
-              className="text-purple-600 hover:text-purple-800 font-medium"
+              className="valley-rose-text hover:text-purple-800 font-medium"
               disabled={loading}
             >
               {loading ? 'Refreshing...' : 'Refresh'}
@@ -144,7 +145,7 @@ const HomePage = () => {
         {/* Loading State */}
         {loading ? (
           <div className="flex justify-center items-center min-h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{borderColor: 'var(--primary-color)'}}></div>
             <span className="ml-3 text-gray-600">Loading dashboard data...</span>
           </div>
         ) : (
@@ -152,16 +153,16 @@ const HomePage = () => {
             {/* Hotel Insights Section */}
             <div id="hotel-insights" className="mb-8">
               <div className="flex items-center mb-6">
-                <div className="w-1 h-6 bg-purple-600 mr-3"></div>
+                <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
                 <h2 className="text-2xl font-bold text-gray-900">Hotel Insights</h2>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {insights.map((insight, index) => (
-                  <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                  <div key={index} className="content-section-heavy p-6 rounded-lg shadow-sm border border-gray-200">
                     <div className="flex items-center justify-between mb-4">
                       <div className="text-3xl font-bold text-gray-900">{insight.value}</div>
-                      <div className="text-2xl">{insight.icon}</div>
+                      <div>{insight.icon}</div>
                     </div>
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">{insight.title}</h3>
                     <p className="text-sm text-gray-600">{insight.description}</p>
@@ -172,7 +173,7 @@ const HomePage = () => {
             {/* Recent Bookings Section */}
             <div id="recent-bookings">
               <div className="flex items-center mb-6">
-                <div className="w-1 h-6 bg-purple-600 mr-3"></div>
+                <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
                 <h2 className="text-2xl font-bold text-gray-900">Recent Bookings</h2>
               </div>
               
@@ -183,50 +184,77 @@ const HomePage = () => {
                   <p className="text-gray-600">There are no recent bookings to display at the moment.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                   {formattedBookings.map((booking, index) => (
-                    <div key={booking.reservationNumber || index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                      <div className="flex justify-between items-start mb-4">
+                    <div key={booking.reservationNumber || index} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 relative">
+                      <span 
+                        className="px-3 py-1 text-white text-xs font-medium absolute top-0 right-0"
+                        style={{
+                          backgroundColor: booking.statusColor === 'bg-blue-500' ? '#3B82F6' : 
+                                          booking.statusColor === 'bg-green-500' ? '#28B800' : 
+                                          booking.statusColor === 'bg-red-500' ? '#ED0000' : '#6B7280',
+                          borderRadius: '0 8px 0 8px',
+                          zIndex: 10
+                        }}
+                      >
+                        {booking.status}
+                      </span>
+                      
+                      {/* Customer Name */}
+                      <div className="mb-4">
                         <h3 className="text-lg font-semibold text-gray-900">{booking.guestName}</h3>
-                        <span className={`px-3 py-1 rounded-full text-white text-xs font-medium ${booking.statusColor}`}>
-                          {booking.status}
-                        </span>
                       </div>
                       
+                      {/* Contact Information */}
                       <div className="space-y-2 mb-4">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <span className="mr-2">📧</span>
-                          {booking.email}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <span className="mr-2">📞</span>
-                          {booking.phone}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <span className="mr-2">🚪</span>
-                          {booking.roomType}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <span className="mr-2">👤</span>
-                          {booking.guests}
+                        <div className="flex items-center space-x-5">
+                          <div className="flex items-center text-sm text-gray-600 space-x-2">
+                            <Mail01Icon style={{color: 'var(--primary-color)', marginRight: '0.5rem'}} />
+                            {booking.email}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <CallIcon style={{color: 'var(--primary-color)', marginRight: '0.5rem'}} />
+                            {booking.phone}
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="flex justify-between items-center mb-4">
-                        <div className="text-lg font-bold text-gray-900">{booking.price}</div>
-                        {booking.reservationNumber && (
-                          <div className="text-xs text-gray-500">{booking.reservationNumber}</div>
-                        )}
+                      {/* Booking Details */}
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center space-x-5">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <MeetingRoomIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                            {booking.roomType}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <UserIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                            {booking.guests}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <EuroIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                            {booking.price}
+                          </div>
+                        </div>
                       </div>
                       
+                      {/* Reservation Number */}
+                      <div className="mb-4">
+                        <div className="text-sm text-gray-500">
+                          {booking.reservationNumber}
+                        </div>
+                      </div>
+                      
+                      {/* Check-in/Check-out Dates */}
                       <div className="space-y-2">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <span className="mr-2">📅</span>
-                          Check-In: {booking.checkIn}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <span className="mr-2">📅</span>
-                          Check-Out: {booking.checkOut}
+                        <div className="flex items-center space-x-5">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <CalendarCheckIn01Icon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                            Check-In: {booking.checkIn}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <CalendarCheckOut01Icon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                            Check-Out: {booking.checkOut}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -239,7 +267,7 @@ const HomePage = () => {
       </div>
 
       {/* Footer */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4">
+      <div className="content-section-heavy border-t border-gray-200 px-6 py-4">
         <p className="text-center text-sm text-gray-500">
           © 2022-2025 by ValleyRose.com, Inc.
         </p>

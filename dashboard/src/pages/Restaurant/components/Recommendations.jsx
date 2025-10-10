@@ -103,7 +103,7 @@ const Recommendations = () => {
       {/* Add New Recommendation Form */}
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center mb-6">
-          <div className="w-1 h-6 bg-purple-600 mr-3"></div>
+          <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
           <h2 className="text-xl font-semibold text-gray-900">Recommendations</h2>
         </div>
 
@@ -121,7 +121,8 @@ const Recommendations = () => {
               type="text"
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
               placeholder="Meal Title"
               required
             />
@@ -136,7 +137,8 @@ const Recommendations = () => {
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
               placeholder="Meal Description"
               required
             />
@@ -150,7 +152,8 @@ const Recommendations = () => {
             <select
               value={formData.type}
               onChange={(e) => handleInputChange('type', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
             >
               <option value="Meal">Meal</option>
               <option value="Soup">Soup</option>
@@ -200,7 +203,7 @@ const Recommendations = () => {
               ) : (
                 <label htmlFor="thumbnail-upload" className="cursor-pointer flex items-center justify-center w-full h-full">
                   <div className="flex flex-col items-center justify-center">
-                    <div className="text-2xl text-purple-600 mb-1 leading-none">+</div>
+                    <div className="text-2xl mb-1 leading-none" style={{color: 'var(--primary-color)'}}>+</div>
                   </div>
                 </label>
               )}
@@ -219,7 +222,18 @@ const Recommendations = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-60"
+              className="w-full px-8 py-3 text-white rounded-lg transition-colors disabled:opacity-60"
+              style={{backgroundColor: 'var(--primary-color)'}}
+              onMouseEnter={(e) => {
+                if (!submitting) {
+                  e.target.style.backgroundColor = 'var(--primary-hover)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!submitting) {
+                  e.target.style.backgroundColor = 'var(--primary-color)';
+                }
+              }}
             >
               {submitting ? 'Adding...' : 'Add'}
             </button>
@@ -252,7 +266,7 @@ const Recommendations = () => {
                     <h4 className="text-2xl font-semibold text-gray-900 truncate">
                       {recommendation.title}
                     </h4>
-                    <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-purple-50 text-purple-700">
+                    <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded text-sm" style={{backgroundColor: 'var(--primary-color)', color: 'white'}}>
                       {recommendation.type}
                     </span>
                   </div>

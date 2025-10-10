@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import logo from "../assets/header/logo.png"
 import banner from "../assets/header/banner.png"
 
-const HeaderHero = () => {
+const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle = null, customSubtitle = null, customButtons = null }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
@@ -16,11 +16,13 @@ const HeaderHero = () => {
     <div className="relative">
       {/* Background Image Container */}
       <div 
-        className="w-full h-[80vh] bg-cover bg-center relative" 
-        style={{ backgroundImage: `url(${banner})` }}
+        className="w-full min-h-[80vh] bg-cover bg relative" 
+        style={{ backgroundImage: `url(${backgroundImage})` }}
       >
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/50"></div>
         {/* Header/Navigation - Positioned absolutely on top of the background */}
-        <header className="absolute top-0 left-0 w-full z-10">
+        <header className="absolute top-0 left-0 w-full z-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
               {/* Logo */}
@@ -40,7 +42,7 @@ const HeaderHero = () => {
 
               {/* Language Selector */}
               <div className="hidden md:flex items-center">
-                <select className="bg-transparent border border-white text-white rounded-md text-sm px-2 py-1">
+                <select className=" border border-white text-white rounded-md text-sm px-2 py-1">
                   <option>English</option>
                   <option>Deutsch</option>
                 </select>
@@ -92,23 +94,58 @@ const HeaderHero = () => {
           </div>
         </header>
 
-        {/* Hero Content - Centered on the background image */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-0">
-          <div className="max-w-4xl px-4">
-            <h1 className="text-4xl md:text-6xl font-serif mb-4">
-              <span className="text-purple-400">Valley Rose</span> <span className="text-white">Hotel - Restaurant</span>
-            </h1>
-            <p className="text-white text-xl mb-8">Bei Toni</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link to="/booking" className="bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-6 rounded-md transition duration-300">
-                Book a Room
-              </Link>
-              <Link to="/check" className="bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-6 rounded-md transition duration-300">
-                Check Reservation
-              </Link>
+        {/* Hero Content */}
+        {(currentPath === '/booking' || currentPath === '/check') ? (
+          /* Bottom positioned content for booking and check pages */
+          <div className="absolute inset-0 flex flex-col justify-end items-start text-left z-10">
+            <div className="max-w-4xl px-4 pb-16">
+              <h1 className="text-4xl md:text-6xl title-font mb-4">
+                {customTitle}
+              </h1>
+              <p className="text-white text-xl mb-8 title-font">{customSubtitle}</p>
+              {showButtons && (
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {customButtons || (
+                    <>
+                      <Link to="/booking" className="btn-primary font-medium py-2 px-6 rounded-md">
+                        Book a Room
+                      </Link>
+                      <Link to="/check" className="bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-6 rounded-md transition duration-300">
+                        Check Reservation
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        ) : (
+          /* Centered content for other pages */
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
+            <div className="max-w-4xl px-4">
+              <h1 className="text-4xl md:text-6xl title-font mb-4">
+                <>
+                  <span className="valley-rose-text">Valley Rose</span> <span className="text-white">Hotel - Restaurant</span>
+                </>
+              </h1>
+              <p className="text-white text-xl mb-8 title-font">Bei Toni</p>
+              {showButtons && (
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  {customButtons || (
+                    <>
+                      <Link to="/booking" className="btn-primary font-medium py-2 px-6 rounded-md">
+                        Book a Room
+                      </Link>
+                      <Link to="/check" className="bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-6 rounded-md transition duration-300">
+                        Check Reservation
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

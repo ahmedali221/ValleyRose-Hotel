@@ -6,8 +6,8 @@ import hotel2 from "../../../assets/hotel/hotel2.png"
 
 const EventsSection = () => {
   return (
-    <section className="py-16 px-8 bg-gray-50">
-      <div className="max-w-8xl ">
+    <section className="py-12 px-4 sm:px-8 content-section-light">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div 
           className="mb-12"
@@ -17,13 +17,13 @@ const EventsSection = () => {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="text-3xl font-medium mb-2"
+            className="text-2xl sm:text-3xl font-medium mb-2 title-font"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Host Your Event at <span className="text-purple-500">Valley Rose!</span>
+            Host Your Event at <span className="valley-rose-text">Valley Rose!</span>
           </motion.h2>
           <motion.p 
             className="text-gray-700 max-w-3xl mb-8"
@@ -47,7 +47,7 @@ const EventsSection = () => {
 
     {/* Event Space Showcase */}
         <motion.div 
-          className="relative flex items-center justify-center mt-20 py-30 px-4"
+          className="relative flex items-center justify-center mt-12 lg:mt-20 py-16 lg:py-30 px-4"
           initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -86,13 +86,13 @@ const EventsSection = () => {
               </motion.div>
               
               <motion.h3 
-                className="text-3xl md:text-4xl mb-4 font-light"
+                className="text-3xl md:text-4xl mb-4 font-light title-font"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.4 }}
               >
-                At <span className="text-purple-400 font-semibold">Valley Rose</span>
+                At <span className="valley-rose-text font-semibold">Valley Rose</span>
               </motion.h3>
               <motion.p 
                 className="text-gray-200 mb-6 text-xl font-light"
@@ -114,7 +114,7 @@ const EventsSection = () => {
               </motion.p>
               <motion.a
                 href="#"
-                className="inline-block mt-8 bg-purple-500 text-white py-3 px-10 rounded-full hover:bg-purple-600 transition-colors text-lg"
+                className="inline-block mt-8 btn-primary py-3 px-10 rounded-full text-lg"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

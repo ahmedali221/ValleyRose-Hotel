@@ -1,5 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import HeaderHero from '../../components/HeaderHero'
+import contactBanner from '../../assets/banners/contact.jpg'
 
 const ContactUs = () => {
   const contactCards = [
@@ -68,14 +70,23 @@ const ContactUs = () => {
 
   return (
     <motion.div 
-      className="min-h-screen  text-gray-200 font-sans"
+      className="min-h-screen content-section  text-gray-200 font-sans"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-8xl mx-auto px-6 py-16">
+      <HeaderHero 
+        backgroundImage={contactBanner} 
+        showButtons={false}
+        customTitle={
+          <>
+            <span className="valley-rose-text">Contact</span> <span className="text-white">Us</span>
+          </>
+        }
+      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <motion.h1 
-          className="text-4xl font-bold text-black mb-2"
+          className="text-3xl sm:text-4xl font-bold text-black mb-2 title-font"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -99,7 +110,7 @@ const ContactUs = () => {
           Whether you have a question, want to book a room, plan an event, or simply learn more about what we offer, feel free to reach out. Our team is here to help and will get back to you as soon as possible.
         </motion.p>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 ">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {contactCards.map((card, index) => (
             <motion.div 
               key={card.id}
@@ -121,13 +132,13 @@ const ContactUs = () => {
                 {card.title}
               </motion.div>
               <motion.div 
-                className="w-24 h-24 rounded-full bg-purple-500 flex items-center justify-center mb-6"
+                className="w-24 h-24 rounded-full btn-primary flex items-center justify-center mb-6"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: index * 0.2 + 0.4 }}
                 whileHover={{ 
                   scale: 1.1,
-                  backgroundColor: "#7c3aed"
+                  backgroundColor: "var(--primary-hover)"
                 }}
               >
                 {card.icon}

@@ -26,7 +26,7 @@ const RecommendedMeals = () => {
   }, []);
 
   return (
-    <section className="bg-gray-50 py-16 px-6">
+    <section className="py-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div 
@@ -37,14 +37,14 @@ const RecommendedMeals = () => {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="text-4xl font-bold mb-2"
+            className="text-3xl sm:text-4xl font-bold mb-2 title-font"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <span className="text-gray-800">Recommended</span>{' '}
-            <span className="text-purple-600">Meals</span>
+            <span className="valley-rose-text">Meals</span>
           </motion.h2>
           <motion.p 
             className="text-gray-500 text-sm"
@@ -72,7 +72,7 @@ const RecommendedMeals = () => {
         {/* Error State */}
         {error && (
           <motion.div 
-            className="bg-red-50 border border-red-200 rounded-lg p-6 text-center"
+            className="border border-red-200 rounded-lg p-6 text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -98,7 +98,7 @@ const RecommendedMeals = () => {
               meals.map((meal, index) => (
                 <motion.div 
                   key={meal._id} 
-                  className="bg-white flex flex-row rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                  className="flex flex-row rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -110,7 +110,7 @@ const RecommendedMeals = () => {
                 >
                   {/* Meal Image */}
                   <motion.div 
-                    className="h-48 bg-gray-200 overflow-hidden flex-2"
+                    className="h-48 overflow-hidden flex-2"
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -134,7 +134,7 @@ const RecommendedMeals = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: index * 0.2 + 0.4 }}
                   >
-                    <h3 className="text-xl font-bold text-purple-600 mb-3">
+                    <h3 className="text-xl font-bold valley-rose-text mb-3">
                       {meal.title}
                     </h3>
                     {meal.description && (
@@ -143,7 +143,7 @@ const RecommendedMeals = () => {
                       </p>
                     )}
                     {meal.type && (
-                      <span className="inline-block mt-3 px-3 py-1 bg-purple-100 text-purple-600 text-xs font-semibold rounded-full">
+                      <span className="inline-block mt-3 px-3 py-1 bg-purple-100 valley-rose-text text-xs font-semibold rounded-full">
                         {meal.type}
                       </span>
                     )}

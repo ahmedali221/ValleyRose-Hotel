@@ -96,7 +96,7 @@ const Main = () => {
       {/* Restaurant Gallery Section */}
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center mb-6">
-          <div className="w-1 h-6 bg-purple-600 mr-3"></div>
+          <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
           <h2 className="text-xl font-semibold text-gray-900">Restaurant Gallery</h2>
         </div>
 
@@ -128,7 +128,7 @@ const Main = () => {
           ))}
           
           {/* Add Photo Button */}
-          <div className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-purple-500 transition-colors">
+          <div className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center transition-colors" style={{'--tw-border-color': 'var(--primary-color)'}} onMouseEnter={(e) => { e.target.style.borderColor = 'var(--primary-color)'; }} onMouseLeave={(e) => { e.target.style.borderColor = '#d1d5db'; }}>
             <input
               type="file"
               accept="image/*"
@@ -138,7 +138,7 @@ const Main = () => {
               id="gallery-upload"
             />
             <label htmlFor="gallery-upload" className="cursor-pointer text-center">
-              <div className="text-4xl text-purple-600 mb-2">+</div>
+              <div className="text-4xl mb-2" style={{color: 'var(--primary-color)'}}>+</div>
               <p className="text-sm text-gray-500">{isUploadingGallery ? 'Uploading...' : 'Add Photo'}</p>
             </label>
           </div>
@@ -152,7 +152,7 @@ const Main = () => {
       {/* Restaurant Main Menu Section */}
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center mb-6">
-          <div className="w-1 h-6 bg-purple-600 mr-3"></div>
+          <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
           <h2 className="text-xl font-semibold text-gray-900">Restaurant Main Menu</h2>
         </div>
 
@@ -188,7 +188,7 @@ const Main = () => {
             )}
             {menuDoc && !isLoadingMenu && (
               <div className="flex items-center space-x-3">
-                <a href={menuDoc.pdfFile} target="_blank" rel="noreferrer" className="text-purple-600 hover:underline text-sm">View current menu</a>
+                <a href={menuDoc.pdfFile} target="_blank" rel="noreferrer" className="hover:underline text-sm" style={{color: 'var(--primary-color)'}}>View current menu</a>
                 <button onClick={handleMenuDelete} className="text-red-600 hover:text-red-800 text-sm">Delete</button>
               </div>
             )}

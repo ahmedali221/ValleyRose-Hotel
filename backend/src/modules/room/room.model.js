@@ -24,7 +24,7 @@ const RoomSchema = new mongoose.Schema(
     ratingSuggestion: { type: Number, min: 1, max: 5 },
     type: { 
       type: String, 
-      enum: ['Single Room', 'Double Room', 'Triple Room', 'Apartment', 'Suite'], 
+      enum: ['Single Room', 'Double Room', 'Triple Room'], 
       required: true 
     },
     coverImage: ImageSchema,

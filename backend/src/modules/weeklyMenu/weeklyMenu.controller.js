@@ -46,6 +46,71 @@ async function upsert(req, res) {
   }
 }
 
+async function addMealToDay(req, res) {
+  try {
+    const { day } = req.params;
+    const { mealId, type = 'meals' } = req.body; // type can be 'meals' or 'soups'
+    
+    if (!mealId) {
+      return res.status(400).json({ message: 'mealId is required' });
+    }
+    
+    if (!['meals', 'soups'].includes(type)) {
+      return res.status(400).json({ message: 'type must be either "meals" or "soups"' });
+    }
+
+    // Find or create the day's menu
+    let doc = await WeeklyMenu.findOne({ day });
+    if (!doc) {
+      doc = new WeeklyMenu({ day, meals: [], soups: [] });
+    }
+
+    // Add the meal if it's not already there
+    if (!doc[type].includes(mealId)) {
+      doc[type].push(mealId);
+      await doc.save();
+    }
+
+    // Populate using array syntax
+    await doc.populate(['meals', 'soups']);
+    res.json(doc);
+  } catch (err) {
+    console.error('Error adding meal to day:', err);
+    res.status(500).json({ message: 'Failed to add meal to day', error: err.message });
+  }
+}
+
+async function removeMealFromDay(req, res) {
+  try {
+    const { day } = req.params;
+    const { mealId, type = 'meals' } = req.body; // type can be 'meals' or 'soups'
+    
+    if (!mealId) {
+      return res.status(400).json({ message: 'mealId is required' });
+    }
+    
+    if (!['meals', 'soups'].includes(type)) {
+      return res.status(400).json({ message: 'type must be either "meals" or "soups"' });
+    }
+
+    const doc = await WeeklyMenu.findOne({ day });
+    if (!doc) {
+      return res.status(404).json({ message: 'Day not found' });
+    }
+
+    // Remove the meal
+    doc[type] = doc[type].filter(id => id.toString() !== mealId);
+    await doc.save();
+
+    // Populate using array syntax
+    await doc.populate(['meals', 'soups']);
+    res.json(doc);
+  } catch (err) {
+    console.error('Error removing meal from day:', err);
+    res.status(500).json({ message: 'Failed to remove meal from day', error: err.message });
+  }
+}
+
 async function clearDay(req, res) {
   try {
     const doc = await WeeklyMenu.findOneAndUpdate({ day: req.params.day }, { meals: [], soups: [] }, { new: true });
@@ -57,7 +122,7 @@ async function clearDay(req, res) {
   }
 }
 
-module.exports = { upsertValidators, getAll, getByDay, upsert, clearDay };
+module.exports = { upsertValidators, getAll, getByDay, upsert, addMealToDay, removeMealFromDay, clearDay };
 
 
 

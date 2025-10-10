@@ -78,7 +78,7 @@ const MenuDisplay = () => {
   };
 
   return (
-    <section className="bg-gradient-to-b from-gray-50 to-white py-16 px-6">
+    <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -87,7 +87,7 @@ const MenuDisplay = () => {
               href={menuPdfUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-6 rounded-lg transition duration-300 shadow-md hover:shadow-lg mb-6"
+              className="inline-flex items-center gap-2 btn-primary font-medium py-3 px-6 rounded-lg transition duration-300 shadow-md hover:shadow-lg mb-6"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -107,8 +107,8 @@ const MenuDisplay = () => {
             </a>
           )}
 
-          <h2 className="text-4xl font-bold">
-            <span className="text-purple-600">Valley Rose</span>{' '}
+          <h2 className="text-4xl font-bold title-font">
+            <span className="valley-rose-text">Valley Rose</span>{' '}
             <span className="text-gray-800">Restaurant</span>
           </h2>
         </div>
@@ -122,7 +122,7 @@ const MenuDisplay = () => {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+            <div className="border border-red-200 rounded-lg p-8 text-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-12 w-12 text-red-500 mx-auto mb-4"
@@ -144,7 +144,7 @@ const MenuDisplay = () => {
 
         {/* Menu Display Container */}
         {!loading && !error && menuPdfUrl && (
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden relative">
+            <div className="rounded-2xl shadow-xl overflow-hidden relative">
             {/* Navigation Arrow - Previous */}
             <button
               onClick={handlePreviousPage}
@@ -210,7 +210,7 @@ const MenuDisplay = () => {
             </div>
 
             {/* Pagination Dots */}
-            <div className="bg-gray-50 py-6 px-6">
+            <div className="py-6 px-6">
               <div className="flex items-center justify-center gap-3">
                 {Array.from({ length: totalPages }, (_, index) => {
                   const pageNumber = index + 1;
@@ -239,7 +239,7 @@ const MenuDisplay = () => {
 
         {/* Empty State */}
         {!loading && !error && !menuPdfUrl && (
-          <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-16 w-16 text-gray-400 mx-auto mb-4"

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import logo from '../../assets/Header/Vector.png';
 import character from '../../assets/reservations/chracter.png';
+import HeaderHero from '../../components/HeaderHero';
+import checkBanner from '../../assets/banners/check.jpg';
 import { reservationService } from '../../services/reservationService';
 
 const CheckReservation = () => {
@@ -55,16 +57,24 @@ const CheckReservation = () => {
 
   return (
     <motion.div 
-      className="max-h-screen bg-gray-50"
+      className="min-h-screen content-section"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-  
+      <HeaderHero 
+        backgroundImage={checkBanner} 
+        showButtons={false}
+        customTitle={
+          <>
+            <span className="text-white">Check Your Reservation</span>
+          </>
+        }
+      />
 
       {/* Main Content */}
-      <div className="container mx-auto py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="container mx-auto py-8 sm:py-12 pb-20 px-4 sm:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Left Column - Search Form */}
           <motion.div 
             className="space-y-8"
@@ -79,7 +89,7 @@ const CheckReservation = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <motion.h2 
-                className="text-4xl font-serif text-gray-800 mb-4" 
+                className="text-3xl sm:text-4xl title-font text-gray-800 mb-4" 
                 style={{ fontFamily: 'serif' }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -98,7 +108,7 @@ const CheckReservation = () => {
               
               <motion.form 
                 onSubmit={handleSearch} 
-                className="flex gap-4 mb-6"
+                className="flex flex-col sm:flex-row gap-4 mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
@@ -114,7 +124,7 @@ const CheckReservation = () => {
                 <motion.button
                   type="submit"
                   disabled={loading}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
+                  className="btn-primary px-8 py-3 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -141,7 +151,7 @@ const CheckReservation = () => {
               transition={{ duration: 0.8, delay: 1.0 }}
             >
               <motion.h3 
-                className="text-3xl font-serif text-gray-800 mb-4" 
+                className="text-2xl sm:text-3xl title-font text-gray-800 mb-4" 
                 style={{ fontFamily: 'serif' }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -169,7 +179,7 @@ const CheckReservation = () => {
                   whileHover={{ x: 10 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 btn-primary rounded-full flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                     </svg>
@@ -182,7 +192,7 @@ const CheckReservation = () => {
                   whileHover={{ x: 10 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 btn-primary rounded-full flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                       <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
@@ -219,7 +229,7 @@ const CheckReservation = () => {
                   <img src={logo} alt="Valley Rose" className="h-8" />
                   <div>
                     <span className="text-gray-600">Reservation</span>
-                    <span className="text-purple-600 font-semibold ml-2">{reservation.reservationNumber}</span>
+                    <span className="valley-rose-text font-semibold ml-2">{reservation.reservationNumber}</span>
                   </div>
                 </motion.div>
 

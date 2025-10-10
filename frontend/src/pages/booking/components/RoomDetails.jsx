@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import bookingService from '../../../services/bookingService';
 
-const RoomDetails = ({ onNext, bookingData, setBookingData }) => {
+const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelected = false }) => {
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [availabilityChecked, setAvailabilityChecked] = useState(false);
@@ -256,17 +256,35 @@ const RoomDetails = ({ onNext, bookingData, setBookingData }) => {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Room Type
+          {isRoomTypePreSelected && (
+            <span className="text-sm text-[#9962B9] ml-2">(Pre-selected)</span>
+          )}
         </label>
-        <select
-          value={bookingData.roomType || ''}
-          onChange={(e) => setBookingData(prev => ({ ...prev, roomType: e.target.value }))}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50"
-        >
-          <option value="">Select Room Type</option>
-          {Array.isArray(roomTypes) && roomTypes.map((type) => (
-            <option key={type} value={type}>{type}</option>
-          ))}
-        </select>
+         <select
+           value={bookingData.roomType || ''}
+           onChange={(e) => setBookingData(prev => ({ ...prev, roomType: e.target.value }))}
+           disabled={isRoomTypePreSelected}
+           className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white ${
+             isRoomTypePreSelected 
+               ? 'bg-[#9962B9] cursor-not-allowed' 
+               : 'bg-[#9962B9]'
+           }`}
+         >
+           {Array.isArray(roomTypes) && roomTypes.map((type) => (
+             <option 
+               key={type} 
+               value={type}
+               className={bookingData.roomType === type ? 'bg-[#9962B9] text-white' : 'bg-white text-black'}
+             >
+               {type}
+             </option>
+           ))}
+         </select>
+        {isRoomTypePreSelected && (
+          <p className="text-sm text-gray-600 mt-2">
+            Room type was pre-selected from the room details page
+          </p>
+        )}
       </div>
 
       {/* Check-in Date */}

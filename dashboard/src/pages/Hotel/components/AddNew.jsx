@@ -180,17 +180,23 @@ const AddNew = () => {
 
   return (
     <div className="p-6">
+      {/* Add New Title Section */}
+      <div className="flex items-center mb-6">
+        <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
+        <h2 className="text-lg font-semibold text-gray-900">Add New</h2>
+        <button className="ml-4 px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center" style={{backgroundColor: 'var(--primary-color)'}}>
+          <span className="mr-2">👁</span>
+          Preview
+        </button>
+      </div>
+
       <div className="mb-6">
         <p className="text-gray-600">
-          Please be careful when adding a new room or apartment. Ensure all details are accurate, clear, and reflect the quality our Valley Rose guests expect. A well-listed room makes for a smoother guest experience and a stronger reputation.
+          Please be careful when adding a new room or apartment. Ensure all details are accurate, clear, and reflect the quality our <span className="valley-rose-text">Valley Rose</span> guests expect. A well-listed room makes for a smoother guest experience and a stronger reputation.
         </p>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <div className="mb-4">
-          <span className="text-purple-600 font-semibold">Add New</span>
-          <a href="#" className="text-purple-600 ml-2 text-sm">Preview</a>
-        </div>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -216,7 +222,8 @@ const AddNew = () => {
               type="text"
               value={formData.title.english}
               onChange={(e) => handleInputChange('title.english', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
               placeholder="Give the room a clear, simple name (e.g., Double Room, Family Apartment)"
               required
             />
@@ -231,7 +238,8 @@ const AddNew = () => {
               type="text"
               value={formData.title.german}
               onChange={(e) => handleInputChange('title.german', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
               placeholder="Enter room title in German"
               required
             />
@@ -248,7 +256,8 @@ const AddNew = () => {
               rows={4}
               value={formData.description.english}
               onChange={(e) => handleInputChange('description.english', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
               placeholder="Enter detailed description in English"
             />
           </div>
@@ -262,7 +271,8 @@ const AddNew = () => {
               rows={4}
               value={formData.description.german}
               onChange={(e) => handleInputChange('description.german', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
               placeholder="Enter detailed description in German"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -284,11 +294,12 @@ const AddNew = () => {
                 step="0.01"
                 value={formData.pricePerNight}
                 onChange={(e) => handleInputChange('pricePerNight', e.target.value)}
-                className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+                style={{'--tw-ring-color': 'var(--primary-color)'}}
                 placeholder="0.00"
                 required
               />
-              <span className="absolute right-3 top-2 text-purple-600 font-bold">€</span>
+              <span className="absolute right-3 top-2 valley-rose-text font-bold">€</span>
             </div>
             <p className="text-xs text-gray-500 mt-1">Enter amount in EUR. Use a 1-5 star scale based on quality.</p>
           </div>
@@ -306,7 +317,8 @@ const AddNew = () => {
                 max="5"
                 value={formData.ratingSuggestion}
                 onChange={(e) => handleInputChange('ratingSuggestion', e.target.value)}
-                className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+                style={{'--tw-ring-color': 'var(--primary-color)'}}
                 placeholder="0.00"
               />
               <span className="absolute right-3 top-2 text-yellow-500">★</span>
@@ -322,7 +334,8 @@ const AddNew = () => {
           <select 
             value={formData.type}
             onChange={(e) => handleInputChange('type', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-100 text-purple-800"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+            style={{'--tw-ring-color': 'var(--primary-color)', backgroundColor: 'var(--primary-color)', opacity: 0.1, color: 'var(--primary-color)'}}
           >
             {roomTypes.map((type) => (
               <option key={type} value={type}>{type}</option>
@@ -445,7 +458,7 @@ const AddNew = () => {
               className="hidden"
               id="serviceGallery"
             />
-            <label htmlFor="serviceGallery" className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-purple-500 cursor-pointer">
+            <label htmlFor="serviceGallery" className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer" style={{'--tw-border-color': 'var(--primary-color)'}} onMouseEnter={(e) => e.target.style.borderColor = 'var(--primary-color)'} onMouseLeave={(e) => e.target.style.borderColor = '#d1d5db'}>
               <span className="text-2xl text-gray-400">+</span>
             </label>
           </div>
@@ -464,7 +477,18 @@ const AddNew = () => {
           <button 
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{backgroundColor: 'var(--primary-color)'}}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = 'var(--primary-hover)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = 'var(--primary-color)';
+              }
+            }}
           >
             {loading ? 'Creating...' : 'Upload Now'}
           </button>

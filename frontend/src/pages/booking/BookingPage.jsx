@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import RoomDetails from './components/RoomDetails';
 import PersonalInfo from './components/PersonalInfo';
 import Confirmation from './components/Confirmation';
 import Payment from './components/Payment';
 import FinalReview from './components/FinalReview';
+import HeaderHero from '../../components/HeaderHero';
+import bookingBanner from '../../assets/banners/booking.jpg';
 
 const BookingPage = () => {
+  const [searchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isRoomTypePreSelected, setIsRoomTypePreSelected] = useState(false);
   const [bookingData, setBookingData] = useState({
     roomType: '',
     checkInDate: '',
@@ -26,6 +31,15 @@ const BookingPage = () => {
     reservationId: null,
     reservationNumber: ''
   });
+
+  useEffect(() => {
+    // Check if room type is pre-selected from URL
+    const roomTypeFromUrl = searchParams.get('roomType');
+    if (roomTypeFromUrl) {
+      setBookingData(prev => ({ ...prev, roomType: roomTypeFromUrl }));
+      setIsRoomTypePreSelected(true);
+    }
+  }, [searchParams]);
 
   const steps = [
     { id: 1, name: 'Room Details', component: RoomDetails },
@@ -51,12 +65,21 @@ const BookingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-    
+      <HeaderHero 
+        backgroundImage={bookingBanner} 
+        showButtons={false}
+        customTitle={
+          <>
+            <span className="text-white">Book Your Stay Now</span>
+          </>
+        }
+        customSubtitle="At Valley Rose"
+      />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-15">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-15">
             
             {/* Left Column - Information */}
             <div className="lg:col-span-1 space-y-8">
@@ -66,7 +89,7 @@ const BookingPage = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <h2 className="text-3xl font-serif text-gray-800 mb-4">
+                <h2 className="text-2xl sm:text-3xl title-font text-gray-800 mb-4">
                   Online Room Reservations
                 </h2>
                 <p className="text-gray-600 mb-6">
@@ -80,7 +103,7 @@ const BookingPage = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <h2 className="text-3xl font-serif text-gray-800 mb-4">
+                <h2 className="text-2xl sm:text-3xl title-font text-gray-800 mb-4">
                   Special Reservations
                 </h2>
                 <p className="text-gray-600 mb-6">
@@ -89,14 +112,14 @@ const BookingPage = () => {
                 
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 valley-rose-text" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                     </svg>
                     <span className="text-gray-700">+43 1 20 43 969</span>
                   </div>
                   
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 valley-rose-text" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                       <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                     </svg>
@@ -169,6 +192,7 @@ const BookingPage = () => {
                     onBack={prevStep}
                     bookingData={bookingData}
                     setBookingData={setBookingData}
+                    isRoomTypePreSelected={isRoomTypePreSelected}
                   />
                 </AnimatePresence>
               </motion.div>

@@ -26,7 +26,7 @@ const Gallery = () => {
   }, []);
 
   return (
-    <section className="bg-white py-16 px-6">
+    <section className="py-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div 
@@ -37,14 +37,14 @@ const Gallery = () => {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="text-4xl font-bold mb-2"
+            className="text-3xl sm:text-4xl font-bold mb-2 title-font"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <span className="text-gray-800">A Look at What&apos;s on the</span>{' '}
-            <span className="text-purple-600">Table</span>
+            <span className="valley-rose-text">Table</span>
           </motion.h2>
           <motion.p 
             className="text-gray-500 text-sm"
@@ -72,7 +72,7 @@ const Gallery = () => {
         {/* Error State */}
         {error && (
           <motion.div 
-            className="bg-red-50 border border-red-200 rounded-lg p-6 text-center"
+            className="border border-red-200 rounded-lg p-6 text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}

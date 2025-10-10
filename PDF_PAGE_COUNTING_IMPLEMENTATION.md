@@ -176,3 +176,11 @@ If you encounter issues:
 The implementation should now automatically count PDF pages and display the correct pagination! 🎉
 
 
+
+
+
+
+
+
+
+
