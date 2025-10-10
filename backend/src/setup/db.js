@@ -5,9 +5,28 @@ async function connect() {
   if (!mongoUri) {
     throw new Error('MONGO_URI is not set');
   }
+  
+  // Check if already connected
+  if (mongoose.connection.readyState === 1) {
+    console.log('MongoDB already connected');
+    return;
+  }
+  
   mongoose.set('strictQuery', true);
-  await mongoose.connect(mongoUri, { dbName: undefined });
-  console.log('MongoDB connected');
+  
+  try {
+    await mongoose.connect(mongoUri, { 
+      dbName: undefined,
+      serverSelectionTimeoutMS: 5000, // 5 second timeout
+      socketTimeoutMS: 45000, // 45 second socket timeout
+      bufferCommands: false, // Disable mongoose buffering
+      bufferMaxEntries: 0 // Disable mongoose buffering
+    });
+    console.log('MongoDB connected successfully');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
 }
 
 module.exports = { connect };

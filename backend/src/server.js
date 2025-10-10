@@ -14,12 +14,47 @@ const weeklyMenuRoutes = require('./modules/weeklyMenu/weeklyMenu.routes');
 const restaurantGalleryRoutes = require('./modules/restaurantGallery/restaurantGallery.routes');
 const restaurantMainMenuRoutes = require('./modules/restaurantMainMenu/restaurantMainMenu.routes');
 
-
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Initialize database connection for serverless
+let isConnected = false;
+
+const ensureConnection = async () => {
+  if (!isConnected) {
+    try {
+      await connect();
+      isConnected = true;
+      console.log('Database connected in serverless function');
+    } catch (error) {
+      console.error('Database connection error:', error);
+      throw error;
+    }
+  }
+};
+
 app.get('/health', (_req, res) => res.json({ ok: true }));
+
+// Test endpoint without database dependency
+app.get('/test', (req, res) => {
+  res.json({ 
+    message: 'Server is working',
+    timestamp: new Date().toISOString(),
+    nodeVersion: process.version,
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Middleware to ensure database connection for API routes
+app.use('/api', async (req, res, next) => {
+  try {
+    await ensureConnection();
+    next();
+  } catch (error) {
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
@@ -31,7 +66,6 @@ app.use('/api/meals', mealRoutes);
 app.use('/api/weekly-menu', weeklyMenuRoutes);
 app.use('/api/restaurant-gallery', restaurantGalleryRoutes);
 app.use('/api/restaurant-main-menu', restaurantMainMenuRoutes);
-
 
 // For Vercel deployment
 module.exports = app;
