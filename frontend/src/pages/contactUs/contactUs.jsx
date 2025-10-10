@@ -2,12 +2,15 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import HeaderHero from '../../components/HeaderHero'
 import contactBanner from '../../assets/banners/contact.jpg'
+import { useTranslation } from '../../locales'
 
 const ContactUs = () => {
+  const { t } = useTranslation();
+
   const contactCards = [
     {
       id: 1,
-      title: 'Visit Us',
+      title: t('contact.visitUs'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3z" />
@@ -16,15 +19,15 @@ const ContactUs = () => {
       ),
       content: (
         <div className="text-sm text-gray-300">
-          <div className="font-medium">Valley Rose Hotel</div>
-          <div>Erzherzog Karl Stra§e 98a,</div>
-          <div>1220 Vienna, Austria</div>
+          <div className="font-medium">{t('contact.address')}</div>
+          <div>{t('contact.street')}</div>
+          <div>{t('contact.city')}</div>
         </div>
       )
     },
     {
       id: 2,
-      title: 'Call Us',
+      title: t('contact.callUs'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h2l1 5-1 1a11 11 0 005 5l1-1 5 1v2a2 2 0 01-2 2h-1C7.611 20 4 16.389 4 11V9a2 2 0 01-1-4z" />
@@ -32,27 +35,27 @@ const ContactUs = () => {
       ),
       content: (
         <div className="text-sm text-gray-300">
-          <div>Phone : +43 1 204 38 88</div>
-          <div>Mobile: +43 650 910 66 01</div>
-          <div>Whatsapp: +43 650 910 66 01</div>
+          <div>{t('contact.phone')}</div>
+          <div>{t('contact.mobile')}</div>
+          <div>{t('contact.whatsapp')}</div>
         </div>
       )
     },
     {
       id: 3,
-      title: 'Email Us',
+      title: t('contact.emailUs'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18a2 2 0 002-2V8a2 2 0 00-2-2H3a2 2 0 00-2 2v6a2 2 0 002 2z" />
         </svg>
       ),
       content: (
-        <div className="text-sm text-gray-300">valleyrose@speed.at</div>
+        <div className="text-sm text-gray-300">{t('contact.email')}</div>
       )
     },
     {
       id: 4,
-      title: 'Opening Hours',
+      title: t('contact.openingHours'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
@@ -61,8 +64,8 @@ const ContactUs = () => {
       ),
       content: (
         <div className="text-sm text-gray-300">
-          <div>Monday to Sunday</div>
-          <div>11:30 h - 23:00 h</div>
+          <div>{t('contact.hours')}</div>
+          <div>{t('contact.time')}</div>
         </div>
       )
     }
@@ -80,7 +83,7 @@ const ContactUs = () => {
         showButtons={false}
         customTitle={
           <>
-            <span className="valley-rose-text">Contact</span> <span className="text-white">Us</span>
+            <span className="valley-rose-text">{t('contact.title')}</span> <span className="text-white">Us</span>
           </>
         }
       />
@@ -91,7 +94,7 @@ const ContactUs = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          Contact Us
+          {t('contact.title')}
         </motion.h1>
         <motion.p 
           className="text-lg text-gray-400 mb-8"
@@ -99,7 +102,7 @@ const ContactUs = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          We'd Love to Hear From You
+          {t('contact.subtitle')}
         </motion.p>
         <motion.p 
           className="text-lg text-gray-400 mb-8"
@@ -107,7 +110,7 @@ const ContactUs = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          Whether you have a question, want to book a room, plan an event, or simply learn more about what we offer, feel free to reach out. Our team is here to help and will get back to you as soon as possible.
+          {t('contact.description')}
         </motion.p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

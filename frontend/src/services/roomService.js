@@ -8,6 +8,7 @@ export const roomService = {
    * @param {string} params.type - Filter by room type ('Single Room', 'Double Room', 'Triple Room', 'Apartment', 'Suite')
    * @param {number} params.page - Page number (default: 1)
    * @param {number} params.limit - Items per page (default: 10)
+   * @param {string} params.language - Language for localized content ('en' or 'de')
    * @returns {Promise<Object>} Object containing rooms data and pagination info
    */
   getRooms: async (params = {}) => {
@@ -22,11 +23,14 @@ export const roomService = {
   /**
    * Get a single room by ID
    * @param {string} id - Room ID
+   * @param {string} language - Language for localized content ('en' or 'de')
    * @returns {Promise<Object>} Room data
    */
-  getRoomById: async (id) => {
+  getRoomById: async (id, language = 'en') => {
     try {
-      const response = await api.get(`/rooms/${id}`);
+      const response = await api.get(`/rooms/${id}`, { 
+        params: { language } 
+      });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch room details');

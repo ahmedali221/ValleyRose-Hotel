@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from "../assets/header/logo.png"
 import banner from "../assets/header/banner.png"
+import { useTranslation } from '../locales';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle = null, customSubtitle = null, customButtons = null }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
+  const { t } = useTranslation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -34,18 +37,15 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
 
               {/* Desktop Navigation */}
               <nav className="hidden md:flex space-x-8">
-                <Link to="/" className={`${currentPath === '/' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>Home</Link>
-                <Link to="/hotel" className={`${currentPath === '/hotel' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>Hotel</Link>
-                <Link to="/restaurant" className={`${currentPath === '/restaurant' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>Restaurant</Link>
-                <Link to="/contact" className={`${currentPath === '/contact' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>Contact us</Link>
+                <Link to="/" className={`${currentPath === '/' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.home')}</Link>
+                <Link to="/hotel" className={`${currentPath === '/hotel' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.hotel')}</Link>
+                <Link to="/restaurant" className={`${currentPath === '/restaurant' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.restaurant')}</Link>
+                <Link to="/contact" className={`${currentPath === '/contact' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.contact')}</Link>
               </nav>
 
               {/* Language Selector */}
               <div className="hidden md:flex items-center">
-                <select className=" border border-white text-white rounded-md text-sm px-2 py-1">
-                  <option>English</option>
-                  <option>Deutsch</option>
-                </select>
+                <LanguageSwitcher />
               </div>
 
               {/* Mobile menu button */}
@@ -80,16 +80,13 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
           {/* Mobile Menu */}
           <div className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden bg-white shadow-lg`}>
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <Link to="/" className={`block px-3 py-2 text-base font-medium ${currentPath === '/' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>Home</Link>
-              <Link to="/hotel" className={`block px-3 py-2 text-base font-medium ${currentPath === '/hotel' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>Hotel</Link>
-              <Link to="/restaurant" className={`block px-3 py-2 text-base font-medium ${currentPath === '/restaurant' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>Restaurant</Link>
-              <Link to="/contact" className={`block px-3 py-2 text-base font-medium ${currentPath === '/contact' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>Contact us</Link>
+              <Link to="/" className={`block px-3 py-2 text-base font-medium ${currentPath === '/' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>{t('nav.home')}</Link>
+              <Link to="/hotel" className={`block px-3 py-2 text-base font-medium ${currentPath === '/hotel' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>{t('nav.hotel')}</Link>
+              <Link to="/restaurant" className={`block px-3 py-2 text-base font-medium ${currentPath === '/restaurant' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>{t('nav.restaurant')}</Link>
+              <Link to="/contact" className={`block px-3 py-2 text-base font-medium ${currentPath === '/contact' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>{t('nav.contact')}</Link>
             </div>
             <div className="px-4 py-3 border-t border-gray-200">
-              <select className="w-full bg-transparent border border-gray-300 rounded-md text-sm px-2 py-1">
-                <option>English</option>
-                <option>Deutsch</option>
-              </select>
+              <LanguageSwitcher className="w-full bg-transparent border border-gray-300 rounded-md text-sm px-2 py-1 text-gray-800" />
             </div>
           </div>
         </header>
@@ -100,18 +97,18 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
           <div className="absolute inset-0 flex flex-col justify-end items-start text-left z-10">
             <div className="max-w-4xl px-4 pb-16">
               <h1 className="text-4xl md:text-6xl title-font mb-4">
-                {customTitle}
+                {customTitle || t('hero.bookYourStay')}
               </h1>
-              <p className="text-white text-xl mb-8 title-font">{customSubtitle}</p>
+              <p className="text-white text-xl mb-8 title-font">{customSubtitle || t('hero.atValleyRose')}</p>
               {showButtons && (
                 <div className="flex flex-col sm:flex-row gap-4">
                   {customButtons || (
                     <>
                       <Link to="/booking" className="btn-primary font-medium py-2 px-6 rounded-md">
-                        Book a Room
+                        {t('nav.bookRoom')}
                       </Link>
                       <Link to="/check" className="bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-6 rounded-md transition duration-300">
-                        Check Reservation
+                        {t('nav.checkReservation')}
                       </Link>
                     </>
                   )}
@@ -128,16 +125,16 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
                   <span className="valley-rose-text">Valley Rose</span> <span className="text-white">Hotel - Restaurant</span>
                 </>
               </h1>
-              <p className="text-white text-xl mb-8 title-font">Bei Toni</p>
+              <p className="text-white text-xl mb-8 title-font">{t('hero.subtitle')}</p>
               {showButtons && (
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                   {customButtons || (
                     <>
                       <Link to="/booking" className="btn-primary font-medium py-2 px-6 rounded-md">
-                        Book a Room
+                        {t('nav.bookRoom')}
                       </Link>
                       <Link to="/check" className="bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-6 rounded-md transition duration-300">
-                        Check Reservation
+                        {t('nav.checkReservation')}
                       </Link>
                     </>
                   )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import bookingService from '../../../services/bookingService';
+import { useTranslation } from '../../../locales';
 
 const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelected = false }) => {
   const [roomTypes, setRoomTypes] = useState([]);
@@ -13,6 +14,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
   const [showCheckOutPicker, setShowCheckOutPicker] = useState(false);
   const checkInRef = useRef(null);
   const checkOutRef = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchRoomTypes();
@@ -48,7 +50,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
 
   const handleSearch = async () => {
     if (!bookingData.roomType || !bookingData.checkInDate || !bookingData.checkOutDate) {
-      setError('Please fill in all fields');
+      setError(t('booking.pleaseFillAll'));
       return;
     }
 
@@ -81,7 +83,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
 
   const handleNext = () => {
     if (!availabilityChecked || !isAvailable) {
-      setError('Please check availability first');
+      setError(t('booking.pleaseCheckAvailability'));
       return;
     }
     
@@ -157,7 +159,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
         </div>
         
         <div className="grid grid-cols-7 gap-1 text-center text-sm text-gray-600 mb-2">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          {[t('booking.days.sun'), t('booking.days.mon'), t('booking.days.tue'), t('booking.days.wed'), t('booking.days.thu'), t('booking.days.fri'), t('booking.days.sat')].map(day => (
             <div key={day} className="p-2 font-medium">{day}</div>
           ))}
         </div>
@@ -232,11 +234,11 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
                 color: isAvailable ? '#28B800' : '#FF3B30',
               }}
             >
-              {isAvailable ? 'Your selected room is available!' : 'Room not available for selected dates'}
+              {isAvailable ? t('booking.available') : t('booking.notAvailable')}
             </span>
           </div>
           {isAvailable && (
-            <span className="text-[#28B800] font-semibold">Cost: {cost}€</span>
+            <span className="text-[#28B800] font-semibold">{t('booking.cost')}: {cost}€</span>
           )}
         </motion.div>
       )}
@@ -255,9 +257,9 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
       {/* Room Type */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Room Type
+          {t('booking.roomType')}
           {isRoomTypePreSelected && (
-            <span className="text-sm text-[#9962B9] ml-2">(Pre-selected)</span>
+            <span className="text-sm text-[#9962B9] ml-2">{t('booking.preSelected')}</span>
           )}
         </label>
          <select
@@ -282,7 +284,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
          </select>
         {isRoomTypePreSelected && (
           <p className="text-sm text-gray-600 mt-2">
-            Room type was pre-selected from the room details page
+            {t('booking.preSelectedDescription')}
           </p>
         )}
       </div>
@@ -290,7 +292,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
       {/* Check-in Date */}
       <div className="relative" ref={checkInRef}>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Check-in Date
+          {t('booking.checkInDate')}
         </label>
         <button
           type="button"
@@ -301,7 +303,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
         >
           <span className={bookingData.checkInDate ? 'text-gray-900' : 'text-gray-500'}>
-            {bookingData.checkInDate ? formatDateForDisplay(bookingData.checkInDate) : 'Select check-in date'}
+            {bookingData.checkInDate ? formatDateForDisplay(bookingData.checkInDate) : t('booking.selectCheckIn')}
           </span>
           <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
@@ -315,7 +317,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
             selectedDate={bookingData.checkInDate}
             onSelect={(date) => handleDateSelect(date, 'checkInDate')}
             minDate={new Date().toISOString().split('T')[0]}
-            label="Select Check-in Date"
+            label={t('booking.selectCheckInDate')}
           />
         </AnimatePresence>
       </div>
@@ -323,7 +325,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
       {/* Check-out Date */}
       <div className="relative" ref={checkOutRef}>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Check-out Date
+          {t('booking.checkOutDate')}
         </label>
         <button
           type="button"
@@ -334,7 +336,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
         >
           <span className={bookingData.checkOutDate ? 'text-gray-900' : 'text-gray-500'}>
-            {bookingData.checkOutDate ? formatDateForDisplay(bookingData.checkOutDate) : 'Select check-out date'}
+            {bookingData.checkOutDate ? formatDateForDisplay(bookingData.checkOutDate) : t('booking.selectCheckOut')}
           </span>
           <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
@@ -348,7 +350,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
             selectedDate={bookingData.checkOutDate}
             onSelect={(date) => handleDateSelect(date, 'checkOutDate')}
             minDate={bookingData.checkInDate || new Date().toISOString().split('T')[0]}
-            label="Select Check-out Date"
+            label={t('booking.selectCheckOutDate')}
           />
         </AnimatePresence>
       </div>
@@ -360,7 +362,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
           disabled={loading || !bookingData.roomType || !bookingData.checkInDate || !bookingData.checkOutDate}
           className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {loading ? 'Searching...' : 'Search'}
+          {loading ? t('booking.searching') : t('booking.search')}
         </button>
         
         <button
@@ -368,7 +370,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
           disabled={!availabilityChecked || !isAvailable}
           className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Next
+          {t('booking.next')}
         </button>
       </div>
     </motion.div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { roomService } from '../../../services/roomService';
+import { useTranslation } from '../../../locales';
 
 const StaySection = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const StaySection = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 6;
+  const { t, language } = useTranslation();
 
   // Fetch rooms from backend
   const fetchRooms = async (page = 1) => {
@@ -20,7 +22,8 @@ const StaySection = () => {
       setError(null);
       const response = await roomService.getRooms({
         page,
-        limit: itemsPerPage
+        limit: itemsPerPage,
+        language: language || 'en'
       });
       
       if (response.success) {
@@ -76,7 +79,7 @@ const StaySection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Your Stay at <span className="valley-rose-text">Valley Rose Hotel!</span>
+            {t('hotel.yourStayAt')}
           </motion.h2>
           <motion.p 
             className="text-gray-700 max-w-3xl"
@@ -85,9 +88,7 @@ const StaySection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            At Valley Rose Hotel, we believe that comfortable living is at the heart of every great stay. 
-            Our goal is to create a peaceful, homely atmosphere where you can relax, unwind, and feel truly cared for. 
-            Whether you're here for a short break or an extended vacation, we aim to make your time with us a warm and unforgettable experience.
+            {t('hotel.stayDescription')}
           </motion.p>
         </motion.div>
 
@@ -106,7 +107,7 @@ const StaySection = () => {
               onClick={() => fetchRooms(currentPage)}
               className="btn-primary px-6 py-2 rounded-lg"
             >
-              Try Again
+              {t('hotel.tryAgain')}
             </button>
           </div>
         )}
@@ -143,7 +144,12 @@ const StaySection = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.2 + 0.3 }}
                 >
-                  <h3 className="text-lg font-semibold text-white">{room.title?.english || room.type}</h3>
+                  <h3 className="text-lg font-semibold text-white">
+                    {language === 'de' 
+                      ? (room.title?.german || room.title?.english || room.type)
+                      : (room.title?.english || room.type)
+                    }
+                  </h3>
                   <div className="flex items-center text-sm text-white">
                     <span className="text-yellow-400 mr-1">★</span>
                     <span>({room.ratingSuggestion || '4.8'})</span>
@@ -160,7 +166,10 @@ const StaySection = () => {
                 >
                   <img 
                     src={room.thumbnailImage?.url || '/placeholder-room.jpg'} 
-                    alt={room.title?.english || room.type || 'Room at Valley Rose Hotel'} 
+                    alt={language === 'de' 
+                      ? (room.title?.german || room.title?.english || room.type || t('hotel.roomAtHotel'))
+                      : (room.title?.english || room.type || t('hotel.roomAtHotel'))
+                    } 
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.src = '/placeholder-room.jpg';
@@ -190,15 +199,15 @@ const StaySection = () => {
                   : 'btn-primary'
               }`}
             >
-              Previous
+              {t('hotel.previous')}
             </button>
             
             <div className="flex items-center space-x-2">
               <span className="text-gray-700">
-                Page {currentPage} of {totalPages}
+                {t('hotel.pageOf')} {currentPage} {t('hotel.of')} {totalPages}
               </span>
               <span className="text-gray-500 text-sm">
-                ({totalItems} rooms total)
+                ({totalItems} {t('hotel.roomsTotal')})
               </span>
             </div>
             
@@ -211,7 +220,7 @@ const StaySection = () => {
                   : 'btn-primary'
               }`}
             >
-              Next
+              {t('hotel.next')}
             </button>
           </motion.div>
         )}
@@ -228,7 +237,7 @@ const StaySection = () => {
             to="/booking"
             className="inline-block btn-primary px-8 py-4 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl"
           >
-            Book Your Stay Now
+            {t('hotel.bookYourStayNow')}
           </Link>
         </motion.div>
       </div>

@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 import eventImage from '../../../assets/events/event-space.svg';
 import hotel1 from "../../../assets/hotel/hotel1.png"
 import hotel2 from "../../../assets/hotel/hotel2.png"
+import { useTranslation } from '../../../locales';
 
 const EventsSection = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="py-12 px-4 sm:px-8 content-section-light">
       <div className="max-w-7xl mx-auto">
@@ -23,7 +26,7 @@ const EventsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Host Your Event at <span className="valley-rose-text">Valley Rose!</span>
+            {t('hotel.hostYourEvent')}
           </motion.h2>
           <motion.p 
             className="text-gray-700 max-w-3xl mb-8"
@@ -32,7 +35,7 @@ const EventsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Looking for a cozy, elegant space to host your next event? Valley Rose Restaurant offers a warm and intimate atmosphere, ideal for small gatherings, family celebrations, business meetings, or private dinners.
+            {t('hotel.eventDescription1')}
           </motion.p>
           <motion.p 
             className="text-gray-700 max-w-3xl"
@@ -41,7 +44,7 @@ const EventsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            With our attentive team, comfortable spaces, and homemade cuisine, we'll help you create an event that feels both personal and memorable. Whether it's a birthday, anniversary, or a corporate evening, we're here to make it special.
+            {t('hotel.eventDescription2')}
           </motion.p>
         </motion.div>
 
@@ -92,7 +95,7 @@ const EventsSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.4 }}
               >
-                At <span className="valley-rose-text font-semibold">Valley Rose</span>
+                {t('hotel.atValleyRose')}
               </motion.h3>
               <motion.p 
                 className="text-gray-200 mb-6 text-xl font-light"
@@ -101,7 +104,7 @@ const EventsSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.6 }}
               >
-                All events must be arranged in advance
+                {t('hotel.allEventsMustBeArranged')}
               </motion.p>
               <motion.p 
                 className="text-gray-300 leading-relaxed text-base max-w-lg mx-auto"
@@ -110,7 +113,7 @@ const EventsSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.8 }}
               >
-                just reach out to us with your ideas, and our team will take care of the planning and details. From the space to the menu, we're here to make your occasion smooth, stress-free, and truly special.
+                {t('hotel.eventPlanningDescription')}
               </motion.p>
               <motion.a
                 href="#"
@@ -122,7 +125,7 @@ const EventsSection = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Contact Us
+                {t('hotel.contactUs')}
               </motion.a>
             </motion.div>
             
@@ -137,7 +140,7 @@ const EventsSection = () => {
             >
               <img 
                 src={hotel2} 
-                alt="Valley Rose outdoor seating" 
+                alt={t('hotel.outdoorSeating')} 
                 className="w-full h-auto rounded-lg shadow-xl"
               />
             </motion.div>
@@ -153,7 +156,7 @@ const EventsSection = () => {
             >
               <img 
                 src={hotel1} 
-                alt="Valley Rose indoor venue" 
+                alt={t('hotel.indoorVenue')} 
                 className="w-full h-auto rounded-lg shadow-xl"
               />
             </motion.div>

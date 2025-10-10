@@ -1,8 +1,13 @@
 import food from "../../../assets/food/food.png";
 import food1 from "../../../assets/food/food1.png";
 import { motion } from 'framer-motion';
+import { useTranslation } from '../../../locales';
+import { Link, useLocation } from 'react-router-dom';
+
 
 const RestaurantSection = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="content-section text-white py-8 sm:py-12 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col gap-6 lg:gap-8">
@@ -47,7 +52,7 @@ const RestaurantSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
-                Where Tradition Meets Taste
+                {t('home.restaurantTitle')}
               </motion.h2>
               <motion.h3 
                 className="text-xl sm:text-2xl font-semibold mb-6 text-black title-font"
@@ -56,7 +61,7 @@ const RestaurantSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
-                Our Restaurant
+                {t('home.ourRestaurant')}
               </motion.h3>
               <motion.p 
                 className="text-black text-lg mb-4"
@@ -65,7 +70,7 @@ const RestaurantSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.0 }}
               >
-                Enjoy the warm, welcoming flavors of Austrian home cooking at our in-house restaurant. Led by our chef Toni, each dish is prepared with love and rooted in local tradition. From hearty classics to seasonal specialties, we serve meals that bring comfort and delight to every guest.
+                {t('home.restaurantDescription')}
               </motion.p>
             </div>
           </motion.div>
@@ -80,7 +85,7 @@ const RestaurantSection = () => {
         >
           {/* Right Column - Text with dark background */}
           <motion.div 
-            className="md:w-1/2 bg-gray-900 p-12 h-92 justify-center mt-30 flex-3 relative -mr-25 "
+            className="md:w-1/2 bg-gray-900 p-12 h-92 justify-center mt-20 flex-3 relative -mr-25 "
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -93,7 +98,7 @@ const RestaurantSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              At Valley Rose
+              {t('home.atValleyRose')}
             </motion.h3>
             <motion.p 
               className="text-gray-300 mb-8 leading-relaxed text-lg"
@@ -102,7 +107,7 @@ const RestaurantSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              Our menu changes weekly, featuring new seasonal meals and homemade specials that reflect the flavors of the region, every dish is made with care and served with heart.
+              {t('home.menuDescription')}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -110,15 +115,19 @@ const RestaurantSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 1.0 }}
             >
-              <motion.a 
-                href="#" 
-                className="valley-rose-text hover:text-purple-300 flex items-center text-xl "
+              <motion.div
                 whileHover={{ x: 10 }}
                 transition={{ duration: 0.3 }}
               >
-                <span>You can view this week's menu</span>
-                <span className="ml-2 text-2xl">→</span>
-              </motion.a>
+                <Link
+                  to="/restaurant"
+                  className="valley-rose-text hover:text-purple-300 flex items-center text-xl"
+                  style={{ display: 'inline-flex', alignItems: 'center' }}
+                >
+                  <span>{t('home.viewMenu')}</span>
+                  <span className="ml-2 text-2xl">→</span>
+                </Link>
+              </motion.div>
             </motion.div>
           </motion.div>
           

@@ -1,7 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from '../../../locales';
 
 const Introduction = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="py-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
@@ -31,7 +34,7 @@ const Introduction = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Authentic Austrian flavors, fresh every week
+              {t('restaurant.subtitle')}
             </motion.p>
             <motion.p 
               className="text-gray-700 leading-relaxed"
@@ -40,11 +43,7 @@ const Introduction = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              At Valley Rose Hotel, dining is more than just a service; it&apos;s a highlight of your stay. 
-              Our in-house restaurant offers a warm, relaxed atmosphere where guests and visitors alike can 
-              enjoy fresh, homemade Austrian cuisine, prepared with love by our chef, Toni. Every dish is 
-              made using fresh, local ingredients, with a menu that changes weekly to bring new flavors to 
-              the table.
+              {t('restaurant.description')}
             </motion.p>
           </motion.div>
 

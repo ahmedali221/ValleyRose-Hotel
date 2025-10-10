@@ -135,7 +135,7 @@ const Rooms = () => {
         ) : (
           rooms.map((room) => (
             <Link
-              to={`/hotel/rooms/${room._id}`}
+              to={`/hotel/preview/${room._id}`}
               key={room._id}
               className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-sm relative hover:shadow-md transition-shadow"
             >

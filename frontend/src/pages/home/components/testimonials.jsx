@@ -1,10 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from '../../../locales';
 
 // Using SVG placeholder for profile image
 import profileImg from '../../../assets/profile/profile-placeholder.svg';
 
 const Testimonials = () => {
+  const { t } = useTranslation();
+  
   // Sample testimonial data
   const testimonials = [
     {
@@ -64,7 +67,7 @@ const Testimonials = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="valley-rose-text">Our Clients</span> Rate Us
+            <span className="valley-rose-text">{t('home.clientsRateUs')}</span>
           </motion.h2>
           <motion.p 
             className="text-gray-600"
@@ -73,7 +76,7 @@ const Testimonials = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            What our guests say about their experience
+            {t('home.testimonialsSubtitle')}
           </motion.p>
         </motion.div>
 

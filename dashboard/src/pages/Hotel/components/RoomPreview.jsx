@@ -53,12 +53,12 @@ const RoomPreview = () => {
         <span>◀</span> Back
       </button>
 
-   {/* Hero Preview */}
-   <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-black">
+      {/* Room Preview Card */}
+      <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-black">
         {room.coverImage?.url ? (
-          <img src={room.coverImage.url} alt={title} className="w-full h-72 object-cover opacity-80" />
+          <img src={room.coverImage.url} alt={title} className="w-full h-96 object-cover opacity-80" />
         ) : (
-          <div className="w-full h-72 bg-gray-200" />
+          <div className="w-full h-96 bg-gray-200" />
         )}
         
         {/* Thumbnail overlay in bottom-right corner */}
@@ -70,12 +70,11 @@ const RoomPreview = () => {
           />
         )}
 
-        {/* Purple ribbon */}
+        {/* Price and Rating ribbon */}
         <div
           className="absolute top-4 left-4 text-white px-4 py-2 flex items-center gap-3"
           style={{
-            width: '85%',
-            backgroundColor: '#9333ea',
+            backgroundColor: 'var(--primary-color)',
             borderBottomRightRadius: '0.75rem'
           }}
         >
@@ -86,18 +85,29 @@ const RoomPreview = () => {
           </div>
         </div>
 
-        {/* Title and short blurb overlay */}
+        {/* Description overlay */}
         <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-          <h2 className="text-2xl font-serif mb-2 drop-shadow">{title}</h2>
-          <p className="max-w-3xl text-sm leading-relaxed opacity-95">
-            {(room.description?.english || '').slice(0, 260)}
-          </p>
+          <div className="max-w-2xl">
+            <p className="text-sm leading-relaxed opacity-95 mb-3">
+              {(room.description?.english || '').slice(0, 200)}
+            </p>
+            <p className="text-sm leading-relaxed opacity-95 mb-4">
+              {(room.description?.english || '').slice(200, 400)}
+            </p>
+            <h2 className="text-3xl font-serif mb-2 drop-shadow" style={{fontFamily: 'Redressed, cursive'}}>{title}</h2>
+            <button 
+              className="px-6 py-2 rounded-lg text-white font-medium"
+              style={{backgroundColor: 'var(--primary-color)'}}
+            >
+              Book it Now
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Gallery heading */}
       <div>
-        <h3 className="text-2xl font-serif mb-1">A Glimpse Into Your Stay</h3>
+        <h3 className="text-2xl font-serif mb-1" style={{fontFamily: 'Redressed, cursive'}}>A Glimpse Into Your Stay</h3>
         <p className="text-sm text-gray-500">Take a closer look at our rooms, restaurant, and the peaceful charm of Valley Rose.</p>
       </div>
 
@@ -116,8 +126,24 @@ const RoomPreview = () => {
 
       {/* Actions */}
       <div className="flex gap-4 justify-end">
-        <Link to={`/hotel`} className="px-6 py-2 rounded-lg border border-purple-300 text-purple-600 hover:bg-purple-50">Delete</Link>
-        <Link to={`/hotel`} className="px-6 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">Update</Link>
+        <button 
+          onClick={() => {
+            if (window.confirm('Are you sure you want to delete this room?')) {
+              // TODO: Implement delete functionality
+              console.log('Delete room:', room._id);
+            }
+          }}
+          className="px-6 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50"
+        >
+          Delete
+        </button>
+        <button 
+          onClick={() => navigate(`/hotel/edit/${room._id}`)}
+          className="px-6 py-2 rounded-lg text-white"
+          style={{backgroundColor: 'var(--primary-color)'}}
+        >
+          Update
+        </button>
       </div>
 
       <p className="text-center text-xs text-gray-400">© 2022-2025 by ValleyRose.com, Inc.</p>

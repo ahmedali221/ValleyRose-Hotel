@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import right from "../../../assets/header/right.png";
+import { useTranslation } from '../../../locales';
 
 export default function About() {
+  const { t } = useTranslation();
+
   return (
     <div className="content-section p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -19,7 +22,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Welcome to <span className="valley-rose-text">Valley Rose Hotel!</span>
+            {t('home.welcome')}
           </motion.h1>
           <motion.p 
             className="text-gray-600 text-base sm:text-lg"
@@ -27,7 +30,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Where Every Stay <span className="valley-rose-text font-semibold">Blooms</span> with Comfort
+            {t('home.subtitle')}
           </motion.p>
         </motion.div>
 
@@ -46,11 +49,7 @@ export default function About() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              Experience the taste of tradition with our home-style cuisine, 
-              lovingly prepared under the direction of Toni. Each dish is 
-              crafted with care and features a variety of regional Austrian 
-              delicacies designed to delight your palate. Let us treat you 
-              in the evening with our thoughtfully curated menu.
+              {t('home.description1')}
             </motion.p>
 
             <motion.p 
@@ -59,9 +58,7 @@ export default function About() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.0 }}
             >
-              Our cozy 3-star hotel in Vienna's 22nd district offers quick 
-              access to the city center and top attractions. We look 
-              forward to making your stay memorable.
+              {t('home.description2')}
             </motion.p>
 
             {/* Buttons */}
@@ -76,14 +73,14 @@ export default function About() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Book a Room
+                {t('home.bookRoom')}
               </motion.button>
               <motion.button 
                 className="bg-white hover:bg-gray-100 valley-rose-text px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors border-2 border-gray-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                View All Rooms
+                {t('home.viewAllRooms')}
               </motion.button>
             </motion.div>
           </motion.div>
@@ -111,11 +108,11 @@ export default function About() {
                   >
                     <img 
                       src={right} 
-                      alt="Cozy Room with Modern Amenities" 
+                      alt={t('home.roomImageAlt')} 
                       className="absolute inset-0 w-full h-full object-cover"
                       style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
                     />
-                    <p className="text-gray-400 text-sm">Cozy Room with Modern Amenities</p>
+                    <p className="text-gray-400 text-sm">{t('home.roomImageAlt')}</p>
                   </motion.div>
                 </div>
               </div>

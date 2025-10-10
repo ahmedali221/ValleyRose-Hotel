@@ -67,7 +67,9 @@ const Sidebar = () => {
                 ? 'text-black'
                 : 'text-gray-700 hover:bg-gray-200'
             }`}
-            style={isActive('/settings') ? {backgroundColor: 'var(--primary-color)'} : {}}
+            style={isActive('/settings') ? {
+              backgroundColor: 'rgba(153, 98, 185, 0.15)' // 15% opacity of var(--primary-color)
+            } : {}}
           >
             Settings
           </Link>

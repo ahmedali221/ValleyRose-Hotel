@@ -13,11 +13,11 @@ export const homeService = {
     }
   },
 
-  // Get recent bookings/reservations
-  getRecentBookings: async (limit = 6) => {
+  // Get recent bookings/reservations with pagination
+  getRecentBookings: async (limit = 6, page = 1) => {
     try {
-      const response = await api.get(`/offline-reservations?limit=${limit}`);
-      return response.data.data || [];
+      const response = await api.get(`/offline-reservations?limit=${limit}&page=${page}`);
+      return response.data; // Returns full response with data and pagination info
     } catch (error) {
       console.error('Error fetching recent bookings:', error);
       throw error;

@@ -6,17 +6,19 @@ import character from '../../assets/reservations/chracter.png';
 import HeaderHero from '../../components/HeaderHero';
 import checkBanner from '../../assets/banners/check.jpg';
 import { reservationService } from '../../services/reservationService';
+import { useTranslation } from '../../locales';
 
 const CheckReservation = () => {
   const [reservationCode, setReservationCode] = useState('');
   const [reservation, setReservation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!reservationCode.trim()) {
-      setError('Please enter a reservation code');
+      setError(t('checkReservation.enterReservationCode'));
       return;
     }
 
@@ -37,14 +39,14 @@ const CheckReservation = () => {
   const handleCancelReservation = async () => {
     if (!reservation) return;
     
-    if (window.confirm('Are you sure you want to cancel this reservation?')) {
+    if (window.confirm(t('checkReservation.confirmCancel'))) {
       try {
         await reservationService.cancelReservation(reservation._id);
         setReservation(null);
         setReservationCode('');
-        alert('Reservation cancelled successfully');
+        alert(t('checkReservation.cancelledSuccessfully'));
       } catch (err) {
-        alert('Failed to cancel reservation: ' + err.message);
+        alert(t('checkReservation.cancelFailed') + ' ' + err.message);
       }
     }
   };
@@ -67,7 +69,7 @@ const CheckReservation = () => {
         showButtons={false}
         customTitle={
           <>
-            <span className="text-white">Check Your Reservation</span>
+            <span className="text-white">{t('checkReservation.title')}</span>
           </>
         }
       />
@@ -95,7 +97,7 @@ const CheckReservation = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                Quick Access to Your Booking Details
+                {t('checkReservation.quickAccess')}
               </motion.h2>
               <motion.p 
                 className="text-gray-600 text-lg mb-6"
@@ -103,7 +105,7 @@ const CheckReservation = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
-                Welcome to our Reservation Check page! Simply enter your <strong>reservation code</strong> below to instantly access your booking details. We look forward to welcoming you soon!
+                {t('checkReservation.description')}
               </motion.p>
               
               <motion.form 
@@ -117,7 +119,7 @@ const CheckReservation = () => {
                   type="text"
                   value={reservationCode}
                   onChange={(e) => setReservationCode(e.target.value)}
-                  placeholder="reservation code (e.g., 56421 or #56421)"
+                  placeholder={t('checkReservation.placeholder')}
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -128,7 +130,7 @@ const CheckReservation = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {loading ? 'Searching...' : 'Search'}
+                  {loading ? t('checkReservation.searching') : t('checkReservation.search')}
                 </motion.button>
               </motion.form>
 
@@ -157,7 +159,7 @@ const CheckReservation = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
               >
-                Support
+                {t('checkReservation.support')}
               </motion.h3>
               <motion.p 
                 className="text-gray-600 text-lg mb-6"
@@ -165,7 +167,7 @@ const CheckReservation = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.4 }}
               >
-                If you need any assistance or have questions, our support team is ready to help.
+                {t('checkReservation.supportDescription')}
               </motion.p>
               
               <motion.div 
@@ -228,7 +230,7 @@ const CheckReservation = () => {
                 >
                   <img src={logo} alt="Valley Rose" className="h-8" />
                   <div>
-                    <span className="text-gray-600">Reservation</span>
+                    <span className="text-gray-600">{t('checkReservation.reservation')}</span>
                     <span className="valley-rose-text font-semibold ml-2">{reservation.reservationNumber}</span>
                   </div>
                 </motion.div>
@@ -240,52 +242,52 @@ const CheckReservation = () => {
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Full Name:</span>
+                    <span className="text-gray-600">{t('checkReservation.fullName')}</span>
                     <span className="font-medium">{reservation.customer.firstName} {reservation.customer.lastName}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Email address:</span>
+                    <span className="text-gray-600">{t('checkReservation.emailAddress')}</span>
                     <span className="font-medium">{reservation.customer.email}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Phone Number:</span>
+                    <span className="text-gray-600">{t('checkReservation.phoneNumber')}</span>
                     <span className="font-medium">{reservation.customer.phoneNumber}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Room Type:</span>
+                    <span className="text-gray-600">{t('checkReservation.roomType')}</span>
                     <span className="font-medium">{reservation.roomType}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Number of Guests:</span>
-                    <span className="font-medium">{reservation.numberOfGuests} Guests</span>
+                    <span className="text-gray-600">{t('checkReservation.numberOfGuests')}</span>
+                    <span className="font-medium">{reservation.numberOfGuests} {t('common.guests')}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Check-in Date:</span>
+                    <span className="text-gray-600">{t('checkReservation.checkInDate')}</span>
                     <span className="font-medium">{formatDate(reservation.checkInDate)}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Check-out Date:</span>
+                    <span className="text-gray-600">{t('checkReservation.checkOutDate')}</span>
                     <span className="font-medium">{formatDate(reservation.checkOutDate)}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Cost:</span>
+                    <span className="text-gray-600">{t('checkReservation.cost')}</span>
                     <span className="font-medium">{reservation.cost}€</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Payment Method:</span>
+                    <span className="text-gray-600">{t('checkReservation.paymentMethod')}</span>
                     <span className="font-medium">{reservation.paymentMethod}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Status:</span>
+                    <span className="text-gray-600">{t('checkReservation.status')}</span>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                       reservation.status === 'Confirmed' 
                         ? 'bg-green-500 text-white' 
@@ -293,7 +295,7 @@ const CheckReservation = () => {
                         ? 'bg-red-500 text-white'
                         : 'bg-blue-500 text-white'
                     }`}>
-                      {reservation.status === 'Confirmed' ? 'Successful' : reservation.status}
+                      {reservation.status === 'Confirmed' ? t('checkReservation.successful') : reservation.status}
                     </span>
                   </div>
                 </motion.div>
@@ -312,7 +314,7 @@ const CheckReservation = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {reservation.status === 'Cancelled' ? 'Reservation Cancelled' : 'Cancel Reservation'}
+                  {reservation.status === 'Cancelled' ? t('checkReservation.reservationCancelled') : t('checkReservation.cancelReservation')}
                 </motion.button>
               </motion.div>
             ) : (
@@ -336,7 +338,7 @@ const CheckReservation = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.8 }}
                 >
-                  Welcome! To find your booking, please enter your reservation code in the search bar.
+                  {t('checkReservation.welcomeMessage')}
                 </motion.p>
               </motion.div>
             )}

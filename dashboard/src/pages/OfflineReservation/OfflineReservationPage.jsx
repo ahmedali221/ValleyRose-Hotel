@@ -5,6 +5,7 @@ const OfflineReservationPage = () => {
   const [view, setView] = useState('create'); // 'create' or 'manage'
   const [step, setStep] = useState(1);
   const [customers, setCustomers] = useState([]);
+  const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(null);
@@ -18,7 +19,7 @@ const OfflineReservationPage = () => {
   const [statusFilter, setStatusFilter] = useState('');
 
   const [form, setForm] = useState({
-    roomType: 'Single Room',
+    roomType: '',
     checkInDate: '',
     checkOutDate: '',
     customerId: '',
@@ -30,15 +31,26 @@ const OfflineReservationPage = () => {
   });
 
   useEffect(() => {
-    const loadCustomers = async () => {
+    const loadInitialData = async () => {
       try {
-        const customerList = await offlineReservationService.listCustomers();
+        const [customerList, roomTypesList] = await Promise.all([
+          offlineReservationService.listCustomers(),
+          offlineReservationService.getRoomTypes()
+        ]);
+        
         setCustomers(Array.isArray(customerList) ? customerList : (customerList?.data ?? []));
+        setRoomTypes(roomTypesList || []);
+        
+        // Set default room type if available
+        if (roomTypesList && roomTypesList.length > 0) {
+          setForm(prev => ({ ...prev, roomType: roomTypesList[0] }));
+        }
       } catch (e) {
-        console.error('Failed to load customers:', e);
+        console.error('Failed to load initial data:', e);
+        setError('Failed to load room types and customers');
       }
     };
-    loadCustomers();
+    loadInitialData();
   }, []);
 
   // Load reservations when view changes to manage
@@ -166,7 +178,7 @@ const OfflineReservationPage = () => {
     setAvailabilityChecked(false);
     setAvailableRooms([]);
     setForm({
-      roomType: 'Single Room',
+      roomType: roomTypes.length > 0 ? roomTypes[0] : '',
       checkInDate: '',
       checkOutDate: '',
       customerId: '',
@@ -233,7 +245,7 @@ const OfflineReservationPage = () => {
               <h1 className="text-2xl font-semibold valley-rose-text title-font mb-4">Offline Room Reservations</h1>
               
               {/* View Toggle */}
-              <div className="flex bg-gray-200 rounded-lg p-1 mb-6">
+              {/* <div className="flex bg-gray-200 rounded-lg p-1 mb-6">
                 <button
                   onClick={() => setView('create')}
                   className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -256,7 +268,7 @@ const OfflineReservationPage = () => {
                 >
                   Manage Reservations
                 </button>
-              </div>
+              </div> */}
             </div>
 
             {/* Error Message */}
@@ -281,11 +293,19 @@ const OfflineReservationPage = () => {
                     className="w-full px-4 py-3 text-white rounded-lg focus:outline-none focus:ring-2 appearance-none"
                     style={{backgroundColor: 'var(--primary-color)', '--tw-ring-color': 'var(--primary-color)'}}
                   >
-                    <option value="Single Room">Single</option>
-                    <option value="Double Room">Double</option>
-                    <option value="Triple Room">Triple</option>
-                    <option value="Apartment">Apartment</option>
-                    <option value="Suite">Suite</option>
+                    {roomTypes.length === 0 ? (
+                      <option value="" disabled>Loading room types...</option>
+                    ) : (
+                      roomTypes.map((roomType) => (
+                        <option 
+                          key={roomType} 
+                          value={roomType}
+                          className="bg-white text-black"
+                        >
+                          {roomType}
+                        </option>
+                      ))
+                    )}
               </select>
             </div>
                 
@@ -298,11 +318,14 @@ const OfflineReservationPage = () => {
                       value={form.checkInDate} 
                       onChange={(e) => setForm({ ...form, checkInDate: e.target.value })} 
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 pl-12"
-                      style={{'--tw-ring-color': 'var(--primary-color)'}}
+                      style={{
+                        '--tw-ring-color': 'var(--primary-color)',
+                        colorScheme: 'light'
+                      }}
                       min={new Date().toISOString().split('T')[0]}
                       placeholder="dd / mm / yyyy"
                     />
-                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 style={{color: 'var(--primary-color)'}}">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2" style={{color: 'var(--primary-color)'}}>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                       </svg>
@@ -318,24 +341,28 @@ const OfflineReservationPage = () => {
                       type="date" 
                       value={form.checkOutDate} 
                       onChange={(e) => setForm({ ...form, checkOutDate: e.target.value })} 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 pl-12"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 pl-12"
+                      style={{
+                        '--tw-ring-color': 'var(--primary-color)',
+                        colorScheme: 'light'
+                      }}
                       min={form.checkInDate || new Date().toISOString().split('T')[0]}
                       placeholder="dd / mm / yyyy"
                     />
-                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 style={{color: 'var(--primary-color)'}}">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2" style={{color: 'var(--primary-color)'}}>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                       </svg>
+                    </div>
+                  </div>
               </div>
-            </div>
-          </div>
 
                 {/* Buttons */}
                 <div className="flex gap-4 mt-8">
                   <button 
                     onClick={handleCheckAvailability}
                     disabled={loading || !form.roomType || !form.checkInDate || !form.checkOutDate}
-                    className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg disabled:cursor-not-allowed"
+                    className="flex-1 px-6 py-3 bg-[var(--primary-color)] text-white rounded-lg disabled:cursor-not-allowed"
                   >
                     {loading ? 'Checking...' : 'Check Availability'}
                   </button>
@@ -461,11 +488,11 @@ const OfflineReservationPage = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Check-in:</span>
-                      <span className="text-gray-900">{new Date(form.checkInDate).toLocaleDateString()}</span>
+                      <span className="text-gray-900">{new Date(form.checkInDate).toLocaleDateString('en-GB')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Check-out:</span>
-                      <span className="text-gray-900">{new Date(form.checkOutDate).toLocaleDateString()}</span>
+                      <span className="text-gray-900">{new Date(form.checkOutDate).toLocaleDateString('en-GB')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Guest:</span>
@@ -543,7 +570,6 @@ const OfflineReservationPage = () => {
               </>
             )}
 
-            {/* Manage Reservations View */}
             {view === 'manage' && (
               <div>
                 {/* Filters */}

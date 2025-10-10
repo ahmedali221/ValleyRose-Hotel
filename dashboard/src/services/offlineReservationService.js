@@ -2,13 +2,13 @@ import api from '../api/axiosConfig';
 
 // Offline reservation service
 export const offlineReservationService = {
-  // List rooms (optionally filter by type)
-  listRooms: async (params = {}) => {
+  // Get room types
+  getRoomTypes: async () => {
     try {
-      const res = await api.get('/rooms', { params });
-      return res.data;
+      const res = await api.get('/rooms/types');
+      return res.data.data || [];
     } catch (e) {
-      throw new Error(e.response?.data?.message || 'Failed to fetch rooms');
+      throw new Error(e.response?.data?.message || 'Failed to fetch room types');
     }
   },
 

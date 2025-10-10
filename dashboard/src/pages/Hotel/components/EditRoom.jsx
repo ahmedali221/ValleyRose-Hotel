@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { hotelService } from '../../../services/hotelService';
 
-const AddNew = () => {
+const EditRoom = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: { english: '', german: '' },
     description: { english: '', german: '' },
@@ -23,27 +26,66 @@ const AddNew = () => {
   });
 
   useEffect(() => {
-    fetchRoomTypes();
-  }, []);
+    const loadRoomData = async () => {
+      try {
+        setLoading(true);
+        const [roomResponse, roomTypesResponse] = await Promise.all([
+          hotelService.getRoom(id),
+          hotelService.getRoomTypes()
+        ]);
+        
+        const room = roomResponse.data;
+        setRoomTypes(roomTypesResponse.data);
+        
+        // Pre-fill form with existing room data
+        const initialFormData = {
+          title: room.title || { english: '', german: '' },
+          description: room.description || { english: '', german: '' },
+          pricePerNight: room.pricePerNight || '',
+          ratingSuggestion: room.ratingSuggestion || '',
+          type: room.type || 'Single Room',
+          coverImage: null, // Will be handled separately for updates
+          thumbnailImage: null, // Will be handled separately for updates
+          serviceGallery: [] // Will be handled separately for updates
+        };
+        
+        console.log('Loading room data:', room);
+        console.log('Setting initial form data:', initialFormData);
+        setFormData(initialFormData);
+
+        // Set existing image previews
+        setImagePreviews({
+          coverImage: room.coverImage?.url || null,
+          thumbnailImage: room.thumbnailImage?.url || null,
+          serviceGallery: room.serviceGallery?.map(img => img.url) || []
+        });
+
+      } catch (error) {
+        console.error('Failed to load room data:', error);
+        setError('Failed to load room data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRoomData();
+  }, [id]);
 
   // Cleanup effect to prevent memory leaks
   useEffect(() => {
     return () => {
       // Clean up all preview URLs when component unmounts
-      if (imagePreviews.coverImage) URL.revokeObjectURL(imagePreviews.coverImage);
-      if (imagePreviews.thumbnailImage) URL.revokeObjectURL(imagePreviews.thumbnailImage);
-      imagePreviews.serviceGallery.forEach(url => URL.revokeObjectURL(url));
+      if (imagePreviews.coverImage && imagePreviews.coverImage.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreviews.coverImage);
+      }
+      if (imagePreviews.thumbnailImage && imagePreviews.thumbnailImage.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreviews.thumbnailImage);
+      }
+      imagePreviews.serviceGallery.forEach(url => {
+        if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+      });
     };
   }, [imagePreviews]);
-
-  const fetchRoomTypes = async () => {
-    try {
-      const response = await hotelService.getRoomTypes();
-      setRoomTypes(response.data);
-    } catch (error) {
-      console.error('Failed to fetch room types:', error);
-    }
-  };
 
   const handleInputChange = (field, value) => {
     if (field.includes('.')) {
@@ -126,28 +168,18 @@ const AddNew = () => {
     }
 
     try {
-      console.log('Submitting form data:', formData);
-      await hotelService.createRoom(formData);
-      setSuccess('Room created successfully!');
-      // Reset form and previews
-      setFormData({
-        title: { english: '', german: '' },
-        description: { english: '', german: '' },
-        pricePerNight: '',
-        ratingSuggestion: '',
-        type: 'Single Room',
-        coverImage: null,
-        thumbnailImage: null,
-        serviceGallery: []
-      });
-      setImagePreviews({
-        coverImage: null,
-        thumbnailImage: null,
-        serviceGallery: []
-      });
+      console.log('Updating room with data:', formData);
+      await hotelService.updateRoom(id, formData);
+      setSuccess('Room updated successfully!');
+      
+      // Navigate back to room preview after successful update
+      setTimeout(() => {
+        navigate(`/hotel/preview/${id}`);
+      }, 1500);
+      
     } catch (error) {
-      console.error('Room creation error:', error);
-      setError(error.message || 'Failed to create room. Please try again.');
+      console.error('Room update error:', error);
+      setError(error.message || 'Failed to update room. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -155,36 +187,39 @@ const AddNew = () => {
 
   const handleClear = () => {
     // Clean up existing preview URLs to prevent memory leaks
-    if (imagePreviews.coverImage) URL.revokeObjectURL(imagePreviews.coverImage);
-    if (imagePreviews.thumbnailImage) URL.revokeObjectURL(imagePreviews.thumbnailImage);
-    imagePreviews.serviceGallery.forEach(url => URL.revokeObjectURL(url));
+    if (imagePreviews.coverImage && imagePreviews.coverImage.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreviews.coverImage);
+    }
+    if (imagePreviews.thumbnailImage && imagePreviews.thumbnailImage.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreviews.thumbnailImage);
+    }
+    imagePreviews.serviceGallery.forEach(url => {
+      if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+    });
     
-    setFormData({
-      title: { english: '', german: '' },
-      description: { english: '', german: '' },
-      pricePerNight: '',
-      ratingSuggestion: '',
-      type: 'Single Room',
-      coverImage: null,
-      thumbnailImage: null,
-      serviceGallery: []
-    });
-    setImagePreviews({
-      coverImage: null,
-      thumbnailImage: null,
-      serviceGallery: []
-    });
-    setError('');
-    setSuccess('');
+    // Reset to original room data
+    navigate(`/hotel/preview/${id}`);
   };
+
+  if (loading && !formData.title.english) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
-      {/* Add New Title Section */}
+      {/* Edit Room Title Section */}
       <div className="flex items-center mb-6">
         <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
-        <h2 className="text-lg font-semibold text-gray-900">Add New</h2>
-        <button className="ml-4 px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center" style={{backgroundColor: 'var(--primary-color)'}}>
+        <h2 className="text-lg font-semibold text-gray-900">Edit Room</h2>
+        <button 
+          onClick={() => navigate(`/hotel/preview/${id}`)}
+          className="ml-4 px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center" 
+          style={{backgroundColor: 'var(--primary-color)'}}
+        >
           <span className="mr-2">👁</span>
           Preview
         </button>
@@ -192,7 +227,7 @@ const AddNew = () => {
 
       <div className="mb-6">
         <p className="text-gray-600">
-          Please be careful when adding a new room or apartment. Ensure all details are accurate, clear, and reflect the quality our <span className="valley-rose-text">Valley Rose</span> guests expect. A well-listed room makes for a smoother guest experience and a stronger reputation.
+          Update the room details below. Ensure all information is accurate and reflects the quality our <span className="valley-rose-text">Valley Rose</span> guests expect.
         </p>
       </div>
 
@@ -354,8 +389,6 @@ const AddNew = () => {
         </div>
         </div>
 
-      
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Cover */}
           <div>
@@ -388,7 +421,7 @@ const AddNew = () => {
           {/* Thumbnail */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Thumbnail</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg  text-center">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg text-center">
               <input
                 type="file"
                 accept="image/*"
@@ -434,7 +467,7 @@ const AddNew = () => {
                     // Remove image from both formData and previews
                     const newFiles = formData.serviceGallery.filter((_, i) => i !== index);
                     const newPreviews = imagePreviews.serviceGallery.filter((_, i) => i !== index);
-                    URL.revokeObjectURL(preview);
+                    if (preview.startsWith('blob:')) URL.revokeObjectURL(preview);
                     setFormData(prev => ({ ...prev, serviceGallery: newFiles }));
                     setImagePreviews(prev => ({ ...prev, serviceGallery: newPreviews }));
                   }}
@@ -475,7 +508,7 @@ const AddNew = () => {
             onClick={handleClear}
             className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
           >
-            Clear
+            Cancel
           </button>
           <button 
             type="submit"
@@ -493,7 +526,7 @@ const AddNew = () => {
               }
             }}
           >
-            {loading ? 'Creating...' : 'Upload Now'}
+            {loading ? 'Updating...' : 'Update Room'}
           </button>
         </div>
         </form>
@@ -503,4 +536,4 @@ const AddNew = () => {
   );
 };
 
-export default AddNew;
+export default EditRoom;

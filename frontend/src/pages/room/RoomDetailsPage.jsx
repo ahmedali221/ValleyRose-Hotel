@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { roomService } from '../../services/roomService';
 import logo from "../../assets/header/logo.png";
+import { useTranslation } from '../../locales';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const RoomDetailsPage = () => {
   const { id } = useParams();
@@ -13,10 +15,11 @@ const RoomDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     fetchRoomDetails();
-  }, [id]);
+  }, [id, language]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -26,12 +29,12 @@ const RoomDetailsPage = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await roomService.getRoomById(id);
+      const response = await roomService.getRoomById(id, language);
       
       if (response.success) {
         setRoom(response.data);
       } else {
-        setError('Room not found');
+        setError(t('room.roomNotFound'));
       }
     } catch (err) {
       console.error('Error fetching room details:', err);
@@ -58,13 +61,13 @@ const RoomDetailsPage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Room Not Found</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t('room.roomNotFound')}</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <Link
             to="/hotel"
             className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
           >
-            Back to Hotel
+            {t('room.backToHotel')}
           </Link>
         </div>
       </div>
@@ -96,18 +99,15 @@ const RoomDetailsPage = () => {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex space-x-8">
-                  <Link to="/" className={`${currentPath === '/' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>Home</Link>
-                  <Link to="/hotel" className={`${currentPath === '/hotel' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>Hotel</Link>
-                  <Link to="/restaurant" className={`${currentPath === '/restaurant' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>Restaurant</Link>
-                  <Link to="/contact" className={`${currentPath === '/contact' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>Contact us</Link>
+                  <Link to="/" className={`${currentPath === '/' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.home')}</Link>
+                  <Link to="/hotel" className={`${currentPath === '/hotel' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.hotel')}</Link>
+                  <Link to="/restaurant" className={`${currentPath === '/restaurant' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.restaurant')}</Link>
+                  <Link to="/contact" className={`${currentPath === '/contact' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.contact')}</Link>
                 </nav>
 
                 {/* Language Selector */}
                 <div className="hidden md:flex items-center">
-                  <select className="bg-transparent border border-white text-white rounded-md text-sm px-2 py-1">
-                    <option>English</option>
-                    <option>Deutsch</option>
-                  </select>
+                  <LanguageSwitcher />
                 </div>
 
                 {/* Mobile menu button */}
@@ -142,16 +142,13 @@ const RoomDetailsPage = () => {
             {/* Mobile Menu */}
             <div className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden bg-white shadow-lg`}>
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <Link to="/" className={`block px-3 py-2 text-base font-medium ${currentPath === '/' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>Home</Link>
-                <Link to="/hotel" className={`block px-3 py-2 text-base font-medium ${currentPath === '/hotel' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>Hotel</Link>
-                <Link to="/restaurant" className={`block px-3 py-2 text-base font-medium ${currentPath === '/restaurant' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>Restaurant</Link>
-                <Link to="/contact" className={`block px-3 py-2 text-base font-medium ${currentPath === '/contact' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>Contact us</Link>
+                <Link to="/" className={`block px-3 py-2 text-base font-medium ${currentPath === '/' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>{t('nav.home')}</Link>
+                <Link to="/hotel" className={`block px-3 py-2 text-base font-medium ${currentPath === '/hotel' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>{t('nav.hotel')}</Link>
+                <Link to="/restaurant" className={`block px-3 py-2 text-base font-medium ${currentPath === '/restaurant' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>{t('nav.restaurant')}</Link>
+                <Link to="/contact" className={`block px-3 py-2 text-base font-medium ${currentPath === '/contact' ? 'text-purple-600' : 'text-gray-800'} hover:text-purple-600`}>{t('nav.contact')}</Link>
               </div>
               <div className="px-4 py-3 border-t border-gray-200">
-                <select className="w-full bg-transparent border border-gray-300 rounded-md text-sm px-2 py-1">
-                  <option>English</option>
-                  <option>Deutsch</option>
-                </select>
+                <LanguageSwitcher className="w-full bg-transparent border border-gray-300 rounded-md text-sm px-2 py-1 text-gray-800" />
               </div>
             </div>
           </header>
@@ -170,7 +167,7 @@ const RoomDetailsPage = () => {
                 >
                   {/* Price and Rating */}
                   <div className="mb-6">
-                      €{room.pricePerNight} / Night
+                      €{room.pricePerNight} {t('room.perNight')}
                     
                       <span className="text-yellow-400 ml-3">★</span>
                       <span className="text-lg">({room.ratingSuggestion || '4.8'})</span>
@@ -180,14 +177,20 @@ const RoomDetailsPage = () => {
                   {/* Description */}
                   <div className="mb-8 space-y-4">
                     <p className="text-lg leading-relaxed">
-                      {room.description?.english || `Spacious, bright, and perfect for families or small groups, our ${room.type.toLowerCase()} offers a comfortable stay with everything you need to feel at home. It includes cozy bedrooms, a welcoming living area, a private bathroom, and large windows with a beautiful view of the surrounding area.`}
+                      {language === 'de' 
+                        ? (room.description?.german || room.description?.english || `Spacious, bright, and perfect for families or small groups, our ${room.type.toLowerCase()} offers a comfortable stay with everything you need to feel at home. It includes cozy bedrooms, a welcoming living area, a private bathroom, and large windows with a beautiful view of the surrounding area.`)
+                        : (room.description?.english || `Spacious, bright, and perfect for families or small groups, our ${room.type.toLowerCase()} offers a comfortable stay with everything you need to feel at home. It includes cozy bedrooms, a welcoming living area, a private bathroom, and large windows with a beautiful view of the surrounding area.`)
+                      }
                     </p>
                    
                   </div>
 
                   {/* Room Title */}
                   <h1 className="text-2xl sm:text-3xl font-bold mb-8 title-font">
-                    {room.title?.english || room.type}
+                    {language === 'de' 
+                      ? (room.title?.german || room.title?.english || room.type)
+                      : (room.title?.english || room.type)
+                    }
                   </h1>
 
                   {/* Book Now Button */}
@@ -197,7 +200,7 @@ const RoomDetailsPage = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Book it Now
+                    {t('room.bookItNow')}
                   </motion.button>
                 </motion.div>
 
@@ -211,7 +214,10 @@ const RoomDetailsPage = () => {
                   <div className="absolute top-30 -right-20 z-10   border-2 border-white rounded-lg shadow-2xl ">
                     <img
                       src={room.thumbnailImage?.url || room.coverImage?.url || '/placeholder-room.jpg'}
-                      alt={room.title?.english || room.type}
+                      alt={language === 'de' 
+                        ? (room.title?.german || room.title?.english || room.type)
+                        : (room.title?.english || room.type)
+                      }
                       className="w-55 h-75 object-cover rounded-lg shadow-2xl"
                       onError={(e) => {
                         e.target.src = '/placeholder-room.jpg';
@@ -235,10 +241,10 @@ const RoomDetailsPage = () => {
           className="text-start mb-12"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 title-font">
-            A Glimpse Into Your Stay
+            {t('room.glimpseIntoStay')}
           </h2>
           <p className='text-l text-gray-400 '>
-            Take a closer look at our rooms, restaurant, and the peaceful charm of Valley Rose.
+            {t('room.roomGalleryDescription')}
           </p>
         </motion.div>
 
@@ -256,7 +262,10 @@ const RoomDetailsPage = () => {
               >
                 <img
                   src={image.url}
-                  alt={`${room.title?.english || room.type} - Image ${index + 1}`}
+                  alt={`${language === 'de' 
+                    ? (room.title?.german || room.title?.english || room.type)
+                    : (room.title?.english || room.type)
+                  } - ${t('room.image')} ${index + 1}`}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
                     e.target.src = '/placeholder-room.jpg';
@@ -277,7 +286,10 @@ const RoomDetailsPage = () => {
               >
                 <img
                   src="/placeholder-room.jpg"
-                  alt={`${room.title?.english || room.type} - Image ${index + 1}`}
+                  alt={`${language === 'de' 
+                    ? (room.title?.german || room.title?.english || room.type)
+                    : (room.title?.english || room.type)
+                  } - ${t('room.image')} ${index + 1}`}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -300,7 +312,7 @@ const RoomDetailsPage = () => {
             <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Hotel Rooms
+            {t('room.backToHotelRooms')}
           </Link>
         </motion.div>
       </div>

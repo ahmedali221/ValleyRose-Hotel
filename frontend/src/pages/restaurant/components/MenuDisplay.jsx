@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { restaurantMainMenuService } from '../../../services';
+import { useTranslation } from '../../../locales';
 
 const MenuDisplay = () => {
   const [menuPdfUrl, setMenuPdfUrl] = useState(null);
@@ -8,6 +9,7 @@ const MenuDisplay = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(5); // Will be updated from API
   const [imageLoading, setImageLoading] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchMainMenu = async () => {
@@ -63,7 +65,7 @@ const MenuDisplay = () => {
   const handleImageError = (e) => {
     setImageLoading(false);
     console.warn('PDF to image conversion failed');
-    setError('Unable to display PDF page. Please use the download button to view the full menu.');
+    setError(t('restaurant.checkBackLater'));
   };
 
   // Generate the correct Cloudinary transformation URL for PDF page as image
@@ -103,7 +105,7 @@ const MenuDisplay = () => {
                   d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                 />
               </svg>
-              Download Menu
+              {t('restaurant.downloadMenu')}
             </a>
           )}
 
@@ -137,7 +139,7 @@ const MenuDisplay = () => {
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <p className="text-red-600 text-lg font-semibold mb-2">Failed to load menu</p>
+            <p className="text-red-600 text-lg font-semibold mb-2">{t('restaurant.failedToLoadMenu')}</p>
             <p className="text-red-500 text-sm">{error}</p>
           </div>
         )}
@@ -231,7 +233,7 @@ const MenuDisplay = () => {
               </div>
               {/* Page Counter */}
               <div className="text-center mt-3 text-sm text-gray-600 font-medium">
-                Page {currentPage} of {totalPages}
+                {t('restaurant.pageOf')} {currentPage} {t('restaurant.of')} {totalPages}
               </div>
             </div>
           </div>
@@ -254,8 +256,8 @@ const MenuDisplay = () => {
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <p className="text-gray-500 text-lg">No menu available at the moment.</p>
-            <p className="text-gray-400 text-sm mt-2">Please check back later or contact us for menu details.</p>
+            <p className="text-gray-500 text-lg">{t('restaurant.noMenuAvailable')}</p>
+            <p className="text-gray-400 text-sm mt-2">{t('restaurant.checkBackLater')}</p>
           </div>
         )}
       </div>

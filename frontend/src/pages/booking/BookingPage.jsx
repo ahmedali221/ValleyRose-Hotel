@@ -8,6 +8,7 @@ import Payment from './components/Payment';
 import FinalReview from './components/FinalReview';
 import HeaderHero from '../../components/HeaderHero';
 import bookingBanner from '../../assets/banners/booking.jpg';
+import { useTranslation } from '../../locales';
 
 const BookingPage = () => {
   const [searchParams] = useSearchParams();
@@ -31,6 +32,7 @@ const BookingPage = () => {
     reservationId: null,
     reservationNumber: ''
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Check if room type is pre-selected from URL
@@ -42,11 +44,11 @@ const BookingPage = () => {
   }, [searchParams]);
 
   const steps = [
-    { id: 1, name: 'Room Details', component: RoomDetails },
-    { id: 2, name: 'Personal Info', component: PersonalInfo },
-    { id: 3, name: 'Confirmation', component: Confirmation },
-    { id: 4, name: 'Payment', component: Payment },
-    { id: 5, name: 'Final Review', component: FinalReview }
+    { id: 1, name: t('booking.steps.roomDetails'), component: RoomDetails },
+    { id: 2, name: t('booking.steps.personalInfo'), component: PersonalInfo },
+    { id: 3, name: t('booking.steps.confirmation'), component: Confirmation },
+    { id: 4, name: t('booking.steps.payment'), component: Payment },
+    { id: 5, name: t('booking.steps.finalReview'), component: FinalReview }
   ];
 
   const nextStep = () => {
@@ -70,10 +72,10 @@ const BookingPage = () => {
         showButtons={false}
         customTitle={
           <>
-            <span className="text-white">Book Your Stay Now</span>
+            <span className="text-white">{t('hero.bookYourStay')}</span>
           </>
         }
-        customSubtitle="At Valley Rose"
+        customSubtitle={t('hero.atValleyRose')}
       />
 
       {/* Main Content */}
@@ -90,10 +92,10 @@ const BookingPage = () => {
                 transition={{ duration: 0.8 }}
               >
                 <h2 className="text-2xl sm:text-3xl title-font text-gray-800 mb-4">
-                  Online Room Reservations
+                  {t('booking.onlineReservations')}
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  To book your stay at Valley Rose Hotel, simply choose your preferred check-in and check-out dates to find available rooms. Then, fill in your personal details and complete the secure payment process. Once your booking is confirmed, you will receive a confirmation email with all the necessary details, including your booking code. If you have any questions or face any issues, feel free to contact us at +43 1 204 38 88, we're always happy to help.
+                  {t('booking.onlineDescription')}
                 </p>
               </motion.div>
 
@@ -104,10 +106,10 @@ const BookingPage = () => {
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
                 <h2 className="text-2xl sm:text-3xl title-font text-gray-800 mb-4">
-                  Special Reservations
+                  {t('booking.specialReservations')}
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  For bookings of more than 6 guests and special events, please contact us via email.
+                  {t('booking.specialDescription')}
                 </p>
                 
                 <div className="space-y-3">

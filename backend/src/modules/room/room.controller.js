@@ -88,7 +88,7 @@ async function createRoom(req, res) {
 
 async function listRooms(req, res) {
   try {
-    const { type, page = 1, limit = 10 } = req.query;
+    const { type, page = 1, limit = 10, language = 'en' } = req.query;
     const filter = type ? { type } : {};
     
     const skip = (page - 1) * limit;
@@ -99,9 +99,16 @@ async function listRooms(req, res) {
     
     const total = await Room.countDocuments(filter);
     
+    // Transform items to include localized content
+    const localizedItems = items.map(room => ({
+      ...room.toObject(),
+      localizedTitle: room.title?.[language] || room.title?.english || room.type,
+      localizedDescription: room.description?.[language] || room.description?.english || ''
+    }));
+    
     res.json({
       success: true,
-      data: items,
+      data: localizedItems,
       pagination: {
         current: parseInt(page),
         total: Math.ceil(total / limit),
@@ -120,6 +127,7 @@ async function listRooms(req, res) {
 
 async function getRoom(req, res) {
   try {
+    const { language = 'en' } = req.query;
     const item = await Room.findById(req.params.id);
     if (!item) {
       return res.status(404).json({ 
@@ -127,9 +135,17 @@ async function getRoom(req, res) {
         message: 'Room not found' 
       });
     }
+    
+    // Transform item to include localized content
+    const localizedItem = {
+      ...item.toObject(),
+      localizedTitle: item.title?.[language] || item.title?.english || item.type,
+      localizedDescription: item.description?.[language] || item.description?.english || ''
+    };
+    
     res.json({
       success: true,
-      data: item
+      data: localizedItem
     });
   } catch (error) {
     res.status(500).json({
@@ -141,14 +157,35 @@ async function getRoom(req, res) {
 }
 
 async function updateRoom(req, res) {
+  console.log('Received update request body:', req.body);
+  console.log('Received update files:', req.files);
+  
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  if (!errors.isEmpty()) {
+    console.log('Update validation errors:', errors.array());
+    return res.status(400).json({ 
+      success: false,
+      message: 'Validation failed',
+      errors: errors.array() 
+    });
+  }
   
   try {
-    const changes = { ...req.body };
+    const gallery = (req.files?.serviceGallery || []).map(img);
+    
+    // Parse JSON strings for nested objects (same as createRoom)
+    const changes = {
+      ...req.body,
+      title: typeof req.body.title === 'string' ? JSON.parse(req.body.title) : req.body.title,
+      description: typeof req.body.description === 'string' ? JSON.parse(req.body.description) : req.body.description,
+    };
+    
+    // Add image changes if provided
     if (req.files?.coverImage?.[0]) changes.coverImage = img(req.files.coverImage[0]);
     if (req.files?.thumbnailImage?.[0]) changes.thumbnailImage = img(req.files.thumbnailImage[0]);
-    if (req.files?.serviceGallery?.length) changes.serviceGallery = req.files.serviceGallery.map(img);
+    if (req.files?.serviceGallery?.length) changes.serviceGallery = gallery;
+    
+    console.log('Parsed update changes:', changes);
     
     const item = await Room.findByIdAndUpdate(req.params.id, changes, { new: true });
     if (!item) {
@@ -164,6 +201,7 @@ async function updateRoom(req, res) {
       data: item
     });
   } catch (error) {
+    console.error('Room update error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to update room',

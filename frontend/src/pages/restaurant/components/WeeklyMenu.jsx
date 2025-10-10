@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { weeklyMenuService } from '../../../services';
 import restaurantImage from '../../../assets/restaurant/restaurant.png';
+import { useTranslation } from '../../../locales';
 
 const WeeklyMenu = () => {
   const [weeklyMenuItems, setWeeklyMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   // Calculate current week dates dynamically
   const getCurrentWeekDates = () => {
@@ -100,10 +102,7 @@ const WeeklyMenu = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <span className="text-white">New Taste</span>{' '}
-              <span className="valley-rose-text">Every</span>
-              <br />
-              <span className="valley-rose-text">Week.</span>
+              <span className="text-white">{t('restaurant.newTasteEveryWeek')}</span>
             </motion.h2>
             <motion.p 
               className="text-gray-300 leading-relaxed text-sm lg:text-base"
@@ -112,9 +111,7 @@ const WeeklyMenu = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Our rotating menu features homemade specials, seasonal ingredients, and classic 
-              favorites, all designed to reflect the heart of Austrian home cooking. You&apos;re 
-              invited to relax, enjoy, and let us take care of everything.
+              {t('restaurant.weeklyMenuDescription')}
             </motion.p>
           </motion.div>
 
@@ -134,8 +131,7 @@ const WeeklyMenu = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <span className="text-white">Weekly</span>{' '}
-              <span className="valley-rose-text">Menu</span>
+              <span className="text-white">{t('restaurant.weeklyMenu')}</span>
             </motion.h2>
 
             {/* Loading State */}
@@ -178,7 +174,7 @@ const WeeklyMenu = () => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <p className="text-gray-400">No weekly menu available at the moment.</p>
+                    <p className="text-gray-400">{t('restaurant.noWeeklyMenu')}</p>
                   </motion.div>
                 ) : (
                   weeklyMenuItems.map((dayMenu, index) => (
@@ -203,7 +199,7 @@ const WeeklyMenu = () => {
                       {/* Meals */}
                       {dayMenu.meals && dayMenu.meals.length > 0 && (
                         <div className="space-y-2 lg:space-y-3 mb-3">
-                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">Meals</h5>
+                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">{t('restaurant.meals')}</h5>
                           {dayMenu.meals.map((meal, mealIndex) => (
                             <div key={meal._id || mealIndex}>
                               <h4 className="text-white font-semibold text-sm lg:text-base mb-1">
@@ -222,7 +218,7 @@ const WeeklyMenu = () => {
                       {/* Soups */}
                       {dayMenu.soups && dayMenu.soups.length > 0 && (
                         <div className="space-y-2 lg:space-y-3">
-                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">Soups</h5>
+                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">{t('restaurant.soups')}</h5>
                           {dayMenu.soups.map((soup, soupIndex) => (
                             <div key={soup._id || soupIndex}>
                               <h4 className="text-white font-semibold text-sm lg:text-base mb-1">
@@ -241,7 +237,7 @@ const WeeklyMenu = () => {
                       {/* Empty state for day */}
                       {(!dayMenu.meals || dayMenu.meals.length === 0) && 
                        (!dayMenu.soups || dayMenu.soups.length === 0) && (
-                        <p className="text-gray-500 text-sm italic">No items for this day yet.</p>
+                        <p className="text-gray-500 text-sm italic">{t('restaurant.noItemsForDay')}</p>
                       )}
                     </motion.div>
                   ))

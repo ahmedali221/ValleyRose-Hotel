@@ -9,6 +9,15 @@ const HomePage = () => {
   const [recentBookings, setRecentBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Pagination state for recent bookings
+  const [bookingsPagination, setBookingsPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 6
+  });
+  const [bookingsLoading, setBookingsLoading] = useState(false);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -19,11 +28,17 @@ const HomePage = () => {
         
         const [analyticsData, bookingsData] = await Promise.all([
           homeService.getDashboardStats(),
-          homeService.getRecentBookings(6)
+          homeService.getRecentBookings(bookingsPagination.itemsPerPage, 1)
         ]);
         
         setAnalytics(analyticsData);
-        setRecentBookings(bookingsData);
+        setRecentBookings(bookingsData.data || []);
+        setBookingsPagination(prev => ({
+          ...prev,
+          currentPage: bookingsData.pagination?.current || 1,
+          totalPages: bookingsData.pagination?.total || 1,
+          totalItems: bookingsData.pagination?.totalItems || 0
+        }));
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
         setError('Failed to load dashboard data. Please try again.');
@@ -34,6 +49,34 @@ const HomePage = () => {
 
     fetchData();
   }, []);
+
+  // Fetch bookings for specific page
+  const fetchBookingsPage = async (page) => {
+    try {
+      setBookingsLoading(true);
+      const bookingsData = await homeService.getRecentBookings(bookingsPagination.itemsPerPage, page);
+      
+      setRecentBookings(bookingsData.data || []);
+      setBookingsPagination(prev => ({
+        ...prev,
+        currentPage: bookingsData.pagination?.current || page,
+        totalPages: bookingsData.pagination?.total || 1,
+        totalItems: bookingsData.pagination?.totalItems || 0
+      }));
+    } catch (err) {
+      console.error('Error fetching bookings page:', err);
+      setError('Failed to load bookings. Please try again.');
+    } finally {
+      setBookingsLoading(false);
+    }
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= bookingsPagination.totalPages) {
+      fetchBookingsPage(newPage);
+    }
+  };
 
   // Generate insights from analytics data
   const insights = analytics ? [
@@ -177,89 +220,171 @@ const HomePage = () => {
                 <h2 className="text-2xl font-bold text-gray-900">Recent Bookings</h2>
               </div>
               
-              {formattedBookings.length === 0 ? (
+              {formattedBookings.length === 0 && !bookingsLoading ? (
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
                   <div className="text-4xl mb-4">📋</div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Bookings</h3>
                   <p className="text-gray-600">There are no recent bookings to display at the moment.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                  {formattedBookings.map((booking, index) => (
-                    <div key={booking.reservationNumber || index} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 relative">
-                      <span 
-                        className="px-3 py-1 text-white text-xs font-medium absolute top-0 right-0"
-                        style={{
-                          backgroundColor: booking.statusColor === 'bg-blue-500' ? '#3B82F6' : 
-                                          booking.statusColor === 'bg-green-500' ? '#28B800' : 
-                                          booking.statusColor === 'bg-red-500' ? '#ED0000' : '#6B7280',
-                          borderRadius: '0 8px 0 8px',
-                          zIndex: 10
-                        }}
-                      >
-                        {booking.status}
-                      </span>
-                      
-                      {/* Customer Name */}
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">{booking.guestName}</h3>
-                      </div>
-                      
-                      {/* Contact Information */}
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center space-x-5">
-                          <div className="flex items-center text-sm text-gray-600 space-x-2">
-                            <Mail01Icon style={{color: 'var(--primary-color)', marginRight: '0.5rem'}} />
-                            {booking.email}
+                <>
+                  {/* Bookings Loading State */}
+                  {bookingsLoading && (
+                    <div className="flex justify-center items-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{borderColor: 'var(--primary-color)'}}></div>
+                      <span className="ml-3 text-gray-600">Loading bookings...</span>
+                    </div>
+                  )}
+                  
+                  {/* Bookings Grid */}
+                  {!bookingsLoading && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                      {formattedBookings.map((booking, index) => (
+                        <div key={booking.reservationNumber || index} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 relative">
+                          <span 
+                            className="px-3 py-1 text-white text-xs font-medium absolute top-0 right-0"
+                            style={{
+                              backgroundColor: booking.statusColor === 'bg-blue-500' ? '#3B82F6' : 
+                                              booking.statusColor === 'bg-green-500' ? '#28B800' : 
+                                              booking.statusColor === 'bg-red-500' ? '#ED0000' : '#6B7280',
+                              borderRadius: '0 8px 0 8px',
+                              zIndex: 10
+                            }}
+                          >
+                            {booking.status}
+                          </span>
+                          
+                          {/* Customer Name */}
+                          <div className="mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900">{booking.guestName}</h3>
                           </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <CallIcon style={{color: 'var(--primary-color)', marginRight: '0.5rem'}} />
-                            {booking.phone}
+                          
+                          {/* Contact Information */}
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center space-x-5">
+                              <div className="flex items-center text-sm text-gray-600 space-x-2">
+                                <Mail01Icon style={{color: 'var(--primary-color)', marginRight: '0.5rem'}} />
+                                {booking.email}
+                              </div>
+                              <div className="flex items-center text-sm text-gray-600">
+                                <CallIcon style={{color: 'var(--primary-color)', marginRight: '0.5rem'}} />
+                                {booking.phone}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Booking Details */}
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center space-x-5">
+                              <div className="flex items-center text-sm text-gray-600">
+                                <MeetingRoomIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                                {booking.roomType}
+                              </div>
+                              <div className="flex items-center text-sm text-gray-600">
+                                <UserIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                                {booking.guests}
+                              </div>
+                              <div className="flex items-center text-sm text-gray-600">
+                                <EuroIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                                {booking.price}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Reservation Number */}
+                          <div className="mb-4">
+                            <div className="text-sm text-gray-500">
+                              {booking.reservationNumber}
+                            </div>
+                          </div>
+                          
+                          {/* Check-in/Check-out Dates */}
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-5">
+                              <div className="flex items-center text-sm text-gray-600">
+                                <CalendarCheckIn01Icon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                                Check-In: {booking.checkIn}
+                              </div>
+                              <div className="flex items-center text-sm text-gray-600">
+                                <CalendarCheckOut01Icon className="mr-2" style={{color: 'var(--primary-color)'}} />
+                                Check-Out: {booking.checkOut}
+                              </div>
+                            </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Pagination Controls */}
+                  {!bookingsLoading && bookingsPagination.totalPages > 1 && (
+                    <div className="mt-8 flex items-center justify-between">
+                      <div className="text-sm text-gray-700">
+                        Showing {((bookingsPagination.currentPage - 1) * bookingsPagination.itemsPerPage) + 1} to{' '}
+                        {Math.min(bookingsPagination.currentPage * bookingsPagination.itemsPerPage, bookingsPagination.totalItems)} of{' '}
+                        {bookingsPagination.totalItems} bookings
                       </div>
                       
-                      {/* Booking Details */}
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center space-x-5">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <MeetingRoomIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
-                            {booking.roomType}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <UserIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
-                            {booking.guests}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <EuroIcon className="mr-2" style={{color: 'var(--primary-color)'}} />
-                            {booking.price}
-                          </div>
+                      <div className="flex items-center space-x-2">
+                        {/* Previous Button */}
+                        <button
+                          onClick={() => handlePageChange(bookingsPagination.currentPage - 1)}
+                          disabled={bookingsPagination.currentPage === 1}
+                          className={`px-3 py-2 text-sm font-medium rounded-md ${
+                            bookingsPagination.currentPage === 1
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          Previous
+                        </button>
+                        
+                        {/* Page Numbers */}
+                        <div className="flex items-center space-x-1">
+                          {Array.from({ length: Math.min(5, bookingsPagination.totalPages) }, (_, i) => {
+                            let pageNum;
+                            if (bookingsPagination.totalPages <= 5) {
+                              pageNum = i + 1;
+                            } else if (bookingsPagination.currentPage <= 3) {
+                              pageNum = i + 1;
+                            } else if (bookingsPagination.currentPage >= bookingsPagination.totalPages - 2) {
+                              pageNum = bookingsPagination.totalPages - 4 + i;
+                            } else {
+                              pageNum = bookingsPagination.currentPage - 2 + i;
+                            }
+                            
+                            return (
+                              <button
+                                key={pageNum}
+                                onClick={() => handlePageChange(pageNum)}
+                                className={`px-3 py-2 text-sm font-medium rounded-md ${
+                                  pageNum === bookingsPagination.currentPage
+                                    ? 'bg-[var(--primary-color)] text-white'
+                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          })}
                         </div>
-                      </div>
-                      
-                      {/* Reservation Number */}
-                      <div className="mb-4">
-                        <div className="text-sm text-gray-500">
-                          {booking.reservationNumber}
-                        </div>
-                      </div>
-                      
-                      {/* Check-in/Check-out Dates */}
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-5">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <CalendarCheckIn01Icon className="mr-2" style={{color: 'var(--primary-color)'}} />
-                            Check-In: {booking.checkIn}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <CalendarCheckOut01Icon className="mr-2" style={{color: 'var(--primary-color)'}} />
-                            Check-Out: {booking.checkOut}
-                          </div>
-                        </div>
+                        
+                        {/* Next Button */}
+                        <button
+                          onClick={() => handlePageChange(bookingsPagination.currentPage + 1)}
+                          disabled={bookingsPagination.currentPage === bookingsPagination.totalPages}
+                          className={`px-3 py-2 text-sm font-medium rounded-md ${
+                            bookingsPagination.currentPage === bookingsPagination.totalPages
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          Next
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </div>
           </>

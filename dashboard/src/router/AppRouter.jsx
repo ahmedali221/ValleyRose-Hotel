@@ -7,6 +7,7 @@ import Layout from '../components/Layout/Layout';
 import HomePage from '../pages/Home/HomePage';
 import HotelPage from '../pages/Hotel/HotelPage';
 import RoomPreview from '../pages/Hotel/components/RoomPreview';
+import EditRoom from '../pages/Hotel/components/EditRoom';
 import RestaurantPage from '../pages/Restaurant/RestaurantPage';
 import OfflineReservationPage from '../pages/OfflineReservation/OfflineReservationPage';
 import ManageBookingsPage from '../pages/ManageBookings/ManageBookingsPage';
@@ -34,8 +35,16 @@ const router = createBrowserRouter([
         element: <HotelPage />,
       },
       {
+        path: 'hotel/preview/:id',
+        element: <RoomPreview />,
+      },
+      {
         path: 'hotel/rooms/:id',
         element: <RoomPreview />,
+      },
+      {
+        path: 'hotel/edit/:id',
+        element: <EditRoom />,
       },
       {
         path: 'restaurant',

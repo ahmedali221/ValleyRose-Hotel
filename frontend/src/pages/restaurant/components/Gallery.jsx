@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { restaurantGalleryService } from '../../../services';
+import { useTranslation } from '../../../locales';
 
 const Gallery = () => {
   const [galleryImages, setGalleryImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchGalleryImages = async () => {
@@ -43,8 +45,7 @@ const Gallery = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="text-gray-800">A Look at What&apos;s on the</span>{' '}
-            <span className="valley-rose-text">Table</span>
+            <span className="text-gray-800">{t('restaurant.lookAtTable')}</span>
           </motion.h2>
           <motion.p 
             className="text-gray-500 text-sm"
@@ -53,7 +54,7 @@ const Gallery = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Get a taste of our kitchen with real photos of our weekly dishes, always fresh, always homemade.
+            {t('restaurant.galleryDescription')}
           </motion.p>
         </motion.div>
 
@@ -77,7 +78,7 @@ const Gallery = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-red-600 mb-2">Failed to load gallery images</p>
+            <p className="text-red-600 mb-2">{t('restaurant.failedToLoadGallery')}</p>
             <p className="text-red-500 text-sm">{error}</p>
           </motion.div>
         )}
@@ -92,7 +93,7 @@ const Gallery = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <p className="text-gray-500">No gallery images available at the moment.</p>
+                <p className="text-gray-500">{t('restaurant.noGalleryImages')}</p>
               </motion.div>
             ) : (
               galleryImages.map((item, index) => (
@@ -112,7 +113,7 @@ const Gallery = () => {
                   {/* Image */}
                   <motion.img
                     src={item.image}
-                    alt={item.caption || 'Restaurant dish'}
+                    alt={item.caption || t('restaurant.restaurantDish')}
                     className="w-full h-full object-cover"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}

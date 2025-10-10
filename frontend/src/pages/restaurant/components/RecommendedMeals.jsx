@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { mealService } from '../../../services';
+import { useTranslation } from '../../../locales';
 
 const RecommendedMeals = () => {
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchRecommendedMeals = async () => {
@@ -43,8 +45,7 @@ const RecommendedMeals = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="text-gray-800">Recommended</span>{' '}
-            <span className="valley-rose-text">Meals</span>
+            <span className="text-gray-800">{t('restaurant.recommendedMeals')}</span>
           </motion.h2>
           <motion.p 
             className="text-gray-500 text-sm"
@@ -77,7 +78,7 @@ const RecommendedMeals = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-red-600 mb-2">Failed to load recommended meals</p>
+            <p className="text-red-600 mb-2">{t('restaurant.failedToLoadMeals')}</p>
             <p className="text-red-500 text-sm">{error}</p>
           </motion.div>
         )}
@@ -92,7 +93,7 @@ const RecommendedMeals = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <p className="text-gray-500">No recommended meals available at the moment.</p>
+                <p className="text-gray-500">{t('restaurant.noRecommendedMeals')}</p>
               </motion.div>
             ) : (
               meals.map((meal, index) => (
