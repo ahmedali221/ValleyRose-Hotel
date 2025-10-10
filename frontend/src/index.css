@@ -11,12 +11,18 @@
 
 /* Global roses background for all pages */
 body {
-  background-image: url('./assets/banners/roses.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-blend-mode: overlay;
+  /* Initially no background image, will be added after 1 second */
+  background-image: none;
+}
+
+/* Add background image after 1 second delay */
+body.loaded {
+  background-image: url('./assets/banners/roses.png');
 }
 
 /* Main App Theme */

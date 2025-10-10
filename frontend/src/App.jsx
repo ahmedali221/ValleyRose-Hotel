@@ -1,5 +1,6 @@
 import './App.css'
 import { Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import HomePage from './pages/home/home'
 import ContactUs from './pages/contactUs/contactUs'
 import Hotel from './pages/hotel/hotel'
@@ -11,6 +12,14 @@ import RoomDetailsPage from './pages/room/RoomDetailsPage'
 import { LanguageProvider } from './context/LanguageContext'
 
 function App() {
+  // Add background image after 1 second delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      document.body.classList.add('loaded')
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
   return (
     <LanguageProvider>
       <div>
