@@ -16,11 +16,9 @@ async function connect() {
   
   try {
     await mongoose.connect(mongoUri, { 
-      dbName: undefined,
       serverSelectionTimeoutMS: 5000, // 5 second timeout
       socketTimeoutMS: 45000, // 45 second socket timeout
-      bufferCommands: false, // Disable mongoose buffering
-      bufferMaxEntries: 0 // Disable mongoose buffering
+      bufferCommands: false // Disable mongoose buffering
     });
     console.log('MongoDB connected successfully');
   } catch (error) {
