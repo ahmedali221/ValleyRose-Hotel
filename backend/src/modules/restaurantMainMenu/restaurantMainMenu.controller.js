@@ -1,7 +1,14 @@
 const RestaurantMainMenu = require('./restaurantMainMenu.model');
-const pdfParse = require('pdf-parse');
 const https = require('https');
 const http = require('http');
+
+// Conditionally load pdf-parse (not available in serverless environments)
+let pdfParse = null;
+try {
+  pdfParse = require('pdf-parse');
+} catch (error) {
+  console.warn('pdf-parse not available in this environment:', error.message);
+}
 
 // Function to count PDF pages from URL using multiple methods
 async function countPdfPages(pdfUrl) {
@@ -40,6 +47,11 @@ async function countPdfPages(pdfUrl) {
 
 // Method 1: Using pdf-parse
 async function countPdfPagesWithPdfParse(pdfUrl) {
+  if (!pdfParse) {
+    console.log('pdf-parse not available, skipping this method');
+    return 0;
+  }
+  
   return new Promise((resolve, reject) => {
     const protocol = pdfUrl.startsWith('https') ? https : http;
     
@@ -110,6 +122,11 @@ async function testCloudinaryPage(url) {
 
 // Method 3: Estimate pages based on content analysis
 async function estimatePdfPages(pdfUrl) {
+  if (!pdfParse) {
+    console.log('pdf-parse not available for content analysis, skipping this method');
+    return 0;
+  }
+  
   return new Promise((resolve) => {
     const protocol = pdfUrl.startsWith('https') ? https : http;
     
