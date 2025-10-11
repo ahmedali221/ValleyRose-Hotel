@@ -26,15 +26,19 @@ export const AuthProvider = ({ children }) => {
           console.log('✅ AuthContext: Found existing authenticated user:', currentUser.email);
           setUser(currentUser);
         } else {
-          console.log('⚠️ AuthContext: Authentication check failed, clearing data');
-          authService.logout();
+          console.log('⚠️ AuthContext: Authentication check failed, clearing data silently');
+          // Clear data without redirecting
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
         }
       } else {
         console.log('ℹ️ AuthContext: No existing authentication found');
       }
     } catch (error) {
       console.error('❌ AuthContext: Error checking authentication:', error);
-      authService.logout();
+      // Clear data without redirecting on startup errors
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
     } finally {
       setLoading(false);
     }

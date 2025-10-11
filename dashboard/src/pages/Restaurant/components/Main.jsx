@@ -18,18 +18,43 @@ const Main = () => {
       setIsLoadingMenu(true);
       setGalleryError('');
       setMenuError('');
+      
+      // Retry function for gallery images
+      const fetchGalleryWithRetry = async (retries = 2) => {
+        for (let i = 0; i <= retries; i++) {
+          try {
+            const images = await restaurantService.getGalleryImages();
+            return images;
+          } catch (err) {
+            console.warn(`Gallery fetch attempt ${i + 1} failed:`, err.message);
+            if (i === retries) {
+              setGalleryError(err.message || 'Failed to load gallery');
+              return []; // Return empty array on final failure
+            }
+            // Wait before retry
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+        return [];
+      };
+      
       try {
         const [images, menu] = await Promise.all([
-          restaurantService.getGalleryImages(),
+          fetchGalleryWithRetry(),
           restaurantService.getMainMenu().catch(() => null)
         ]);
-        setGalleryImages(images.map((it) => ({
-          id: it._id,
-          url: it.image,
-          name: it.caption || 'Image'
-        })));
+        
+        // Only set gallery images if we got valid data
+        if (Array.isArray(images)) {
+          setGalleryImages(images.map((it) => ({
+            id: it._id,
+            url: it.image,
+            name: it.caption || 'Image'
+          })));
+        }
         setMenuDoc(menu);
       } catch (err) {
+        console.error('Unexpected error loading data:', err);
         setGalleryError(err.message || 'Failed to load gallery');
       } finally {
         setIsLoadingGallery(false);
@@ -188,7 +213,52 @@ const Main = () => {
             )}
             {menuDoc && !isLoadingMenu && (
               <div className="flex items-center space-x-3">
-                <a href={menuDoc.pdfFile} target="_blank" rel="noreferrer" className="hover:underline text-sm" style={{color: 'var(--primary-color)'}}>View current menu</a>
+                <button 
+                  onClick={() => {
+                    // Try multiple methods to view PDF
+                    const pdfUrl = menuDoc.pdfFile;
+                    
+                    // Method 1: Try Google Docs viewer first
+                    const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+                    const newWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                    
+                    newWindow.document.write(`
+                      <html>
+                        <head>
+                          <title>Restaurant Menu</title>
+                          <style>
+                            body { margin: 0; padding: 0; background: #f5f5f5; }
+                            .container { width: 100%; height: 100vh; display: flex; flex-direction: column; }
+                            .header { padding: 10px; background: white; border-bottom: 1px solid #ddd; }
+                            .viewer { flex: 1; }
+                            iframe { width: 100%; height: 100%; border: none; }
+                            .fallback { padding: 20px; text-align: center; }
+                            .fallback a { color: #007bff; text-decoration: none; }
+                          </style>
+                        </head>
+                        <body>
+                          <div class="container">
+                            <div class="header">
+                              <h3>Restaurant Menu</h3>
+                              <p>If the PDF doesn't load, <a href="${pdfUrl}" target="_blank">click here to open directly</a></p>
+                            </div>
+                            <div class="viewer">
+                              <iframe src="${googleViewerUrl}" onerror="this.style.display='none'; document.querySelector('.fallback').style.display='block';"></iframe>
+                              <div class="fallback" style="display: none;">
+                                <p>PDF viewer not available. <a href="${pdfUrl}" target="_blank">Click here to download/view the PDF</a></p>
+                              </div>
+                            </div>
+                          </div>
+                        </body>
+                      </html>
+                    `);
+                    newWindow.document.close();
+                  }}
+                  className="hover:underline text-sm cursor-pointer" 
+                  style={{color: 'var(--primary-color)', background: 'none', border: 'none', padding: 0}}
+                >
+                  View current menu
+                </button>
                 <button onClick={handleMenuDelete} className="text-red-600 hover:text-red-800 text-sm">Delete</button>
               </div>
             )}

@@ -8,6 +8,20 @@ export const restaurantService = {
       const response = await api.get('/restaurant-gallery');
       return response.data;
     } catch (error) {
+      // Handle 404 as "no gallery images" rather than an error
+      if (error.response?.status === 404) {
+        console.log('ℹ️ No restaurant gallery images found');
+        return []; // Return empty array instead of throwing error
+      }
+      
+      // Handle network errors or server errors
+      if (!error.response) {
+        console.warn('🌐 Network error fetching gallery images:', error.message);
+        throw new Error('Network error. Please check your connection.');
+      }
+      
+      // Handle other HTTP errors
+      console.error('❌ Gallery fetch error:', error.response?.status, error.response?.data?.message);
       throw new Error(error.response?.data?.message || 'Failed to fetch gallery images');
     }
   },
@@ -63,6 +77,11 @@ export const restaurantService = {
       const response = await api.get('/restaurant-main-menu');
       return response.data;
     } catch (error) {
+      // Handle 404 as "no menu available" rather than an error
+      if (error.response?.status === 404) {
+        console.log('ℹ️ No restaurant main menu found');
+        return null; // Return null instead of throwing error
+      }
       throw new Error(error.response?.data?.message || 'Failed to fetch main menu');
     }
   },
@@ -83,6 +102,11 @@ export const restaurantService = {
       const response = await api.get('/weekly-menu');
       return response.data;
     } catch (error) {
+      // Handle 404 as "no weekly menu" rather than an error
+      if (error.response?.status === 404) {
+        console.log('ℹ️ No weekly menu found');
+        return null; // Return null instead of throwing error
+      }
       throw new Error(error.response?.data?.message || 'Failed to fetch weekly menu');
     }
   },

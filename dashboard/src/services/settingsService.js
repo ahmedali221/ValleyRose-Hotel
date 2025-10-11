@@ -1,4 +1,4 @@
-import axiosConfig from '../api/axiosConfig';
+import api from '../api/axiosConfig';
 
 // Settings service
 export const settingsService = {
@@ -6,7 +6,7 @@ export const settingsService = {
   getAdmins: async () => {
     try {
       console.log('📡 SettingsService: Fetching admins...');
-      const response = await axiosConfig.get('/auth/admins');
+      const response = await api.get('/auth/admins');
       console.log('✅ SettingsService: Admins fetched successfully');
       return response.data;
     } catch (error) {
@@ -19,7 +19,7 @@ export const settingsService = {
   createAdmin: async (adminData) => {
     try {
       console.log('📡 SettingsService: Creating admin:', adminData.name);
-      const response = await axiosConfig.post('/auth/admins', adminData);
+      const response = await api.post('/auth/admins', adminData);
       console.log('✅ SettingsService: Admin created successfully');
       return { 
         success: true, 
@@ -36,7 +36,7 @@ export const settingsService = {
   deleteAdmin: async (adminId) => {
     try {
       console.log('📡 SettingsService: Deleting admin:', adminId);
-      const response = await axiosConfig.delete(`/auth/admins/${adminId}`);
+      const response = await api.delete(`/auth/admins/${adminId}`);
       console.log('✅ SettingsService: Admin deleted successfully');
       return { 
         success: true, 
@@ -53,7 +53,7 @@ export const settingsService = {
   changePassword: async (passwordData) => {
     try {
       console.log('📡 SettingsService: Changing password...');
-      const response = await axiosConfig.put('/auth/change-password', passwordData);
+      const response = await api.put('/auth/change-password', passwordData);
       console.log('✅ SettingsService: Password changed successfully');
       return { 
         success: true, 
@@ -69,7 +69,7 @@ export const settingsService = {
   // General settings
   getSettings: async () => {
     try {
-      const response = await axiosConfig.get('/settings');
+      const response = await api.get('/settings');
       return response.data;
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -79,7 +79,7 @@ export const settingsService = {
   
   updateSettings: async (settingsData) => {
     try {
-      const response = await axiosConfig.put('/settings', settingsData);
+      const response = await api.put('/settings', settingsData);
       return response.data;
     } catch (error) {
       console.error('Error updating settings:', error);
