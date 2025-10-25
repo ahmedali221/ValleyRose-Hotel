@@ -200,36 +200,36 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6"
+      className="space-y-4 sm:space-y-6"
     >
       {/* Availability Banner */}
       {availabilityChecked && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`p-4 rounded-lg flex items-center justify-between ${
+          className={`p-3 sm:p-4 rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 ${
             isAvailable ? 'bg-green-100 border border-green-300' : 'bg-red-100 border border-red-300'
           }`}
         >
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center"
+              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
                 backgroundColor: isAvailable ? '#28B800' : '#FF3B30', // #FF3B30 is a strong red
               }}
             >
               {isAvailable ? (
-                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               ) : (
-                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               )}
             </div>
             <span
-              className="font-medium"
+              className="font-medium text-sm sm:text-base"
               style={{
                 color: isAvailable ? '#28B800' : '#FF3B30',
               }}
@@ -238,7 +238,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
             </span>
           </div>
           {isAvailable && (
-            <span className="text-[#28B800] font-semibold">{t('booking.cost')}: {cost}€</span>
+            <span className="text-[#28B800] font-semibold text-sm sm:text-base">{t('booking.cost')}: {cost}€</span>
           )}
         </motion.div>
       )}
@@ -248,7 +248,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-red-100 border border-red-300 rounded-lg text-red-800"
+          className="p-3 sm:p-4 bg-red-100 border border-red-300 rounded-lg text-red-800 text-sm sm:text-base"
         >
           {error}
         </motion.div>
@@ -259,14 +259,14 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {t('booking.roomType')}
           {isRoomTypePreSelected && (
-            <span className="text-sm text-[#9962B9] ml-2">{t('booking.preSelected')}</span>
+            <span className="text-xs sm:text-sm text-[#9962B9] ml-1 sm:ml-2">{t('booking.preSelected')}</span>
           )}
         </label>
          <select
            value={bookingData.roomType || ''}
            onChange={(e) => setBookingData(prev => ({ ...prev, roomType: e.target.value }))}
            disabled={isRoomTypePreSelected}
-           className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white ${
+           className={`w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white text-sm sm:text-base ${
              isRoomTypePreSelected 
                ? 'bg-[#9962B9] cursor-not-allowed' 
                : 'bg-[#9962B9]'
@@ -283,7 +283,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
            ))}
          </select>
         {isRoomTypePreSelected && (
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
             {t('booking.preSelectedDescription')}
           </p>
         )}
@@ -300,12 +300,12 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
             setShowCheckInPicker(!showCheckInPicker);
             setShowCheckOutPicker(false);
           }}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+          className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-left flex items-center justify-between hover:bg-gray-50 transition-colors text-sm sm:text-base"
         >
           <span className={bookingData.checkInDate ? 'text-gray-900' : 'text-gray-500'}>
             {bookingData.checkInDate ? formatDateForDisplay(bookingData.checkInDate) : t('booking.selectCheckIn')}
           </span>
-          <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
           </svg>
         </button>
@@ -333,12 +333,12 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
             setShowCheckOutPicker(!showCheckOutPicker);
             setShowCheckInPicker(false);
           }}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+          className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-left flex items-center justify-between hover:bg-gray-50 transition-colors text-sm sm:text-base"
         >
           <span className={bookingData.checkOutDate ? 'text-gray-900' : 'text-gray-500'}>
             {bookingData.checkOutDate ? formatDateForDisplay(bookingData.checkOutDate) : t('booking.selectCheckOut')}
           </span>
-          <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
           </svg>
         </button>
@@ -356,11 +356,11 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-between pt-4">
+      <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-4">
         <button
           onClick={handleSearch}
           disabled={loading || !bookingData.roomType || !bookingData.checkInDate || !bookingData.checkOutDate}
-          className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
         >
           {loading ? t('booking.searching') : t('booking.search')}
         </button>
@@ -368,7 +368,7 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
         <button
           onClick={handleNext}
           disabled={!availabilityChecked || !isAvailable}
-          className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
         >
           {t('booking.next')}
         </button>

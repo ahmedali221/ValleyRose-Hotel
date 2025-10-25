@@ -96,6 +96,16 @@ export const restaurantService = {
     }
   },
 
+  // Update page count for main menu
+  updatePageCount: async (pageCount) => {
+    try {
+      const response = await api.put('/restaurant-main-menu/page-count', { pageCount });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to update page count');
+    }
+  },
+
   // Get weekly menu
   getWeeklyMenu: async () => {
     try {

@@ -105,7 +105,7 @@ const LoginPage = () => {
           {/* Header */}
           <div className="text-center">
             <div className="flex items-center justify-center mb-6">
-              <div className="text-4xl mr-3">🌹</div>
+             
               <div>
                 <h1 className="text-4xl font-bold text-purple-700 font-serif">Valley Rose</h1>
                 <p className="text-lg font-semibold text-purple-600">Dashboard</p>

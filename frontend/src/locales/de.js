@@ -60,6 +60,7 @@ export const de = {
     checkBackLater: 'Bitte schauen Sie später wieder vorbei oder kontaktieren Sie uns für Menüdetails.',
     pageOf: 'Seite',
     of: 'von',
+    menuPages: 'Menü-Seiten',
     // Recommended Meals
     recommendedMeals: 'Empfohlene Gerichte',
     failedToLoadMeals: 'Empfohlene Gerichte konnten nicht geladen werden',
@@ -92,7 +93,7 @@ export const de = {
     address: 'Valley Rose Hotel',
     street: 'Erzherzog Karl Straße 98a,',
     city: '1220 Wien, Österreich',
-    phone: 'Telefon : +43 1 204 38 88',
+    phone: 'Telefon : +436509106601',
     mobile: 'Mobil: +43 650 910 66 01',
     whatsapp: 'Whatsapp: +43 650 910 66 01',
     email: 'valleyrose@speed.at',
@@ -103,7 +104,7 @@ export const de = {
   // Booking
   booking: {
     onlineReservations: 'Online-Zimmerreservierungen',
-    onlineDescription: 'Um Ihren Aufenthalt im Valley Rose Hotel zu buchen, wählen Sie einfach Ihre bevorzugten An- und Abreisedaten aus, um verfügbare Zimmer zu finden. Füllen Sie dann Ihre persönlichen Daten aus und schließen Sie den sicheren Zahlungsprozess ab. Sobald Ihre Buchung bestätigt ist, erhalten Sie eine Bestätigungs-E-Mail mit allen notwendigen Details, einschließlich Ihres Buchungscodes. Wenn Sie Fragen haben oder Probleme auftreten, zögern Sie nicht, uns unter +43 1 204 38 88 zu kontaktieren, wir helfen gerne.',
+    onlineDescription: 'Um Ihren Aufenthalt im Valley Rose Hotel zu buchen, wählen Sie einfach Ihre bevorzugten An- und Abreisedaten aus, um verfügbare Zimmer zu finden. Füllen Sie dann Ihre persönlichen Daten aus und schließen Sie den sicheren Zahlungsprozess ab. Sobald Ihre Buchung bestätigt ist, erhalten Sie eine Bestätigungs-E-Mail mit allen notwendigen Details, einschließlich Ihres Buchungscodes. Wenn Sie Fragen haben oder Probleme auftreten, zögern Sie nicht, uns unter +436509106601 zu kontaktieren, wir helfen gerne.',
     specialReservations: 'Sonderreservierungen',
     specialDescription: 'Für Buchungen von mehr als 6 Gästen und besondere Veranstaltungen kontaktieren Sie uns bitte per E-Mail.',
     steps: {

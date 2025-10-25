@@ -5,6 +5,7 @@ import MenuDisplay from './components/MenuDisplay';
 import RecommendedMeals from './components/RecommendedMeals';
 import WeeklyMenu from './components/WeeklyMenu';
 import Gallery from './components/Gallery';
+import EventsSection from './components/EventsSection';
 import HeaderHero from '../../components/HeaderHero';
 import restaurantBanner from '../../assets/banners/restaurant.jpg';
 
@@ -25,20 +26,25 @@ const Restaurant = () => {
           </>
         }
       />
-      {/* Introduction Section */}
-      <Introduction />
+      <div className="space-y-0">
+        {/* Introduction Section */}
+        <Introduction />
 
-      {/* Menu Display Section */}
-      <MenuDisplay />
+        {/* Menu Display Section */}
+        <MenuDisplay />
 
-      {/* Weekly Menu Section */}
-      <WeeklyMenu />
+        {/* Weekly Menu Section */}
+        <WeeklyMenu />
 
-      {/* Recommended Meals Section */}
-      <RecommendedMeals />
+        {/* Recommended Meals Section */}
+        <RecommendedMeals />
 
-      {/* Gallery Section */}
-      <Gallery />
+        {/* Gallery Section */}
+        <Gallery />
+
+        {/* Events Section */}
+        <EventsSection />
+      </div>
     </motion.div>
   );
 };

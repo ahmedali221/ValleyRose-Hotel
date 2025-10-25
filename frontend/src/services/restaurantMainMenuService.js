@@ -14,6 +14,20 @@ export const restaurantMainMenuService = {
       throw new Error(error.response?.data?.message || 'Failed to fetch main menu');
     }
   },
+
+  /**
+   * Update the page count for the restaurant main menu
+   * @param {number} pageCount - The correct number of pages
+   * @returns {Promise<Object>} Updated menu data
+   */
+  updatePageCount: async (pageCount) => {
+    try {
+      const response = await api.put('/restaurant-main-menu/page-count', { pageCount });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to update page count');
+    }
+  },
 };
 
 

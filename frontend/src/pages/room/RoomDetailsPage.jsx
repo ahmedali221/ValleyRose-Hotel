@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { roomService } from '../../services/roomService';
-import logo from "../../assets/header/logo.png";
+import logo from "../../assets/Header/logo.png";
 import { useTranslation } from '../../locales';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 

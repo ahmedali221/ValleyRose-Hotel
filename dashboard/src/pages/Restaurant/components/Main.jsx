@@ -7,10 +7,12 @@ const Main = () => {
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [galleryError, setGalleryError] = useState('');
 
-  const [menuDoc, setMenuDoc] = useState(null); // { _id, pdfFile }
+  const [menuDoc, setMenuDoc] = useState(null); // { _id, pdfFile, pageCount }
   const [isLoadingMenu, setIsLoadingMenu] = useState(false);
   const [isUploadingMenu, setIsUploadingMenu] = useState(false);
   const [menuError, setMenuError] = useState('');
+  const [isUpdatingPageCount, setIsUpdatingPageCount] = useState(false);
+  const [manualPageCount, setManualPageCount] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -108,11 +110,37 @@ const Main = () => {
   };
 
   const handleMenuDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete the current menu? This action cannot be undone.')) {
+      return;
+    }
+    
     try {
       await restaurantService.deleteMainMenu();
       setMenuDoc(null);
+      setMenuError(''); // Clear any previous errors
     } catch (err) {
       setMenuError(err.message || 'Failed to delete menu');
+    }
+  };
+
+  const handlePageCountUpdate = async () => {
+    const pageCount = parseInt(manualPageCount);
+    if (!pageCount || pageCount <= 0) {
+      setMenuError('Please enter a valid page count');
+      return;
+    }
+    
+    setIsUpdatingPageCount(true);
+    setMenuError('');
+    
+    try {
+      const updatedMenu = await restaurantService.updatePageCount(pageCount);
+      setMenuDoc(updatedMenu);
+      setManualPageCount('');
+    } catch (err) {
+      setMenuError(err.message || 'Failed to update page count');
+    } finally {
+      setIsUpdatingPageCount(false);
     }
   };
 
@@ -212,54 +240,112 @@ const Main = () => {
               <p className="text-sm text-gray-500">Loading current menu...</p>
             )}
             {menuDoc && !isLoadingMenu && (
-              <div className="flex items-center space-x-3">
-                <button 
-                  onClick={() => {
-                    // Try multiple methods to view PDF
-                    const pdfUrl = menuDoc.pdfFile;
-                    
-                    // Method 1: Try Google Docs viewer first
-                    const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
-                    const newWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-                    
-                    newWindow.document.write(`
-                      <html>
-                        <head>
-                          <title>Restaurant Menu</title>
-                          <style>
-                            body { margin: 0; padding: 0; background: #f5f5f5; }
-                            .container { width: 100%; height: 100vh; display: flex; flex-direction: column; }
-                            .header { padding: 10px; background: white; border-bottom: 1px solid #ddd; }
-                            .viewer { flex: 1; }
-                            iframe { width: 100%; height: 100%; border: none; }
-                            .fallback { padding: 20px; text-align: center; }
-                            .fallback a { color: #007bff; text-decoration: none; }
-                          </style>
-                        </head>
-                        <body>
-                          <div class="container">
-                            <div class="header">
-                              <h3>Restaurant Menu</h3>
-                              <p>If the PDF doesn't load, <a href="${pdfUrl}" target="_blank">click here to open directly</a></p>
-                            </div>
-                            <div class="viewer">
-                              <iframe src="${googleViewerUrl}" onerror="this.style.display='none'; document.querySelector('.fallback').style.display='block';"></iframe>
-                              <div class="fallback" style="display: none;">
-                                <p>PDF viewer not available. <a href="${pdfUrl}" target="_blank">Click here to download/view the PDF</a></p>
+              <div className="space-y-4">
+                {/* Menu Info */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium text-gray-700">Current Menu Info</h3>
+                    <span className="text-xs text-gray-500">ID: {menuDoc._id}</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <span className="text-sm text-gray-600">Pages: </span>
+                      {menuDoc.pageCount ? (
+                        <span className="text-sm font-semibold text-gray-900">{menuDoc.pageCount}</span>
+                      ) : (
+                        <span className="text-sm text-orange-600">Not detected - Manual input required</span>
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Status: </span>
+                      <span className="text-sm text-green-600">✓ Active</span>
+                    </div>
+                  </div>
+                  
+                  {/* Manual Page Count Input */}
+                  {!menuDoc.pageCount && (
+                    <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <p className="text-sm text-orange-800 mb-2">
+                        Page count could not be automatically detected. Please enter the correct number of pages:
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="number"
+                          min="1"
+                          max="200"
+                          value={manualPageCount}
+                          onChange={(e) => setManualPageCount(e.target.value)}
+                          placeholder="Enter page count"
+                          className="px-3 py-1 border border-gray-300 rounded text-sm w-32"
+                        />
+                        <button
+                          onClick={handlePageCountUpdate}
+                          disabled={isUpdatingPageCount || !manualPageCount}
+                          className="px-3 py-1 bg-orange-600 text-white rounded text-sm hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isUpdatingPageCount ? 'Updating...' : 'Update'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between">
+                  <button 
+                    onClick={() => {
+                      // Try multiple methods to view PDF
+                      const pdfUrl = menuDoc.pdfFile;
+                      
+                      // Method 1: Try Google Docs viewer first
+                      const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+                      const newWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                      
+                      newWindow.document.write(`
+                        <html>
+                          <head>
+                            <title>Restaurant Menu (${menuDoc.pageCount || 'Unknown'} pages)</title>
+                            <style>
+                              body { margin: 0; padding: 0; background: #f5f5f5; }
+                              .container { width: 100%; height: 100vh; display: flex; flex-direction: column; }
+                              .header { padding: 10px; background: white; border-bottom: 1px solid #ddd; }
+                              .viewer { flex: 1; }
+                              iframe { width: 100%; height: 100%; border: none; }
+                              .fallback { padding: 20px; text-align: center; }
+                              .fallback a { color: #007bff; text-decoration: none; }
+                            </style>
+                          </head>
+                          <body>
+                            <div class="container">
+                              <div class="header">
+                                <h3>Restaurant Menu (${menuDoc.pageCount || 'Unknown'} pages)</h3>
+                                <p>If the PDF doesn't load, <a href="${pdfUrl}" target="_blank">click here to open directly</a></p>
+                              </div>
+                              <div class="viewer">
+                                <iframe src="${googleViewerUrl}" onerror="this.style.display='none'; document.querySelector('.fallback').style.display='block';"></iframe>
+                                <div class="fallback" style="display: none;">
+                                  <p>PDF viewer not available. <a href="${pdfUrl}" target="_blank">Click here to download/view the PDF</a></p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </body>
-                      </html>
-                    `);
-                    newWindow.document.close();
-                  }}
-                  className="hover:underline text-sm cursor-pointer" 
-                  style={{color: 'var(--primary-color)', background: 'none', border: 'none', padding: 0}}
-                >
-                  View current menu
-                </button>
-                <button onClick={handleMenuDelete} className="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                          </body>
+                        </html>
+                      `);
+                      newWindow.document.close();
+                    }}
+                    className="hover:underline text-sm cursor-pointer" 
+                    style={{color: 'var(--primary-color)', background: 'none', border: 'none', padding: 0}}
+                  >
+                    View current menu ({menuDoc.pageCount ? `${menuDoc.pageCount} pages` : 'page count unknown'})
+                  </button>
+                  <button 
+                    onClick={handleMenuDelete} 
+                    className="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 font-medium"
+                  >
+                    Delete Menu
+                  </button>
+                </div>
               </div>
             )}
             {!menuDoc && !isLoadingMenu && (

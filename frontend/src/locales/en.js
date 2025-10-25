@@ -60,6 +60,7 @@ export const en = {
     checkBackLater: 'Please check back later or contact us for menu details.',
     pageOf: 'Page',
     of: 'of',
+    menuPages: 'Menu Pages',
     // Recommended Meals
     recommendedMeals: 'Recommended Meals',
     failedToLoadMeals: 'Failed to load recommended meals',
@@ -92,7 +93,7 @@ export const en = {
     address: 'Valley Rose Hotel',
     street: 'Erzherzog Karl Straße 98a,',
     city: '1220 Vienna, Austria',
-    phone: 'Phone : +43 1 204 38 88',
+    phone: 'Phone : +436509106601',
     mobile: 'Mobile: +43 650 910 66 01',
     whatsapp: 'Whatsapp: +43 650 910 66 01',
     email: 'valleyrose@speed.at',
@@ -103,7 +104,7 @@ export const en = {
   // Booking
   booking: {
     onlineReservations: 'Online Room Reservations',
-    onlineDescription: 'To book your stay at Valley Rose Hotel, simply choose your preferred check-in and check-out dates to find available rooms. Then, fill in your personal details and complete the secure payment process. Once your booking is confirmed, you will receive a confirmation email with all the necessary details, including your booking code. If you have any questions or face any issues, feel free to contact us at +43 1 204 38 88, we\'re always happy to help.',
+    onlineDescription: 'To book your stay at Valley Rose Hotel, simply choose your preferred check-in and check-out dates to find available rooms. Then, fill in your personal details and complete the secure payment process. Once your booking is confirmed, you will receive a confirmation email with all the necessary details, including your booking code. If you have any questions or face any issues, feel free to contact us at +436509106601, we\'re always happy to help.',
     specialReservations: 'Special Reservations',
     specialDescription: 'For bookings of more than 6 guests and special events, please contact us via email.',
     steps: {

@@ -62,18 +62,18 @@ const StaySection = () => {
   };
 
   return (
-    <section className="py-12 px-4 sm:px-8 content-section">
+    <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 content-section bg-white">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div 
-          className="mb-12"
+          className="mb-8 sm:mb-12"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="text-2xl sm:text-3xl font-medium mb-2 title-font"
+            className="text-xl sm:text-2xl lg:text-3xl font-medium mb-2 title-font text-center sm:text-left"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -82,7 +82,7 @@ const StaySection = () => {
             {t('hotel.yourStayAt')}
           </motion.h2>
           <motion.p 
-            className="text-gray-700 max-w-3xl"
+            className="text-gray-700 max-w-3xl text-sm sm:text-base text-center sm:text-left"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -94,18 +94,18 @@ const StaySection = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="flex justify-center items-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          <div className="flex justify-center items-center py-12 sm:py-16">
+            <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-purple-600"></div>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="text-center py-16">
-            <p className="text-red-600 text-lg mb-4">{error}</p>
+          <div className="text-center py-12 sm:py-16">
+            <p className="text-red-600 text-base sm:text-lg mb-4">{error}</p>
             <button 
               onClick={() => fetchRooms(currentPage)}
-              className="btn-primary px-6 py-2 rounded-lg"
+              className="btn-primary px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base"
             >
               {t('hotel.tryAgain')}
             </button>
@@ -114,12 +114,12 @@ const StaySection = () => {
 
         {/* Room Cards */}
         {!loading && !error && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {rooms.map((room, index) => (
               <motion.div
                 key={room._id}
                 className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden relative hover:shadow-md transition-shadow cursor-pointer"
-                style={{ minHeight: '250px' }}
+                style={{ minHeight: '200px' }}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -132,7 +132,7 @@ const StaySection = () => {
               >
                 {/* Purple Header - 85% width, above image, with rounded corner */}
                 <motion.div
-                  className="absolute top-0 left-0 z-10 flex justify-between items-center px-4 py-3"
+                  className="absolute top-0 left-0 z-10 flex justify-between items-center px-3 sm:px-4 py-2 sm:py-3"
                   style={{
                     width: '85%',
                     borderBottomLeftRadius: 0,
@@ -144,13 +144,13 @@ const StaySection = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.2 + 0.3 }}
                 >
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white truncate">
                     {language === 'de' 
                       ? (room.title?.german || room.title?.english || room.type)
                       : (room.title?.english || room.type)
                     }
                   </h3>
-                  <div className="flex items-center text-sm text-white">
+                  <div className="flex items-center text-xs sm:text-sm text-white ml-2">
                     <span className="text-yellow-400 mr-1">★</span>
                     <span>({room.ratingSuggestion || '4.8'})</span>
                   </div>
@@ -158,7 +158,7 @@ const StaySection = () => {
                 
                 {/* Room Image */}
                 <motion.div 
-                  className="w-full h-80"
+                  className="w-full h-48 sm:h-64 lg:h-80"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -184,7 +184,7 @@ const StaySection = () => {
         {/* Pagination Controls */}
         {!loading && !error && totalPages > 1 && (
           <motion.div 
-            className="flex justify-center items-center mt-12 space-x-4"
+            className="flex flex-col sm:flex-row justify-center items-center mt-8 sm:mt-12 gap-4 sm:gap-6"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -193,7 +193,7 @@ const StaySection = () => {
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                 currentPage === 1
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'btn-primary'
@@ -202,11 +202,11 @@ const StaySection = () => {
               {t('hotel.previous')}
             </button>
             
-            <div className="flex items-center space-x-2">
-              <span className="text-gray-700">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <span className="text-gray-700 text-sm sm:text-base">
                 {t('hotel.pageOf')} {currentPage} {t('hotel.of')} {totalPages}
               </span>
-              <span className="text-gray-500 text-sm">
+              <span className="text-gray-500 text-xs sm:text-sm">
                 ({totalItems} {t('hotel.roomsTotal')})
               </span>
             </div>
@@ -214,7 +214,7 @@ const StaySection = () => {
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                 currentPage === totalPages
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'btn-primary'
@@ -227,7 +227,7 @@ const StaySection = () => {
 
         {/* Booking CTA */}
         <motion.div 
-          className="text-center mt-12"
+          className="text-center mt-8 sm:mt-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -235,7 +235,7 @@ const StaySection = () => {
         >
           <Link
             to="/booking"
-            className="inline-block btn-primary px-8 py-4 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl"
+            className="inline-block btn-primary px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl"
           >
             {t('hotel.bookYourStayNow')}
           </Link>

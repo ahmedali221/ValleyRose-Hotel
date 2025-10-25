@@ -29,19 +29,26 @@ async function countPdfPages(pdfUrl) {
       return cloudinaryCount;
     }
     
-    // Method 3: Manual estimation based on content
+    // Method 3: Try binary search approach for more pages
+    const binarySearchCount = await countPdfPagesWithBinarySearch(pdfUrl);
+    if (binarySearchCount > 0) {
+      console.log(`PDF page count detected with binary search: ${binarySearchCount}`);
+      return binarySearchCount;
+    }
+    
+    // Method 4: Manual estimation based on content
     const estimatedCount = await estimatePdfPages(pdfUrl);
     if (estimatedCount > 0) {
       console.log(`PDF page count estimated: ${estimatedCount}`);
       return estimatedCount;
     }
     
-    console.warn('All methods failed, using default page count');
-    return 5; // Default fallback
+    console.warn('All methods failed, unable to determine page count');
+    return null; // No fallback - let the caller handle this
     
   } catch (error) {
     console.error('Error in countPdfPages:', error);
-    return 5; // Default fallback
+    return null; // No fallback - let the caller handle this
   }
 }
 
@@ -52,12 +59,13 @@ async function countPdfPagesWithPdfParse(pdfUrl) {
     return 0;
   }
   
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const protocol = pdfUrl.startsWith('https') ? https : http;
     
-    protocol.get(pdfUrl, (response) => {
+    const request = protocol.get(pdfUrl, (response) => {
       if (response.statusCode !== 200) {
-        reject(new Error(`Failed to fetch PDF: ${response.statusCode}`));
+        console.log(`Failed to fetch PDF: ${response.statusCode}`);
+        resolve(0);
         return;
       }
       
@@ -66,7 +74,13 @@ async function countPdfPagesWithPdfParse(pdfUrl) {
       response.on('end', async () => {
         try {
           const pdfBuffer = Buffer.concat(chunks);
+          console.log(`PDF buffer size: ${pdfBuffer.length} bytes`);
+          
           const data = await pdfParse(pdfBuffer);
+          console.log('PDF parse result:', { 
+            numpages: data.numpages, 
+            textLength: data.text ? data.text.length : 0 
+          });
           
           if (data.numpages && data.numpages > 0) {
             resolve(data.numpages);
@@ -74,10 +88,22 @@ async function countPdfPagesWithPdfParse(pdfUrl) {
             resolve(0);
           }
         } catch (error) {
+          console.log('PDF parse error:', error.message);
           resolve(0);
         }
       });
-    }).on('error', () => resolve(0));
+    });
+    
+    request.on('error', (error) => {
+      console.log('Request error:', error.message);
+      resolve(0);
+    });
+    
+    request.setTimeout(30000, () => {
+      console.log('Request timeout');
+      request.destroy();
+      resolve(0);
+    });
   });
 }
 
@@ -85,19 +111,81 @@ async function countPdfPagesWithPdfParse(pdfUrl) {
 async function countPdfPagesWithCloudinary(pdfUrl) {
   console.log('Trying Cloudinary transformation method...');
   
-  // Test pages 1-10 to see which ones exist
-  for (let page = 1; page <= 10; page++) {
-    try {
-      const testUrl = pdfUrl.replace('/upload/', `/upload/pg_${page},f_jpg,q_auto/`);
-      const exists = await testCloudinaryPage(testUrl);
-      if (!exists) {
-        console.log(`Page ${page} does not exist, stopping at page ${page - 1}`);
-        return page - 1;
-      }
-    } catch (error) {
-      console.log(`Page ${page} test failed, stopping at page ${page - 1}`);
-      return page - 1;
+  // Use binary search approach for more efficient and accurate counting
+  let left = 1;
+  let right = 500; // Increased limit to handle larger PDFs
+  let lastValidPage = 0;
+  
+  // First, find if page 1 exists
+  const firstPageUrl = pdfUrl.replace('/upload/', `/upload/pg_1,f_jpg,q_auto/`);
+  const firstPageExists = await testCloudinaryPage(firstPageUrl);
+  if (!firstPageExists) {
+    console.log('Page 1 does not exist, PDF might be corrupted');
+    return 0;
+  }
+  
+  lastValidPage = 1;
+  
+  // Binary search to find the last existing page
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const testUrl = pdfUrl.replace('/upload/', `/upload/pg_${mid},f_jpg,q_auto/`);
+    const exists = await testCloudinaryPage(testUrl);
+    
+    if (exists) {
+      lastValidPage = mid;
+      left = mid + 1;
+    } else {
+      right = mid - 1;
     }
+  }
+  
+  console.log(`Cloudinary binary search found ${lastValidPage} pages`);
+  return lastValidPage;
+}
+
+// Method 3: Enhanced binary search approach to find the last existing page
+async function countPdfPagesWithBinarySearch(pdfUrl) {
+  console.log('Trying enhanced binary search method...');
+  
+  // First, find a rough upper bound by testing powers of 2
+  let upperBound = 1;
+  let lowerBound = 1;
+  
+  // Find upper bound - test up to 1000 pages
+  while (upperBound <= 1000) {
+    const testUrl = pdfUrl.replace('/upload/', `/upload/pg_${upperBound},f_jpg,q_auto/`);
+    const exists = await testCloudinaryPage(testUrl);
+    if (!exists) {
+      break;
+    }
+    lowerBound = upperBound;
+    upperBound *= 2;
+  }
+  
+  console.log(`Binary search bounds: ${lowerBound} to ${upperBound}`);
+  
+  // If we found an upper bound, do binary search
+  if (upperBound > 1) {
+    let left = lowerBound;
+    let right = upperBound;
+    let lastValidPage = lowerBound;
+    
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const testUrl = pdfUrl.replace('/upload/', `/upload/pg_${mid},f_jpg,q_auto/`);
+      const exists = await testCloudinaryPage(testUrl);
+      
+      if (exists) {
+        lastValidPage = mid;
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    
+    console.log(`Enhanced binary search found ${lastValidPage} pages`);
+    return lastValidPage;
   }
   
   return 0;
@@ -109,11 +197,22 @@ async function testCloudinaryPage(url) {
     const protocol = url.startsWith('https') ? https : http;
     
     const request = protocol.get(url, (response) => {
-      resolve(response.statusCode === 200);
+      // Check for successful response and content type
+      const isSuccess = response.statusCode === 200 && 
+                       response.headers['content-type'] && 
+                       response.headers['content-type'].includes('image');
+      
+      console.log(`Testing ${url}: status=${response.statusCode}, content-type=${response.headers['content-type']}, success=${isSuccess}`);
+      resolve(isSuccess);
     });
     
-    request.on('error', () => resolve(false));
-    request.setTimeout(5000, () => {
+    request.on('error', (error) => {
+      console.log(`Request error for ${url}:`, error.message);
+      resolve(false);
+    });
+    
+    request.setTimeout(8000, () => {
+      console.log(`Request timeout for ${url}`);
       request.destroy();
       resolve(false);
     });
@@ -144,12 +243,24 @@ async function estimatePdfPages(pdfUrl) {
           const data = await pdfParse(pdfBuffer);
           
           if (data.text) {
-            // Analyze text content to estimate pages
+            // Analyze text content to estimate pages more accurately
             const textLength = data.text.length;
-            const estimatedPages = Math.max(1, Math.ceil(textLength / 2000)); // Rough estimate: 2000 chars per page
+            
+            // Try to extract page count from content first
+            const extractedCount = extractPageCountFromContent(data.text);
+            if (extractedCount > 0) {
+              console.log(`Page count extracted from content: ${extractedCount}`);
+              resolve(extractedCount);
+              return;
+            }
+            
+            // Fallback to text length estimation with better accuracy
+            // Restaurant menus typically have 1500-3000 characters per page
+            const avgCharsPerPage = 2000;
+            const estimatedPages = Math.max(1, Math.ceil(textLength / avgCharsPerPage));
             
             console.log(`Text length: ${textLength}, estimated pages: ${estimatedPages}`);
-            resolve(Math.min(estimatedPages, 10)); // Cap at 10 pages
+            resolve(estimatedPages);
           } else {
             resolve(0);
           }
@@ -161,33 +272,68 @@ async function estimatePdfPages(pdfUrl) {
   });
 }
 
-// Alternative method to extract page count from PDF content
+// Enhanced method to extract page count from PDF content
 function extractPageCountFromContent(text) {
   if (!text) return 0;
   
-  // Look for common page indicators in PDF text
+  // Look for common page indicators in PDF text with more patterns
   const pagePatterns = [
     /page\s+(\d+)/gi,
     /(\d+)\s*\/\s*(\d+)/g, // Format like "1 / 5"
-    /page\s*(\d+)\s*of\s*(\d+)/gi
+    /page\s*(\d+)\s*of\s*(\d+)/gi,
+    /(\d+)\s*of\s*(\d+)/gi, // Format like "1 of 5"
+    /page\s*(\d+)/gi,
+    /(\d+)\s*\/\s*(\d+)\s*page/gi, // Format like "1 / 5 page"
+    /(\d+)\s*-\s*(\d+)/g, // Format like "1-5" (page range)
   ];
+  
+  let maxPageFound = 0;
   
   for (const pattern of pagePatterns) {
     const matches = text.match(pattern);
     if (matches) {
       console.log('Found page patterns:', matches);
-      // Extract the highest number found
-      const numbers = matches.join(' ').match(/\d+/g);
-      if (numbers) {
-        const maxPage = Math.max(...numbers.map(Number));
-        if (maxPage > 0) {
-          return maxPage;
+      
+      // Extract all numbers from matches
+      const allNumbers = [];
+      matches.forEach(match => {
+        const numbers = match.match(/\d+/g);
+        if (numbers) {
+          allNumbers.push(...numbers.map(Number));
+        }
+      });
+      
+      if (allNumbers.length > 0) {
+        const maxPage = Math.max(...allNumbers);
+        if (maxPage > maxPageFound) {
+          maxPageFound = maxPage;
         }
       }
     }
   }
   
-  return 0;
+  // Also look for total page count in common formats
+  const totalPagePatterns = [
+    /total\s*pages?\s*:?\s*(\d+)/gi,
+    /pages?\s*:?\s*(\d+)/gi,
+    /(\d+)\s*pages?/gi
+  ];
+  
+  for (const pattern of totalPagePatterns) {
+    const match = text.match(pattern);
+    if (match) {
+      const numbers = match[0].match(/\d+/g);
+      if (numbers) {
+        const pageCount = Math.max(...numbers.map(Number));
+        if (pageCount > maxPageFound) {
+          maxPageFound = pageCount;
+        }
+      }
+    }
+  }
+  
+  console.log(`Extracted page count from content: ${maxPageFound}`);
+  return maxPageFound;
 }
 
 async function uploadPdf(req, res) {
@@ -197,20 +343,27 @@ async function uploadPdf(req, res) {
   try {
     console.log('PDF uploaded to Cloudinary:', file.path);
     
-    // Count pages in the uploaded PDF
-    let pageCount = 5; // Default fallback
+    // Count pages in the uploaded PDF with comprehensive error handling
+    let pageCount = null;
+    let pageCountError = null;
+    
     try {
+      console.log(`Starting page count process for PDF: ${file.path}`);
       pageCount = await countPdfPages(file.path);
-      console.log(`PDF page count detected: ${pageCount}`);
+      console.log(`PDF page count result: ${pageCount}`);
       
       // Validate page count
       if (!pageCount || pageCount <= 0 || isNaN(pageCount)) {
-        console.warn('Invalid page count detected, using default');
-        pageCount = 5;
+        pageCountError = 'Page count could not be determined automatically';
+        console.warn(pageCountError);
+        pageCount = null;
+      } else {
+        console.log(`✅ Successfully detected ${pageCount} pages`);
       }
     } catch (error) {
-      console.warn('Failed to count PDF pages, using default:', error.message);
-      pageCount = 5;
+      pageCountError = `Page counting failed: ${error.message}`;
+      console.error(pageCountError);
+      pageCount = null;
     }
     
     const existing = await RestaurantMainMenu.findOne();
@@ -219,12 +372,24 @@ async function uploadPdf(req, res) {
       existing.pageCount = pageCount;
       await existing.save();
       console.log('Updated existing menu with page count:', pageCount);
-      return res.json(existing);
+      
+      // Include page count error in response if applicable
+      const response = existing.toObject();
+      if (pageCountError) {
+        response.pageCountError = pageCountError;
+      }
+      return res.json(response);
     }
     
     const doc = await RestaurantMainMenu.create({ pdfFile: file.path, pageCount });
     console.log('Created new menu with page count:', pageCount);
-    res.status(201).json(doc);
+    
+    // Include page count error in response if applicable
+    const response = doc.toObject();
+    if (pageCountError) {
+      response.pageCountError = pageCountError;
+    }
+    res.status(201).json(response);
   } catch (error) {
     console.error('Error in uploadPdf:', error);
     res.status(500).json({ message: 'Failed to process PDF', error: error.message });
@@ -255,7 +420,31 @@ async function deletePdf(_req, res) {
   res.json({ success: true });
 }
 
-module.exports = { uploadPdf, getPdf, deletePdf };
+async function updatePageCount(req, res) {
+  try {
+    const { pageCount } = req.body;
+    
+    if (!pageCount || pageCount <= 0 || !Number.isInteger(pageCount)) {
+      return res.status(400).json({ message: 'Valid page count required' });
+    }
+    
+    const doc = await RestaurantMainMenu.findOne();
+    if (!doc) {
+      return res.status(404).json({ message: 'Menu not found' });
+    }
+    
+    doc.pageCount = pageCount;
+    await doc.save();
+    
+    console.log(`Manually updated page count to: ${pageCount}`);
+    res.json(doc);
+  } catch (error) {
+    console.error('Error updating page count:', error);
+    res.status(500).json({ message: 'Failed to update page count', error: error.message });
+  }
+}
+
+module.exports = { uploadPdf, getPdf, deletePdf, updatePageCount };
 
 
 
