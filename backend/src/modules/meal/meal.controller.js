@@ -2,11 +2,24 @@ const { body, validationResult } = require('express-validator');
 const Meal = require('./meal.model');
 
 const createValidators = [
-  body('title').notEmpty().trim(),
+  body('title').optional().trim(),
+  body('name_de').optional().trim(),
+  body('name_en').optional().trim(),
   body('description').optional().trim(),
   body('thumbnail').optional().isString(),
   body('type').isIn(['Meal', 'Soup']),
+  body('menuCategory').optional().isIn(['menu_1', 'menu_2']),
   body('isRecommended').optional().isBoolean(),
+  // Custom validation: require either title OR both name_de and name_en
+  body().custom((value) => {
+    const hasTitle = value.title && value.title.trim().length > 0;
+    const hasBothNames = value.name_de && value.name_de.trim().length > 0 && value.name_en && value.name_en.trim().length > 0;
+    
+    if (!hasTitle && !hasBothNames) {
+      throw new Error('Either title or both name_de and name_en must be provided');
+    }
+    return true;
+  }),
 ];
 
 async function createMeal(req, res) {
@@ -17,10 +30,11 @@ async function createMeal(req, res) {
 }
 
 async function listMeals(req, res) {
-  const { type, recommended } = req.query;
+  const { type, recommended, menuCategory } = req.query;
   const q = {};
   if (type) q.type = type;
   if (recommended !== undefined) q.isRecommended = recommended === 'true';
+  if (menuCategory) q.menuCategory = menuCategory;
   const items = await Meal.find(q).sort({ createdAt: -1 });
   res.json(items);
 }

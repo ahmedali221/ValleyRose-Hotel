@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "build": "echo 'Build completed'"
+    "build": "echo 'Build completed'",
+    "seed:soups": "node src/scripts/seedSoups.js",
+    "seed:meals": "node src/scripts/seedMeals.js",
+    "seed:all": "node src/scripts/seedSoups.js && node src/scripts/seedMeals.js"
   },
   "keywords": [],
   "author": "",
