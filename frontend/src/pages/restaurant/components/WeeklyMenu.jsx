@@ -3,12 +3,25 @@ import { motion } from 'framer-motion';
 import { weeklyMenuService } from '../../../services';
 import restaurantImage from '../../../assets/restaurant/restaurant.png';
 import { useTranslation } from '../../../locales';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const WeeklyMenu = () => {
   const [weeklyMenuItems, setWeeklyMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { t } = useTranslation();
+  const { language } = useLanguage();
+
+  // Helper function to get meal name based on language
+  const getMealName = (meal) => {
+    if (!meal) return '';
+    // Use name_en for English, name_de for German, fallback to title or name
+    if (language === 'de') {
+      return meal.name_de || meal.name_en || meal.title || meal.name || '';
+    } else {
+      return meal.name_en || meal.name_de || meal.title || meal.name || '';
+    }
+  };
 
   // Calculate current week dates dynamically
   const getCurrentWeekDates = () => {
@@ -198,14 +211,33 @@ const WeeklyMenu = () => {
                         </span>
                       </div>
 
-                      {/* Meals */}
-                      {dayMenu.meals && dayMenu.meals.length > 0 && (
+                      {/* Meal 1 */}
+                      {dayMenu.menu_1 && dayMenu.menu_1.length > 0 && (
                         <div className="space-y-2 lg:space-y-3 mb-3">
-                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">{t('restaurant.meals')}</h5>
-                          {dayMenu.meals.map((meal, mealIndex) => (
+                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">{t('restaurant.meal1')}</h5>
+                          {dayMenu.menu_1.map((meal, mealIndex) => (
                             <div key={meal._id || mealIndex}>
                               <h4 className="text-white font-semibold text-sm lg:text-base mb-1">
-                                {meal.title}
+                                {getMealName(meal)}
+                              </h4>
+                              {meal.description && (
+                                <p className="text-gray-400 text-xs lg:text-sm leading-relaxed">
+                                  {meal.description}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Meal 2 */}
+                      {dayMenu.menu_2 && dayMenu.menu_2.length > 0 && (
+                        <div className="space-y-2 lg:space-y-3 mb-3">
+                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">{t('restaurant.meal2')}</h5>
+                          {dayMenu.menu_2.map((meal, mealIndex) => (
+                            <div key={meal._id || mealIndex}>
+                              <h4 className="text-white font-semibold text-sm lg:text-base mb-1">
+                                {getMealName(meal)}
                               </h4>
                               {meal.description && (
                                 <p className="text-gray-400 text-xs lg:text-sm leading-relaxed">
@@ -224,7 +256,7 @@ const WeeklyMenu = () => {
                           {dayMenu.soups.map((soup, soupIndex) => (
                             <div key={soup._id || soupIndex}>
                               <h4 className="text-white font-semibold text-sm lg:text-base mb-1">
-                                {soup.title}
+                                {getMealName(soup)}
                               </h4>
                               {soup.description && (
                                 <p className="text-gray-400 text-xs lg:text-sm leading-relaxed">
@@ -237,7 +269,8 @@ const WeeklyMenu = () => {
                       )}
 
                       {/* Empty state for day */}
-                      {(!dayMenu.meals || dayMenu.meals.length === 0) && 
+                      {(!dayMenu.menu_1 || dayMenu.menu_1.length === 0) && 
+                       (!dayMenu.menu_2 || dayMenu.menu_2.length === 0) && 
                        (!dayMenu.soups || dayMenu.soups.length === 0) && (
                         <p className="text-gray-500 text-sm italic">{t('restaurant.noItemsForDay')}</p>
                       )}
@@ -361,14 +394,33 @@ const WeeklyMenu = () => {
                         </span>
                       </div>
 
-                      {/* Meals */}
-                      {dayMenu.meals && dayMenu.meals.length > 0 && (
+                      {/* Meal 1 */}
+                      {dayMenu.menu_1 && dayMenu.menu_1.length > 0 && (
                         <div className="space-y-2 lg:space-y-3 mb-3">
-                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">{t('restaurant.meals')}</h5>
-                          {dayMenu.meals.map((meal, mealIndex) => (
+                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">{t('restaurant.meal1')}</h5>
+                          {dayMenu.menu_1.map((meal, mealIndex) => (
                             <div key={meal._id || mealIndex}>
                               <h4 className="text-white font-semibold text-sm lg:text-base mb-1">
-                                {meal.title}
+                                {getMealName(meal)}
+                              </h4>
+                              {meal.description && (
+                                <p className="text-gray-400 text-xs lg:text-sm leading-relaxed">
+                                  {meal.description}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Meal 2 */}
+                      {dayMenu.menu_2 && dayMenu.menu_2.length > 0 && (
+                        <div className="space-y-2 lg:space-y-3 mb-3">
+                          <h5 className="text-purple-300 text-xs font-semibold uppercase tracking-wide">{t('restaurant.meal2')}</h5>
+                          {dayMenu.menu_2.map((meal, mealIndex) => (
+                            <div key={meal._id || mealIndex}>
+                              <h4 className="text-white font-semibold text-sm lg:text-base mb-1">
+                                {getMealName(meal)}
                               </h4>
                               {meal.description && (
                                 <p className="text-gray-400 text-xs lg:text-sm leading-relaxed">
@@ -387,7 +439,7 @@ const WeeklyMenu = () => {
                           {dayMenu.soups.map((soup, soupIndex) => (
                             <div key={soup._id || soupIndex}>
                               <h4 className="text-white font-semibold text-sm lg:text-base mb-1">
-                                {soup.title}
+                                {getMealName(soup)}
                               </h4>
                               {soup.description && (
                                 <p className="text-gray-400 text-xs lg:text-sm leading-relaxed">
@@ -400,7 +452,8 @@ const WeeklyMenu = () => {
                       )}
 
                       {/* Empty state for day */}
-                      {(!dayMenu.meals || dayMenu.meals.length === 0) && 
+                      {(!dayMenu.menu_1 || dayMenu.menu_1.length === 0) && 
+                       (!dayMenu.menu_2 || dayMenu.menu_2.length === 0) && 
                        (!dayMenu.soups || dayMenu.soups.length === 0) && (
                         <p className="text-gray-500 text-sm italic">{t('restaurant.noItemsForDay')}</p>
                       )}

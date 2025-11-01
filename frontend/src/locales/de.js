@@ -70,6 +70,8 @@ export const de = {
     weeklyMenuDescription: 'Unser rotierendes Menü bietet hausgemachte Spezialitäten, saisonale Zutaten und klassische Favoriten, die alle darauf ausgelegt sind, das Herz der österreichischen Hausmannskost widerzuspiegeln. Sie sind eingeladen, sich zu entspannen, zu genießen und uns alles andere überlassen.',
     weeklyMenu: 'Wöchentliches Menü',
     meals: 'Gerichte',
+    meal1: 'Gericht 1',
+    meal2: 'Gericht 2',
     soups: 'Suppen',
     noItemsForDay: 'Für diesen Tag sind noch keine Artikel verfügbar.',
     noWeeklyMenu: 'Derzeit ist kein wöchentliches Menü verfügbar.',

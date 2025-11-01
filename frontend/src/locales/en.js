@@ -70,6 +70,8 @@ export const en = {
     weeklyMenuDescription: 'Our rotating menu features homemade specials, seasonal ingredients, and classic favorites, all designed to reflect the heart of Austrian home cooking. You\'re invited to relax, enjoy, and let us take care of everything.',
     weeklyMenu: 'Weekly Menu',
     meals: 'Meals',
+    meal1: 'Meal 1',
+    meal2: 'Meal 2',
     soups: 'Soups',
     noItemsForDay: 'No items for this day yet.',
     noWeeklyMenu: 'No weekly menu available at the moment.',

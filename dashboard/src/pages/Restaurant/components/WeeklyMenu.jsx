@@ -3,24 +3,25 @@ import { mealService, restaurantService } from '../../../services/restaurantServ
 
 const WeeklyMenu = () => {
   const [selectedDay, setSelectedDay] = useState('sun');
-  const [availableMeals, setAvailableMeals] = useState([]); // type "Meal"
+  const [availableMenu1, setAvailableMenu1] = useState([]); // Menu 1 meals
+  const [availableMenu2, setAvailableMenu2] = useState([]); // Menu 2 meals
   const [availableSoups, setAvailableSoups] = useState([]); // type "Soup"
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const [modalError, setModalError] = useState('');
-  const [newMeal, setNewMeal] = useState({ title: '', description: '', type: 'Meal' });
+  const [newMeal, setNewMeal] = useState({ name_de: '', name_en: '', description: '', type: 'Meal', menuCategory: 'menu_1' });
 
-  // Per-day selections: two meals + one soup
+  // Per-day selections: menu_1, menu_2, and soup
   const initialSelections = useMemo(() => ({
-    sat: { meal1: '', meal2: '', soup: '' },
-    sun: { meal1: '', meal2: '', soup: '' },
-    mon: { meal1: '', meal2: '', soup: '' },
-    tue: { meal1: '', meal2: '', soup: '' },
-    wed: { meal1: '', meal2: '', soup: '' },
-    thu: { meal1: '', meal2: '', soup: '' },
-    fri: { meal1: '', meal2: '', soup: '' },
+    sat: { menu_1: '', menu_2: '', soup: '' },
+    sun: { menu_1: '', menu_2: '', soup: '' },
+    mon: { menu_1: '', menu_2: '', soup: '' },
+    tue: { menu_1: '', menu_2: '', soup: '' },
+    wed: { menu_1: '', menu_2: '', soup: '' },
+    thu: { menu_1: '', menu_2: '', soup: '' },
+    fri: { menu_1: '', menu_2: '', soup: '' },
   }), []);
   const [weekSelections, setWeekSelections] = useState(initialSelections);
   const [originalSelections, setOriginalSelections] = useState(initialSelections);
@@ -63,19 +64,19 @@ const WeeklyMenu = () => {
     return daysArray;
   }, []); // Empty dependency array - calculate once on mount
 
-  const mealCategories = ['Meal 1', 'Meal 2', 'Soup'];
-
   useEffect(() => {
     const load = async () => {
       setIsLoading(true);
       setError('');
       try {
-        const [meals, soups, weeklyMenuData] = await Promise.all([
-          mealService.listMeals({ type: 'Meal' }),
+        const [menu1Meals, menu2Meals, soups, weeklyMenuData] = await Promise.all([
+          mealService.listMeals({ type: 'Meal', menuCategory: 'menu_1' }),
+          mealService.listMeals({ type: 'Meal', menuCategory: 'menu_2' }),
           mealService.listMeals({ type: 'Soup' }),
           restaurantService.getWeeklyMenu(),
         ]);
-        setAvailableMeals(meals);
+        setAvailableMenu1(menu1Meals);
+        setAvailableMenu2(menu2Meals);
         setAvailableSoups(soups);
         
         // Load existing weekly menu data
@@ -94,12 +95,13 @@ const WeeklyMenu = () => {
             };
             const dayKey = dayMapping[dayMenu.day];
             if (dayKey) {
-              const mealIds = dayMenu.meals?.map(m => m._id || m.id) || [];
-              const soupIds = dayMenu.soups?.map(s => s._id || s.id) || [];
+              const menu1Id = dayMenu.menu_1?.[0]?._id || dayMenu.menu_1?.[0]?.id || '';
+              const menu2Id = dayMenu.menu_2?.[0]?._id || dayMenu.menu_2?.[0]?.id || '';
+              const soupId = dayMenu.soups?.[0]?._id || dayMenu.soups?.[0]?.id || '';
               loadedSelections[dayKey] = {
-                meal1: mealIds[0] || '',
-                meal2: mealIds[1] || '',
-                soup: soupIds[0] || '',
+                menu_1: menu1Id,
+                menu_2: menu2Id,
+                soup: soupId,
               };
             }
           });
@@ -122,17 +124,25 @@ const WeeklyMenu = () => {
     }));
   };
 
-  const idToMeal = useMemo(() => new Map([...availableMeals, ...availableSoups].map(m => [m._id || m.id, m])), [availableMeals, availableSoups]);
+  const idToMeal = useMemo(() => new Map([...availableMenu1, ...availableMenu2, ...availableSoups].map(m => [m._id || m.id, m])), [availableMenu1, availableMenu2, availableSoups]);
 
   const resolvedMenu = useMemo(() => {
     const result = {};
     for (const d of days) {
       const sel = weekSelections[d.key];
-      const entries = [sel.meal1, sel.meal2, sel.soup]
-        .filter(Boolean)
-        .map(id => idToMeal.get(id))
-        .filter(Boolean)
-        .map(m => ({ name: m.title || m.name, description: m.description || '' }));
+      const entries = [
+        { id: sel.menu_1, label: 'Menu 1' },
+        { id: sel.menu_2, label: 'Menu 2' },
+        { id: sel.soup, label: 'Soup' }
+      ]
+        .filter(e => e.id)
+        .map(e => ({ ...e, meal: idToMeal.get(e.id) }))
+        .filter(e => e.meal)
+        .map(e => ({ 
+          name: e.meal.name_en || e.meal.name_de || e.meal.title || e.meal.name, 
+          description: e.meal.description || '',
+          label: e.label
+        }));
       result[d.key] = entries;
     }
     return result;
@@ -176,102 +186,261 @@ const WeeklyMenu = () => {
           ))}
         </div>
 
-        {/* Simple list showing meal names only */}
-        <div className="mb-6">
-          {['meal1','meal2','soup'].map((slot) => {
-            const id = weekSelections[selectedDay][slot];
-            if (!id) return null;
-            const item = idToMeal.get(id);
-            if (!item) return null;
-            return (
-              <div key={slot} className="mb-3">
-                <div className="text-sm font-medium text-gray-700 mb-1">
-                  {slot === 'soup' ? 'Soup' : (slot === 'meal1' ? 'Meal 1' : 'Meal 2')}
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg" style={{backgroundColor: 'var(--primary-color)'}}>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-white">{item.title || item.name}</h4>
-                  </div>
-                  <button 
-                    className="ml-3 text-white"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Add New Meal Button */}
-        <button 
-          onClick={() => setIsModalOpen(true)} 
-          className="w-full px-8 py-3 text-white rounded-lg transition-colors mb-6"
-          style={{backgroundColor: 'var(--primary-color)'}}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = 'var(--primary-hover)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = 'var(--primary-color)';
-          }}
-        >
-          Add New Meal +
-        </button>
-
-        <p className="text-sm text-gray-500 mb-6">
-          Please make sure to add at least two meals per day in the weekly menu. This helps ensure variety and a complete dining experience for our guests.
-        </p>
-
-        {/* Detailed tiles view showing full meal information */}
-        <div className="space-y-3 mb-6">
-          {['meal1','meal2','soup'].map((slot) => {
-            const id = weekSelections[selectedDay][slot];
-            if (!id) return null;
-            const item = idToMeal.get(id);
-            if (!item) return null;
-            return (
-              <div key={slot} className="flex items-center justify-between py-2 px-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="flex items-center space-x-3 flex-1">
-                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{backgroundColor: 'var(--primary-color)'}}></div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900">{item.title || item.name}</div>
-                    {item.description && (
-                      <div className="text-xs text-gray-500 mt-0.5 line-clamp-1">{item.description}</div>
-                    )}
-                  </div>
-                </div>
-                <button 
-                  onClick={async () => {
-                    try {
-                      // Get the full day name for the API
-                      const currentDay = days.find(d => d.key === selectedDay);
-                      const dayName = currentDay?.fullName;
-                      const mealType = slot === 'soup' ? 'soups' : 'meals';
-                      
-                      // Remove from backend
-                      await restaurantService.removeMealFromDay(dayName, id, mealType);
-                      
-                      // Update local state
-                      updateSelection(slot, '');
-                      setOriginalSelections(prev => ({
-                        ...prev,
-                        [selectedDay]: { ...prev[selectedDay], [slot]: '' }
-                      }));
-                    } catch (err) {
-                      console.error('Failed to remove meal from day:', err);
-                      setError(err.message || 'Failed to remove meal from day');
+        {/* Selection dropdowns for each category */}
+        <div className="space-y-5 mb-6">
+          {/* Menu 1 Selection */}
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between mb-3">
+              <label className="flex items-center text-sm font-semibold text-gray-800">
+                <span className="inline-block w-2 h-2 rounded-full mr-2" style={{backgroundColor: 'var(--primary-color)'}}></span>
+                Menu 1 Meal
+              </label>
+              <button
+                onClick={() => {
+                  setNewMeal({ name_de: '', name_en: '', description: '', type: 'Meal', menuCategory: 'menu_1' });
+                  setIsModalOpen(true);
+                }}
+                className="px-3 py-1.5 text-xs font-medium text-white rounded-md transition-all hover:shadow-sm flex items-center gap-1"
+                style={{backgroundColor: 'var(--primary-color)'}}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary-hover)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--primary-color)'}
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Meal
+              </button>
+            </div>
+            <select
+              value={weekSelections[selectedDay].menu_1 || ''}
+              onChange={async (e) => {
+                const mealId = e.target.value;
+                updateSelection('menu_1', mealId);
+                
+                // Update backend
+                if (mealId) {
+                  try {
+                    const currentDay = days.find(d => d.key === selectedDay);
+                    const dayName = currentDay?.fullName;
+                    await restaurantService.addMealToDay(dayName, mealId, 'menu_1');
+                  } catch (err) {
+                    console.error('Failed to update menu 1:', err);
+                    setError(err.message || 'Failed to update menu 1');
+                    updateSelection('menu_1', '');
+                  }
+                } else {
+                  // Remove if empty
+                  try {
+                    const currentDay = days.find(d => d.key === selectedDay);
+                    const dayName = currentDay?.fullName;
+                    const currentId = weekSelections[selectedDay].menu_1;
+                    if (currentId) {
+                      await restaurantService.removeMealFromDay(dayName, currentId, 'menu_1');
                     }
-                  }} 
-                  className="ml-3 text-red-600 hover:text-red-700 text-sm font-medium flex-shrink-0"
-                >
-                  Delete
-                </button>
-              </div>
-            );
-          })}
+                  } catch (err) {
+                    console.error('Failed to remove menu 1:', err);
+                  }
+                }
+              }}
+              className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 bg-white text-gray-900 font-medium shadow-sm hover:border-gray-400 transition-colors"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
+            >
+              <option value="">Select Menu 1 Meal...</option>
+              {availableMenu1.map(meal => (
+                <option key={meal._id || meal.id} value={meal._id || meal.id}>
+                  {meal.name_en || meal.name_de || meal.title || meal.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Menu 2 Selection */}
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between mb-3">
+              <label className="flex items-center text-sm font-semibold text-gray-800">
+                <span className="inline-block w-2 h-2 rounded-full mr-2" style={{backgroundColor: 'var(--primary-color)'}}></span>
+                Menu 2 Meal
+              </label>
+              <button
+                onClick={() => {
+                  setNewMeal({ name_de: '', name_en: '', description: '', type: 'Meal', menuCategory: 'menu_2' });
+                  setIsModalOpen(true);
+                }}
+                className="px-3 py-1.5 text-xs font-medium text-white rounded-md transition-all hover:shadow-sm flex items-center gap-1"
+                style={{backgroundColor: 'var(--primary-color)'}}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary-hover)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--primary-color)'}
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Meal
+              </button>
+            </div>
+            <select
+              value={weekSelections[selectedDay].menu_2 || ''}
+              onChange={async (e) => {
+                const mealId = e.target.value;
+                updateSelection('menu_2', mealId);
+                
+                // Update backend
+                if (mealId) {
+                  try {
+                    const currentDay = days.find(d => d.key === selectedDay);
+                    const dayName = currentDay?.fullName;
+                    await restaurantService.addMealToDay(dayName, mealId, 'menu_2');
+                  } catch (err) {
+                    console.error('Failed to update menu 2:', err);
+                    setError(err.message || 'Failed to update menu 2');
+                    updateSelection('menu_2', '');
+                  }
+                } else {
+                  // Remove if empty
+                  try {
+                    const currentDay = days.find(d => d.key === selectedDay);
+                    const dayName = currentDay?.fullName;
+                    const currentId = weekSelections[selectedDay].menu_2;
+                    if (currentId) {
+                      await restaurantService.removeMealFromDay(dayName, currentId, 'menu_2');
+                    }
+                  } catch (err) {
+                    console.error('Failed to remove menu 2:', err);
+                  }
+                }
+              }}
+              className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 bg-white text-gray-900 font-medium shadow-sm hover:border-gray-400 transition-colors"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
+            >
+              <option value="">Select Menu 2 Meal...</option>
+              {availableMenu2.map(meal => (
+                <option key={meal._id || meal.id} value={meal._id || meal.id}>
+                  {meal.name_en || meal.name_de || meal.title || meal.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Soup Selection */}
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between mb-3">
+              <label className="flex items-center text-sm font-semibold text-gray-800">
+                <span className="inline-block w-2 h-2 rounded-full mr-2" style={{backgroundColor: 'var(--primary-color)'}}></span>
+                Soup
+              </label>
+              <button
+                onClick={() => {
+                  setNewMeal({ name_de: '', name_en: '', description: '', type: 'Soup', menuCategory: null });
+                  setIsModalOpen(true);
+                }}
+                className="px-3 py-1.5 text-xs font-medium text-white rounded-md transition-all hover:shadow-sm flex items-center gap-1"
+                style={{backgroundColor: 'var(--primary-color)'}}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary-hover)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--primary-color)'}
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Soup
+              </button>
+            </div>
+            <select
+              value={weekSelections[selectedDay].soup || ''}
+              onChange={async (e) => {
+                const soupId = e.target.value;
+                updateSelection('soup', soupId);
+                
+                // Update backend
+                if (soupId) {
+                  try {
+                    const currentDay = days.find(d => d.key === selectedDay);
+                    const dayName = currentDay?.fullName;
+                    await restaurantService.addMealToDay(dayName, soupId, 'soups');
+                  } catch (err) {
+                    console.error('Failed to update soup:', err);
+                    setError(err.message || 'Failed to update soup');
+                    updateSelection('soup', '');
+                  }
+                } else {
+                  // Remove if empty
+                  try {
+                    const currentDay = days.find(d => d.key === selectedDay);
+                    const dayName = currentDay?.fullName;
+                    const currentId = weekSelections[selectedDay].soup;
+                    if (currentId) {
+                      await restaurantService.removeMealFromDay(dayName, currentId, 'soups');
+                    }
+                  } catch (err) {
+                    console.error('Failed to remove soup:', err);
+                  }
+                }
+              }}
+              className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 bg-white text-gray-900 font-medium shadow-sm hover:border-gray-400 transition-colors"
+              style={{'--tw-ring-color': 'var(--primary-color)'}}
+            >
+              <option value="">Select Soup...</option>
+              {availableSoups.map(soup => (
+                <option key={soup._id || soup.id} value={soup._id || soup.id}>
+                  {soup.name_en || soup.name_de || soup.title || soup.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+
+        {/* Selected items display */}
+        {weekSelections[selectedDay].menu_1 || weekSelections[selectedDay].menu_2 || weekSelections[selectedDay].soup ? (
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              Selected Items for {days.find(d => d.key === selectedDay)?.label}
+            </h3>
+            <div className="space-y-2.5">
+              {['menu_1', 'menu_2', 'soup'].map((slot) => {
+                const id = weekSelections[selectedDay][slot];
+                if (!id) return null;
+                const item = idToMeal.get(id);
+                if (!item) return null;
+                const label = slot === 'soup' ? 'Soup' : (slot === 'menu_1' ? 'Menu 1' : 'Menu 2');
+                return (
+                  <div key={slot} className="flex items-center justify-between py-3 px-4 bg-white border-2 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <div className="px-2.5 py-1 rounded-md text-xs font-semibold border bg-gray-100 text-gray-700 border-gray-200">
+                        {label}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-gray-900 text-base mb-1">
+                          {item.name_en || item.name_de || item.title || item.name}
+                        </div>
+                        {item.description && (
+                          <div className="text-sm text-gray-500 line-clamp-2">{item.description}</div>
+                        )}
+                      </div>
+                    </div>
+                    <button 
+                      onClick={async () => {
+                        try {
+                          const currentDay = days.find(d => d.key === selectedDay);
+                          const dayName = currentDay?.fullName;
+                          await restaurantService.removeMealFromDay(dayName, id, slot === 'soup' ? 'soups' : slot);
+                          updateSelection(slot, '');
+                        } catch (err) {
+                          console.error('Failed to remove:', err);
+                          setError(err.message || 'Failed to remove');
+                        }
+                      }} 
+                      className="ml-4 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="mb-6 text-center py-8 text-gray-400 text-sm bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+            No items selected for this day. Use the dropdowns above to make selections.
+          </div>
+        )}
       </div>
 
       {/* Display Section */}
@@ -293,8 +462,13 @@ const WeeklyMenu = () => {
                 <div className="space-y-2">
                   {meals.map((meal, index) => (
                     <div key={index} className="text-sm">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs text-purple-300 uppercase">{meal.label}</span>
+                      </div>
                       <div className="font-medium text-white">{meal.name}</div>
+                      {meal.description && (
                       <div className="text-gray-300">{meal.description}</div>
+                      )}
                     </div>
                   ))}
                   {meals.length === 0 && (
@@ -320,14 +494,25 @@ const WeeklyMenu = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">German Name (name_de)</label>
                 <input
                   type="text"
-                  value={newMeal.title}
-                  onChange={(e) => setNewMeal({ ...newMeal, title: e.target.value })}
+                  value={newMeal.name_de}
+                  onChange={(e) => setNewMeal({ ...newMeal, name_de: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
                   style={{'--tw-ring-color': 'var(--primary-color)'}}
-                  placeholder="Meal title"
+                  placeholder="German name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">English Name (name_en)</label>
+                <input
+                  type="text"
+                  value={newMeal.name_en}
+                  onChange={(e) => setNewMeal({ ...newMeal, name_en: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+                  style={{'--tw-ring-color': 'var(--primary-color)'}}
+                  placeholder="English name"
                 />
               </div>
               <div>
@@ -338,14 +523,14 @@ const WeeklyMenu = () => {
                   onChange={(e) => setNewMeal({ ...newMeal, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
                   style={{'--tw-ring-color': 'var(--primary-color)'}}
-                  placeholder="Describe the meal"
+                  placeholder="Describe the meal (optional)"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
                 <select
                   value={newMeal.type}
-                  onChange={(e) => setNewMeal({ ...newMeal, type: e.target.value })}
+                  onChange={(e) => setNewMeal({ ...newMeal, type: e.target.value, menuCategory: e.target.value === 'Soup' ? null : newMeal.menuCategory })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
                   style={{'--tw-ring-color': 'var(--primary-color)'}}
                 >
@@ -353,31 +538,51 @@ const WeeklyMenu = () => {
                   <option value="Soup">Soup</option>
                 </select>
               </div>
+              {newMeal.type === 'Meal' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Menu Category</label>
+                  <select
+                    value={newMeal.menuCategory || 'menu_1'}
+                    onChange={(e) => setNewMeal({ ...newMeal, menuCategory: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
+                    style={{'--tw-ring-color': 'var(--primary-color)'}}
+                  >
+                    <option value="menu_1">Menu 1</option>
+                    <option value="menu_2">Menu 2</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             <div className="flex gap-4 w-full mt-6">
               <button
-                onClick={() => { setIsModalOpen(false); setModalError(''); setNewMeal({ title: '', description: '', type: 'Meal' }); }}
+                onClick={() => { setIsModalOpen(false); setModalError(''); setNewMeal({ name_de: '', name_en: '', description: '', type: 'Meal', menuCategory: 'menu_1' }); }}
                 className="w-full px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 Cancel
               </button>
               <button
-                disabled={modalSubmitting || !newMeal.title.trim()}
+                disabled={modalSubmitting || !(newMeal.name_de?.trim() && newMeal.name_en?.trim())}
                 onClick={async () => {
-                  if (!newMeal.title.trim()) {
-                    setModalError('Please enter a meal title');
+                  if (!newMeal.name_de?.trim() || !newMeal.name_en?.trim()) {
+                    setModalError('Please enter both German and English names');
                     return;
                   }
                   setModalSubmitting(true);
                   setModalError('');
                   try {
-                    const created = await mealService.createMeal({
-                      title: newMeal.title,
+                    const mealData = {
+                      name_de: newMeal.name_de,
+                      name_en: newMeal.name_en,
                       description: newMeal.description,
                       type: newMeal.type,
                       isRecommended: false,
-                    });
+                    };
+                    if (newMeal.menuCategory) {
+                      mealData.menuCategory = newMeal.menuCategory;
+                    }
+                    
+                    const created = await mealService.createMeal(mealData);
                     
                     // Get the full day name for the API
                     const currentDay = days.find(d => d.key === selectedDay);
@@ -396,57 +601,32 @@ const WeeklyMenu = () => {
                         },
                       }));
                     } else {
-                      setAvailableMeals(prev => [created, ...prev]);
-                      // Add to backend for this specific day
-                      await restaurantService.addMealToDay(dayName, created._id || created.id, 'meals');
-                      // fill meal1 then meal2 if empty
-                      setWeekSelections(prev => {
-                        const cur = prev[selectedDay];
-                        const firstEmpty = !cur.meal1 ? 'meal1' : (!cur.meal2 ? 'meal2' : null);
-                        if (firstEmpty) {
-                          return { 
+                      // Add to the appropriate menu list
+                      if (created.menuCategory === 'menu_1') {
+                        setAvailableMenu1(prev => [created, ...prev]);
+                        await restaurantService.addMealToDay(dayName, created._id || created.id, 'menu_1');
+                        setWeekSelections(prev => ({
+                          ...prev,
+                          [selectedDay]: { 
+                            ...prev[selectedDay], 
+                            menu_1: prev[selectedDay].menu_1 || (created._id || created.id) 
+                          },
+                        }));
+                      } else if (created.menuCategory === 'menu_2') {
+                        setAvailableMenu2(prev => [created, ...prev]);
+                        await restaurantService.addMealToDay(dayName, created._id || created.id, 'menu_2');
+                        setWeekSelections(prev => ({
                             ...prev, 
                             [selectedDay]: { 
-                              ...cur, 
-                              [firstEmpty]: (created._id || created.id) 
-                            } 
-                          };
-                        }
-                        return prev;
-                      });
-                    }
-                    
-                    // Reload the weekly menu to sync with backend
-                    const weeklyMenuData = await restaurantService.getWeeklyMenu();
-                    if (weeklyMenuData && weeklyMenuData.length > 0) {
-                      const loadedSelections = { ...initialSelections };
-                      weeklyMenuData.forEach(dayMenu => {
-                        const dayMapping = {
-                          'Saturday': 'sat',
-                          'Sunday': 'sun', 
-                          'Monday': 'mon',
-                          'Tuesday': 'tue',
-                          'Wednesday': 'wed',
-                          'Thursday': 'thu',
-                          'Friday': 'fri'
-                        };
-                        const dayKey = dayMapping[dayMenu.day];
-                        if (dayKey) {
-                          const mealIds = dayMenu.meals?.map(m => m._id || m.id) || [];
-                          const soupIds = dayMenu.soups?.map(s => s._id || s.id) || [];
-                          loadedSelections[dayKey] = {
-                            meal1: mealIds[0] || '',
-                            meal2: mealIds[1] || '',
-                            soup: soupIds[0] || '',
-                          };
-                        }
-                      });
-                      setWeekSelections(loadedSelections);
-                      setOriginalSelections(loadedSelections);
+                            ...prev[selectedDay], 
+                            menu_2: prev[selectedDay].menu_2 || (created._id || created.id) 
+                          },
+                        }));
+                      }
                     }
                     
                     setIsModalOpen(false);
-                    setNewMeal({ title: '', description: '', type: 'Meal' });
+                    setNewMeal({ name_de: '', name_en: '', description: '', type: 'Meal', menuCategory: 'menu_1' });
                     setError(''); // Clear any errors
                   } catch (err) {
                     setModalError(err.message || 'Failed to add meal');
