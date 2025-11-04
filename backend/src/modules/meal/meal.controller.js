@@ -30,13 +30,18 @@ async function createMeal(req, res) {
 }
 
 async function listMeals(req, res) {
-  const { type, recommended, menuCategory } = req.query;
-  const q = {};
-  if (type) q.type = type;
-  if (recommended !== undefined) q.isRecommended = recommended === 'true';
-  if (menuCategory) q.menuCategory = menuCategory;
-  const items = await Meal.find(q).sort({ createdAt: -1 });
-  res.json(items);
+  try {
+    const { type, recommended, menuCategory } = req.query;
+    const q = {};
+    if (type) q.type = type;
+    if (recommended !== undefined) q.isRecommended = recommended === 'true';
+    if (menuCategory) q.menuCategory = menuCategory;
+    const items = await Meal.find(q).sort({ createdAt: -1 });
+    res.json(items);
+  } catch (err) {
+    console.error('Error listing meals:', err);
+    res.status(500).json({ message: 'Failed to fetch meals', error: err.message });
+  }
 }
 
 async function updateMeal(req, res) {

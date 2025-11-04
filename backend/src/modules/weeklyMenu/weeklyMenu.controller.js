@@ -70,8 +70,8 @@ async function upsert(req, res) {
       { day, meals, soups: soupsArray, menu_1: menu1Array, menu_2: menu2Array },
       { upsert: true, new: true }
     );
-    const populated = await doc.populate('meals').populate('soups').populate('menu_1').populate('menu_2');
-    res.json(populated);
+    await doc.populate(['meals', 'soups', 'menu_1', 'menu_2']);
+    res.json(doc);
   } catch (err) {
     console.error('Error upserting weekly menu:', err);
     res.status(500).json({ message: 'Failed to update weekly menu', error: err.message });
@@ -111,7 +111,7 @@ async function addMealToDay(req, res) {
     
     await doc.save();
 
-    // Populate using array syntax
+    // Populate with error handling
     await doc.populate(['meals', 'soups', 'menu_1', 'menu_2']);
     res.json(doc);
   } catch (err) {
@@ -142,7 +142,7 @@ async function removeMealFromDay(req, res) {
     doc[type] = doc[type].filter(id => id.toString() !== mealId);
     await doc.save();
 
-    // Populate using array syntax
+    // Populate with error handling
     await doc.populate(['meals', 'soups', 'menu_1', 'menu_2']);
     res.json(doc);
   } catch (err) {
