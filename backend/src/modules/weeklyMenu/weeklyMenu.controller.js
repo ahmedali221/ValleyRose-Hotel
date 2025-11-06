@@ -27,26 +27,105 @@ const upsertValidators = [
 async function getAll(_req, res) {
   try {
     const items = await WeeklyMenu.find()
-      .populate('meals')
-      .populate('soups')
-      .populate('menu_1')
-      .populate('menu_2')
-      .sort({ createdAt: 1 });
-    res.json(items);
+      .populate({
+        path: 'meals',
+        model: 'Meal',
+        options: { strictPopulate: false }
+      })
+      .populate({
+        path: 'soups',
+        model: 'Meal',
+        options: { strictPopulate: false }
+      })
+      .populate({
+        path: 'menu_1',
+        model: 'Meal',
+        options: { strictPopulate: false }
+      })
+      .populate({
+        path: 'menu_2',
+        model: 'Meal',
+        options: { strictPopulate: false }
+      })
+      .sort({ createdAt: 1 })
+      .lean();
+    
+    // Filter out null/undefined populated items and clean up invalid references
+    const cleanedItems = items.map(item => {
+      const cleaned = { ...item };
+      
+      // Filter out null/undefined from each array
+      if (cleaned.meals) {
+        cleaned.meals = cleaned.meals.filter(meal => meal !== null && meal !== undefined);
+      }
+      if (cleaned.soups) {
+        cleaned.soups = cleaned.soups.filter(soup => soup !== null && soup !== undefined);
+      }
+      if (cleaned.menu_1) {
+        cleaned.menu_1 = cleaned.menu_1.filter(meal => meal !== null && meal !== undefined);
+      }
+      if (cleaned.menu_2) {
+        cleaned.menu_2 = cleaned.menu_2.filter(meal => meal !== null && meal !== undefined);
+      }
+      
+      return cleaned;
+    });
+    
+    res.json(cleanedItems);
   } catch (err) {
     console.error('Error getting all weekly menus:', err);
-    res.status(500).json({ message: 'Failed to fetch weekly menus', error: err.message });
+    // Try to return empty array or partial data if possible
+    try {
+      const items = await WeeklyMenu.find().sort({ createdAt: 1 }).lean();
+      res.json(items || []);
+    } catch (fallbackErr) {
+      console.error('Fallback query also failed:', fallbackErr);
+      res.status(500).json({ message: 'Failed to fetch weekly menus', error: err.message });
+    }
   }
 }
 
 async function getByDay(req, res) {
   try {
     const item = await WeeklyMenu.findOne({ day: req.params.day })
-      .populate('meals')
-      .populate('soups')
-      .populate('menu_1')
-      .populate('menu_2');
+      .populate({
+        path: 'meals',
+        model: 'Meal',
+        options: { strictPopulate: false }
+      })
+      .populate({
+        path: 'soups',
+        model: 'Meal',
+        options: { strictPopulate: false }
+      })
+      .populate({
+        path: 'menu_1',
+        model: 'Meal',
+        options: { strictPopulate: false }
+      })
+      .populate({
+        path: 'menu_2',
+        model: 'Meal',
+        options: { strictPopulate: false }
+      })
+      .lean();
+    
     if (!item) return res.status(404).json({ message: 'Not found' });
+    
+    // Filter out null/undefined populated items
+    if (item.meals) {
+      item.meals = item.meals.filter(meal => meal !== null && meal !== undefined);
+    }
+    if (item.soups) {
+      item.soups = item.soups.filter(soup => soup !== null && soup !== undefined);
+    }
+    if (item.menu_1) {
+      item.menu_1 = item.menu_1.filter(meal => meal !== null && meal !== undefined);
+    }
+    if (item.menu_2) {
+      item.menu_2 = item.menu_2.filter(meal => meal !== null && meal !== undefined);
+    }
+    
     res.json(item);
   } catch (err) {
     console.error('Error getting weekly menu by day:', err);
@@ -70,8 +149,29 @@ async function upsert(req, res) {
       { day, meals, soups: soupsArray, menu_1: menu1Array, menu_2: menu2Array },
       { upsert: true, new: true }
     );
-    await doc.populate(['meals', 'soups', 'menu_1', 'menu_2']);
-    res.json(doc);
+    
+    // Populate with error handling
+    try {
+      await doc.populate([
+        { path: 'meals', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'soups', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'menu_1', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'menu_2', model: 'Meal', options: { strictPopulate: false } }
+      ]);
+      
+      // Filter out null/undefined populated items
+      const docObj = doc.toObject();
+      if (docObj.meals) docObj.meals = docObj.meals.filter(m => m !== null && m !== undefined);
+      if (docObj.soups) docObj.soups = docObj.soups.filter(s => s !== null && s !== undefined);
+      if (docObj.menu_1) docObj.menu_1 = docObj.menu_1.filter(m => m !== null && m !== undefined);
+      if (docObj.menu_2) docObj.menu_2 = docObj.menu_2.filter(m => m !== null && m !== undefined);
+      
+      res.json(docObj);
+    } catch (populateErr) {
+      console.warn('Populate failed, returning document without populated fields:', populateErr);
+      // Return the document even if populate fails
+      res.json(doc);
+    }
   } catch (err) {
     console.error('Error upserting weekly menu:', err);
     res.status(500).json({ message: 'Failed to update weekly menu', error: err.message });
@@ -112,8 +212,27 @@ async function addMealToDay(req, res) {
     await doc.save();
 
     // Populate with error handling
-    await doc.populate(['meals', 'soups', 'menu_1', 'menu_2']);
-    res.json(doc);
+    try {
+      await doc.populate([
+        { path: 'meals', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'soups', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'menu_1', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'menu_2', model: 'Meal', options: { strictPopulate: false } }
+      ]);
+      
+      // Filter out null/undefined populated items
+      const docObj = doc.toObject();
+      if (docObj.meals) docObj.meals = docObj.meals.filter(m => m !== null && m !== undefined);
+      if (docObj.soups) docObj.soups = docObj.soups.filter(s => s !== null && s !== undefined);
+      if (docObj.menu_1) docObj.menu_1 = docObj.menu_1.filter(m => m !== null && m !== undefined);
+      if (docObj.menu_2) docObj.menu_2 = docObj.menu_2.filter(m => m !== null && m !== undefined);
+      
+      res.json(docObj);
+    } catch (populateErr) {
+      console.warn('Populate failed, returning document without populated fields:', populateErr);
+      // Return the document even if populate fails
+      res.json(doc);
+    }
   } catch (err) {
     console.error('Error adding meal to day:', err);
     res.status(500).json({ message: 'Failed to add meal to day', error: err.message });
@@ -143,8 +262,27 @@ async function removeMealFromDay(req, res) {
     await doc.save();
 
     // Populate with error handling
-    await doc.populate(['meals', 'soups', 'menu_1', 'menu_2']);
-    res.json(doc);
+    try {
+      await doc.populate([
+        { path: 'meals', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'soups', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'menu_1', model: 'Meal', options: { strictPopulate: false } },
+        { path: 'menu_2', model: 'Meal', options: { strictPopulate: false } }
+      ]);
+      
+      // Filter out null/undefined populated items
+      const docObj = doc.toObject();
+      if (docObj.meals) docObj.meals = docObj.meals.filter(m => m !== null && m !== undefined);
+      if (docObj.soups) docObj.soups = docObj.soups.filter(s => s !== null && s !== undefined);
+      if (docObj.menu_1) docObj.menu_1 = docObj.menu_1.filter(m => m !== null && m !== undefined);
+      if (docObj.menu_2) docObj.menu_2 = docObj.menu_2.filter(m => m !== null && m !== undefined);
+      
+      res.json(docObj);
+    } catch (populateErr) {
+      console.warn('Populate failed, returning document without populated fields:', populateErr);
+      // Return the document even if populate fails
+      res.json(doc);
+    }
   } catch (err) {
     console.error('Error removing meal from day:', err);
     res.status(500).json({ message: 'Failed to remove meal from day', error: err.message });
