@@ -208,9 +208,9 @@ const WeeklyMenu = () => {
   }, [idToMeal, weekSelections, days]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-stretch">
       {/* Edit Section */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col">
         <div className="flex items-center mb-6">
           <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
           <h2 className="text-xl font-semibold text-gray-900">Weekly Menu</h2>
@@ -515,13 +515,13 @@ const WeeklyMenu = () => {
       </div>
 
       {/* Display Section */}
-      <div className="bg-gray-900 p-6 rounded-lg text-white border border-gray-800">
-        <div className="flex items-center mb-6">
+      <div className="bg-gray-900 p-6 rounded-lg text-white border border-gray-800 flex flex-col h-full min-h-[600px] lg:min-h-0">
+        <div className="flex items-center mb-6 flex-shrink-0">
           <div className="w-1 h-6 mr-3" style={{backgroundColor: 'var(--primary-color)'}}></div>
           <h2 className="text-3xl font-semibold" style={{ fontFamily: "'Redressed', cursive" }}>Weekly Menu</h2>
         </div>
 
-        <div className="space-y-6 max-h-[32rem] overflow-y-auto pr-2">
+        <div className="space-y-6 overflow-y-auto pr-2 flex-1">
           {Object.entries(resolvedMenu).map(([dayKey, meals]) => {
             const day = days.find(d => d.key === dayKey);
             return (
