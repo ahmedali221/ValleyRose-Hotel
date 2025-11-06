@@ -82,6 +82,14 @@ export const restaurantService = {
         console.log('ℹ️ No restaurant main menu found');
         return null; // Return null instead of throwing error
       }
+      // Handle timeout errors
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        throw new Error('Request timeout. The server is taking longer than expected. Please try again.');
+      }
+      // Handle 500 errors with more context
+      if (error.response?.status >= 500) {
+        throw new Error(error.response?.data?.message || 'Server error. Please try again in a moment.');
+      }
       throw new Error(error.response?.data?.message || 'Failed to fetch main menu');
     }
   },
@@ -115,7 +123,15 @@ export const restaurantService = {
       // Handle 404 as "no weekly menu" rather than an error
       if (error.response?.status === 404) {
         console.log('ℹ️ No weekly menu found');
-        return null; // Return null instead of throwing error
+        return []; // Return empty array instead of null for consistency
+      }
+      // Handle timeout errors
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        throw new Error('Request timeout. The server is taking longer than expected. Please try again.');
+      }
+      // Handle 500 errors with more context
+      if (error.response?.status >= 500) {
+        throw new Error(error.response?.data?.message || 'Server error. Please try again in a moment.');
       }
       throw new Error(error.response?.data?.message || 'Failed to fetch weekly menu');
     }
@@ -230,6 +246,14 @@ export const mealService = {
       const response = await api.get('/meals', { params });
       return response.data;
     } catch (error) {
+      // Handle timeout errors
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        throw new Error('Request timeout. The server is taking longer than expected. Please try again.');
+      }
+      // Handle 500 errors with more context
+      if (error.response?.status >= 500) {
+        throw new Error(error.response?.data?.message || 'Server error. Please try again in a moment.');
+      }
       throw new Error(error.response?.data?.message || 'Failed to fetch meals');
     }
   },

@@ -6,6 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 60000, // 60 seconds timeout
 });
 
 // Request interceptor to add auth token
@@ -30,12 +31,50 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle auth errors
+// Helper function to retry requests
+const retryRequest = async (config, retries = 2, delay = 2000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+      return await api.request(config);
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      console.log(`🔄 Retrying request (${i + 1}/${retries})...`);
+    }
+  }
+};
+
+// Response interceptor to handle auth errors and retry logic
 api.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  async (error) => {
+    const config = error.config;
+    
+    // Handle timeout errors and 500 errors with retry
+    const isTimeout = error.code === 'ECONNABORTED' || error.message?.includes('timeout');
+    const isServerError = error.response?.status >= 500;
+    const shouldRetry = (isTimeout || isServerError) && !config._retry && config._retryCount < 2;
+    
+    if (shouldRetry) {
+      config._retry = true;
+      config._retryCount = (config._retryCount || 0) + 1;
+      
+      console.log(`🔄 Retrying request (attempt ${config._retryCount}/2) for: ${config.url}`);
+      
+      // Wait before retrying (exponential backoff)
+      const delay = 2000 * config._retryCount;
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+      try {
+        return await api.request(config);
+      } catch (retryError) {
+        // If retry also fails, continue with normal error handling
+        error = retryError;
+      }
+    }
+    
     // Handle different types of errors appropriately
     if (error.response?.status === 401) {
       const errorMessage = error.response?.data?.message || '';
@@ -62,8 +101,12 @@ api.interceptors.response.use(
       // Server errors - don't logout, just log
       console.error('🚨 Server error:', error.response?.status, error.response?.data?.message);
     } else if (!error.response) {
-      // Network errors - don't logout, just log
-      console.error('🌐 Network error:', error.message);
+      // Network errors or timeouts - don't logout, just log
+      if (isTimeout) {
+        console.error('⏱️ Request timeout:', error.message);
+      } else {
+        console.error('🌐 Network error:', error.message);
+      }
     }
     
     return Promise.reject(error);

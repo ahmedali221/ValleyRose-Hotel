@@ -68,19 +68,47 @@ const WeeklyMenu = () => {
     const load = async () => {
       setIsLoading(true);
       setError('');
+      
+      // Start minimum loading delay timer
+      const minLoadingTime = 5000; // 2 seconds minimum loading time
+      const loadingStartTime = Date.now();
+      
       try {
-        const [menu1Meals, menu2Meals, soups, weeklyMenuData] = await Promise.all([
+        // Use Promise.allSettled to handle partial failures gracefully
+        const results = await Promise.allSettled([
           mealService.listMeals({ type: 'Meal', menuCategory: 'menu_1' }),
           mealService.listMeals({ type: 'Meal', menuCategory: 'menu_2' }),
           mealService.listMeals({ type: 'Soup' }),
           restaurantService.getWeeklyMenu(),
         ]);
-        setAvailableMenu1(menu1Meals);
-        setAvailableMenu2(menu2Meals);
-        setAvailableSoups(soups);
+        
+        // Handle each result
+        const [menu1Result, menu2Result, soupsResult, weeklyMenuResult] = results;
+        
+        if (menu1Result.status === 'fulfilled') {
+          setAvailableMenu1(menu1Result.value);
+        } else {
+          console.warn('Failed to load menu 1 meals:', menu1Result.reason);
+          setAvailableMenu1([]);
+        }
+        
+        if (menu2Result.status === 'fulfilled') {
+          setAvailableMenu2(menu2Result.value);
+        } else {
+          console.warn('Failed to load menu 2 meals:', menu2Result.reason);
+          setAvailableMenu2([]);
+        }
+        
+        if (soupsResult.status === 'fulfilled') {
+          setAvailableSoups(soupsResult.value);
+        } else {
+          console.warn('Failed to load soups:', soupsResult.reason);
+          setAvailableSoups([]);
+        }
         
         // Load existing weekly menu data
-        if (weeklyMenuData && weeklyMenuData.length > 0) {
+        if (weeklyMenuResult.status === 'fulfilled' && weeklyMenuResult.value && weeklyMenuResult.value.length > 0) {
+          const weeklyMenuData = weeklyMenuResult.value;
           const loadedSelections = { ...initialSelections };
           weeklyMenuData.forEach(dayMenu => {
             // Map backend day names to frontend day keys
@@ -108,8 +136,26 @@ const WeeklyMenu = () => {
           setWeekSelections(loadedSelections);
           setOriginalSelections(loadedSelections);
         }
+        
+        // Check if any critical requests failed
+        const criticalFailures = results.slice(0, 3).filter(r => r.status === 'rejected');
+        if (criticalFailures.length > 0) {
+          const errorMessages = criticalFailures.map(r => r.reason?.message || 'Unknown error').join(', ');
+          setError(`Some data failed to load: ${errorMessages}. The page will continue to work with available data.`);
+        }
+        
+        // Wait for minimum loading time if data loaded quickly
+        const elapsedTime = Date.now() - loadingStartTime;
+        if (elapsedTime < minLoadingTime) {
+          await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
+        }
       } catch (err) {
-        setError(err.message || 'Failed to load meals');
+        // Wait for minimum loading time before showing error
+        const elapsedTime = Date.now() - loadingStartTime;
+        if (elapsedTime < minLoadingTime) {
+          await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
+        }
+        setError(err.message || 'Failed to load meals. Please try refreshing the page.');
       } finally {
         setIsLoading(false);
       }
@@ -165,7 +211,15 @@ const WeeklyMenu = () => {
         )}
 
         {isLoading && (
-          <div className="mb-4 text-center text-gray-600">Loading menu data...</div>
+          <div className="mb-4 text-center">
+            <div className="inline-flex items-center gap-2 text-gray-600">
+              <svg className="animate-spin h-5 w-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Loading menu data... This may take a moment.</span>
+            </div>
+          </div>
         )}
 
         {/* Day Selection */}
