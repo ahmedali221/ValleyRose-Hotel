@@ -137,11 +137,24 @@ const WeeklyMenu = () => {
           setOriginalSelections(loadedSelections);
         }
         
-        // Check if any critical requests failed
-        const criticalFailures = results.slice(0, 3).filter(r => r.status === 'rejected');
+        // Check if any critical requests failed and provide specific feedback
+        const failureLabels = ['Menu 1 meals', 'Menu 2 meals', 'Soups'];
+        const criticalFailures = results.slice(0, 3)
+          .map((result, index) => ({ result, label: failureLabels[index] }))
+          .filter(({ result }) => result.status === 'rejected');
+        
         if (criticalFailures.length > 0) {
-          const errorMessages = criticalFailures.map(r => r.reason?.message || 'Unknown error').join(', ');
-          setError(`Some data failed to load: ${errorMessages}. The page will continue to work with available data.`);
+          const failedItems = criticalFailures.map(({ label }) => label).join(', ');
+          const isTimeout = criticalFailures.some(({ result }) => 
+            result.reason?.code === 'ECONNABORTED' || 
+            result.reason?.message?.includes('timeout')
+          );
+          
+          if (isTimeout) {
+            setError(`⚠️ ${failedItems} are taking longer than expected to load. The page will continue to work with available data. You can refresh to try loading them again.`);
+          } else {
+            setError(`⚠️ Unable to load ${failedItems}. The page will continue to work with available data.`);
+          }
         }
         
         // Wait for minimum loading time if data loaded quickly
@@ -203,9 +216,13 @@ const WeeklyMenu = () => {
           <h2 className="text-xl font-semibold text-gray-900">Weekly Menu</h2>
         </div>
 
-        {/* Error Messages */}
+        {/* Error/Warning Messages */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className={`mb-4 p-3 rounded-lg text-sm ${
+            error.includes('⚠️') 
+              ? 'bg-yellow-50 border border-yellow-200 text-yellow-800' 
+              : 'bg-red-50 border border-red-200 text-red-700'
+          }`}>
             {error}
           </div>
         )}
