@@ -6,7 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 60000, // 60 seconds timeout
+  timeout: 90000, // 90 seconds timeout (increased for serverless cold starts)
 });
 
 // Request interceptor to add auth token
@@ -52,18 +52,24 @@ api.interceptors.response.use(
   async (error) => {
     const config = error.config;
     
-    // Handle timeout errors and 500 errors with retry
+    // Handle timeout errors and 500 errors with retry (more aggressive for /meals endpoint)
     const isTimeout = error.code === 'ECONNABORTED' || error.message?.includes('timeout');
     const isServerError = error.response?.status >= 500;
-    const shouldRetry = (isTimeout || isServerError) && !config._retry && config._retryCount < 2;
+    const isConnectionError = !error.response && error.code !== 'ECONNABORTED';
+    const isMealsEndpoint = config.url?.includes('/meals');
+    
+    // Increase retry attempts for meals endpoint (common cold start issues)
+    const maxRetries = isMealsEndpoint ? 3 : 2;
+    const shouldRetry = (isTimeout || isServerError || isConnectionError) && !config._retry && config._retryCount < maxRetries;
     
     if (shouldRetry) {
       config._retry = true;
       config._retryCount = (config._retryCount || 0) + 1;
       
-      console.log(`🔄 Retrying request (attempt ${config._retryCount}/2) for: ${config.url}`);
+      console.log(`🔄 Retrying request (attempt ${config._retryCount}/${maxRetries}) for: ${config.url}`);
       
-      // Wait before retrying (exponential backoff)
+      // Wait before retrying with exponential backoff
+      // First retry: 2s, Second retry: 4s, Third retry: 6s
       const delay = 2000 * config._retryCount;
       await new Promise(resolve => setTimeout(resolve, delay));
       

@@ -93,44 +93,44 @@ const RestaurantSection = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <div>
-              <motion.h3 
+            <motion.h3 
                 className="text-xl sm:text-2xl lg:text-3xl font-medium mb-3 sm:mb-4 valley-rose-text title-font"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-              >
-                {t('home.atValleyRose')}
-              </motion.h3>
-              <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              {t('home.atValleyRose')}
+            </motion.h3>
+            <motion.p 
                 className="text-gray-300 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base lg:text-lg"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              >
-                {t('home.menuDescription')}
-              </motion.p>
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              {t('home.menuDescription')}
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 1.0 }}
+            >
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 1.0 }}
+                whileHover={{ x: 10 }}
+                transition={{ duration: 0.3 }}
               >
-                <motion.div
-                  whileHover={{ x: 10 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Link
-                    to="/restaurant"
+                <Link
+                  to="/restaurant"
                     className="valley-rose-text hover:text-purple-300 flex items-center text-base sm:text-lg lg:text-xl"
-                    style={{ display: 'inline-flex', alignItems: 'center' }}
-                  >
-                    <span>{t('home.viewMenu')}</span>
+                  style={{ display: 'inline-flex', alignItems: 'center' }}
+                >
+                  <span>{t('home.viewMenu')}</span>
                     <span className="ml-2 text-lg sm:text-xl lg:text-2xl">→</span>
-                  </Link>
-                </motion.div>
+                </Link>
               </motion.div>
+            </motion.div>
             </div>
           </motion.div>
           

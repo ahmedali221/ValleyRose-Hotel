@@ -81,7 +81,7 @@ async function getAll(_req, res) {
       res.json(items || []);
     } catch (fallbackErr) {
       console.error('Fallback query also failed:', fallbackErr);
-      res.status(500).json({ message: 'Failed to fetch weekly menus', error: err.message });
+    res.status(500).json({ message: 'Failed to fetch weekly menus', error: err.message });
     }
   }
 }
@@ -177,7 +177,7 @@ async function upsert(req, res) {
     } catch (populateErr) {
       console.warn('Populate failed, returning document without populated fields:', populateErr);
       // Return the document even if populate fails
-      res.json(doc);
+    res.json(doc);
     }
   } catch (err) {
     console.error('Error upserting weekly menu:', err);
@@ -243,7 +243,7 @@ async function addMealToDay(req, res) {
     } catch (populateErr) {
       console.warn('Populate failed, returning document without populated fields:', populateErr);
       // Return the document even if populate fails
-      res.json(doc);
+    res.json(doc);
     }
   } catch (err) {
     console.error('Error adding meal to day:', err);
@@ -298,7 +298,7 @@ async function removeMealFromDay(req, res) {
     } catch (populateErr) {
       console.warn('Populate failed, returning document without populated fields:', populateErr);
       // Return the document even if populate fails
-      res.json(doc);
+    res.json(doc);
     }
   } catch (err) {
     console.error('Error removing meal from day:', err);

@@ -31,18 +31,34 @@ app.use((req, res, next) => {
 });
 
 // Initialize database connection for serverless
-let isConnected = false;
+const mongoose = require('mongoose');
 
 const ensureConnection = async () => {
-  if (!isConnected) {
-    try {
-      await connect();
-      isConnected = true;
-      console.log('Database connected in serverless function');
-    } catch (error) {
-      console.error('Database connection error:', error);
-      throw error;
-    }
+  // Check mongoose connection state: 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+  const state = mongoose.connection.readyState;
+  
+  if (state === 1) {
+    // Already connected
+    return;
+  }
+  
+  if (state === 2) {
+    // Connection in progress, wait for it
+    console.log('Connection in progress, waiting...');
+    await new Promise(resolve => {
+      mongoose.connection.once('connected', resolve);
+      mongoose.connection.once('error', resolve);
+    });
+    return;
+  }
+  
+  try {
+    console.log('Ensuring database connection for serverless function...');
+    await connect();
+    console.log('Database connection established');
+  } catch (error) {
+    console.error('Database connection error in serverless:', error);
+    throw error;
   }
 };
 
