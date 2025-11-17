@@ -25,28 +25,22 @@ const upsertValidators = [
 ];
 
 async function getAll(_req, res) {
+  const startTime = Date.now();
   try {
+    console.log('[Weekly Menu Controller] Fetching all weekly menus with populated meals...');
+    
+    // Optimize populate to only fetch needed fields (reduces data transfer and processing)
+    const populateOptions = {
+      select: '_id title name_de name_en description type menuCategory',
+      options: { strictPopulate: false }
+    };
+    
     const items = await WeeklyMenu.find()
-      .populate({
-        path: 'meals',
-        model: 'Meal',
-        options: { strictPopulate: false }
-      })
-      .populate({
-        path: 'soups',
-        model: 'Meal',
-        options: { strictPopulate: false }
-      })
-      .populate({
-        path: 'menu_1',
-        model: 'Meal',
-        options: { strictPopulate: false }
-      })
-      .populate({
-        path: 'menu_2',
-        model: 'Meal',
-        options: { strictPopulate: false }
-      })
+      .populate({ path: 'meals', model: 'Meal', ...populateOptions })
+      .populate({ path: 'soups', model: 'Meal', ...populateOptions })
+      .populate({ path: 'menu_1', model: 'Meal', ...populateOptions })
+      .populate({ path: 'menu_2', model: 'Meal', ...populateOptions })
+      .select('day meals soups menu_1 menu_2 createdAt updatedAt')
       .sort({ createdAt: 1 })
       .lean();
     
@@ -71,12 +65,19 @@ async function getAll(_req, res) {
       return cleaned;
     });
     
+    const queryTime = Date.now() - startTime;
+    console.log(`[Weekly Menu Controller] Found ${items.length} weekly menus with populated meals in ${queryTime}ms`);
+    
     res.json(cleanedItems);
   } catch (err) {
-    console.error('Error getting all weekly menus:', err);
+    const queryTime = Date.now() - startTime;
+    console.error(`[Weekly Menu Controller] Error getting all weekly menus after ${queryTime}ms:`, err);
+    console.error('Error stack:', err.stack);
+    
     // Try to return empty array or partial data if possible
     try {
       const items = await WeeklyMenu.find().sort({ createdAt: 1 }).lean();
+      console.log('[Weekly Menu Controller] Returning unpopulated weekly menus as fallback');
       res.json(items || []);
     } catch (fallbackErr) {
       console.error('Fallback query also failed:', fallbackErr);
@@ -86,31 +87,28 @@ async function getAll(_req, res) {
 }
 
 async function getByDay(req, res) {
+  const startTime = Date.now();
   try {
+    console.log(`[Weekly Menu Controller] Fetching weekly menu for ${req.params.day}...`);
+    
+    // Optimize populate to only fetch needed fields
+    const populateOptions = {
+      select: '_id title name_de name_en description type menuCategory',
+      options: { strictPopulate: false }
+    };
+    
     const item = await WeeklyMenu.findOne({ day: req.params.day })
-      .populate({
-        path: 'meals',
-        model: 'Meal',
-        options: { strictPopulate: false }
-      })
-      .populate({
-        path: 'soups',
-        model: 'Meal',
-        options: { strictPopulate: false }
-      })
-      .populate({
-        path: 'menu_1',
-        model: 'Meal',
-        options: { strictPopulate: false }
-      })
-      .populate({
-        path: 'menu_2',
-        model: 'Meal',
-        options: { strictPopulate: false }
-      })
+      .populate({ path: 'meals', model: 'Meal', ...populateOptions })
+      .populate({ path: 'soups', model: 'Meal', ...populateOptions })
+      .populate({ path: 'menu_1', model: 'Meal', ...populateOptions })
+      .populate({ path: 'menu_2', model: 'Meal', ...populateOptions })
+      .select('day meals soups menu_1 menu_2 createdAt updatedAt')
       .lean();
     
-    if (!item) return res.status(404).json({ message: 'Not found' });
+    if (!item) {
+      console.log(`[Weekly Menu Controller] No menu found for ${req.params.day}`);
+      return res.status(404).json({ message: 'Not found' });
+    }
     
     // Filter out null/undefined populated items
     if (item.meals) {
@@ -126,9 +124,13 @@ async function getByDay(req, res) {
       item.menu_2 = item.menu_2.filter(meal => meal !== null && meal !== undefined);
     }
     
+    const queryTime = Date.now() - startTime;
+    console.log(`[Weekly Menu Controller] Fetched menu for ${req.params.day} in ${queryTime}ms`);
+    
     res.json(item);
   } catch (err) {
-    console.error('Error getting weekly menu by day:', err);
+    const queryTime = Date.now() - startTime;
+    console.error(`[Weekly Menu Controller] Error getting weekly menu by day after ${queryTime}ms:`, err);
     res.status(500).json({ message: 'Failed to fetch weekly menu', error: err.message });
   }
 }
@@ -150,13 +152,18 @@ async function upsert(req, res) {
       { upsert: true, new: true }
     );
     
-    // Populate with error handling
+    // Populate with error handling - optimized to only fetch needed fields
     try {
+      const populateOptions = {
+        select: '_id title name_de name_en description type menuCategory',
+        options: { strictPopulate: false }
+      };
+      
       await doc.populate([
-        { path: 'meals', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'soups', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'menu_1', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'menu_2', model: 'Meal', options: { strictPopulate: false } }
+        { path: 'meals', model: 'Meal', ...populateOptions },
+        { path: 'soups', model: 'Meal', ...populateOptions },
+        { path: 'menu_1', model: 'Meal', ...populateOptions },
+        { path: 'menu_2', model: 'Meal', ...populateOptions }
       ]);
       
       // Filter out null/undefined populated items
@@ -211,13 +218,18 @@ async function addMealToDay(req, res) {
     
     await doc.save();
 
-    // Populate with error handling
+    // Populate with error handling - optimized to only fetch needed fields
     try {
+      const populateOptions = {
+        select: '_id title name_de name_en description type menuCategory',
+        options: { strictPopulate: false }
+      };
+      
       await doc.populate([
-        { path: 'meals', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'soups', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'menu_1', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'menu_2', model: 'Meal', options: { strictPopulate: false } }
+        { path: 'meals', model: 'Meal', ...populateOptions },
+        { path: 'soups', model: 'Meal', ...populateOptions },
+        { path: 'menu_1', model: 'Meal', ...populateOptions },
+        { path: 'menu_2', model: 'Meal', ...populateOptions }
       ]);
       
       // Filter out null/undefined populated items
@@ -261,13 +273,18 @@ async function removeMealFromDay(req, res) {
     doc[type] = doc[type].filter(id => id.toString() !== mealId);
     await doc.save();
 
-    // Populate with error handling
+    // Populate with error handling - optimized to only fetch needed fields
     try {
+      const populateOptions = {
+        select: '_id title name_de name_en description type menuCategory',
+        options: { strictPopulate: false }
+      };
+      
       await doc.populate([
-        { path: 'meals', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'soups', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'menu_1', model: 'Meal', options: { strictPopulate: false } },
-        { path: 'menu_2', model: 'Meal', options: { strictPopulate: false } }
+        { path: 'meals', model: 'Meal', ...populateOptions },
+        { path: 'soups', model: 'Meal', ...populateOptions },
+        { path: 'menu_1', model: 'Meal', ...populateOptions },
+        { path: 'menu_2', model: 'Meal', ...populateOptions }
       ]);
       
       // Filter out null/undefined populated items
