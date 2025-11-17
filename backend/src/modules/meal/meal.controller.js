@@ -34,28 +34,53 @@ async function listMeals(req, res) {
   try {
     const { type, recommended, menuCategory } = req.query;
     const q = {};
-    if (type) q.type = type;
-    if (recommended !== undefined) q.isRecommended = recommended === 'true';
-    if (menuCategory) q.menuCategory = menuCategory;
+    
+    // Build query with explicit handling for type, menuCategory, and recommended
+    if (type) {
+      q.type = type;
+    }
+    
+    // Handle menuCategory - ensure it's properly set for menu_1 and menu_2 queries
+    if (menuCategory) {
+      q.menuCategory = menuCategory;
+      // For menu_1 and menu_2, also ensure type is 'Meal' if not specified
+      if ((menuCategory === 'menu_1' || menuCategory === 'menu_2') && !type) {
+        q.type = 'Meal';
+      }
+    }
+    
+    if (recommended !== undefined) {
+      q.isRecommended = recommended === 'true';
+    }
     
     console.log(`[Meal Controller] Querying meals with filters:`, q);
     
-    // Use lean() for better performance and limit fields if needed
+    // Use lean() for better performance and limit fields
+    // MongoDB will automatically use the compound index { type: 1, menuCategory: 1 } for optimal performance
+    // Same optimization approach as soups - let MongoDB query planner choose the best index
     const items = await Meal.find(q)
       .select('_id title name_de name_en description thumbnail type menuCategory isRecommended createdAt updatedAt')
       .sort({ createdAt: -1 })
       .lean();
     
     const queryTime = Date.now() - startTime;
-    console.log(`[Meal Controller] Found ${items.length} meals in ${queryTime}ms`);
+    const queryType = q.type === 'Soup' ? 'soups' : (q.menuCategory === 'menu_1' ? 'menu_1 meals' : (q.menuCategory === 'menu_2' ? 'menu_2 meals' : 'meals'));
+    console.log(`[Meal Controller] Found ${items.length} ${queryType} in ${queryTime}ms`);
     
-    res.json(items);
+    // Return empty array if no items found (consistent with soups behavior)
+    res.json(items || []);
   } catch (err) {
     const queryTime = Date.now() - startTime;
-    console.error(`[Meal Controller] Error listing meals after ${queryTime}ms:`, err);
+    const queryType = req.query.type === 'Soup' ? 'soups' : (req.query.menuCategory === 'menu_1' ? 'menu_1 meals' : (req.query.menuCategory === 'menu_2' ? 'menu_2 meals' : 'meals'));
+    console.error(`[Meal Controller] Error listing ${queryType} after ${queryTime}ms:`, err);
     console.error('Query params:', { type: req.query.type, recommended: req.query.recommended, menuCategory: req.query.menuCategory });
     console.error('Error stack:', err.stack);
-    res.status(500).json({ message: 'Failed to fetch meals', error: err.message });
+    
+    // Return error response (frontend handles this gracefully with Promise.allSettled)
+    res.status(500).json({ 
+      message: `Failed to fetch ${queryType}`, 
+      error: err.message
+    });
   }
 }
 
