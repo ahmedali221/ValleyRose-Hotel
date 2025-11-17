@@ -16,7 +16,19 @@ const restaurantMainMenuRoutes = require('./modules/restaurantMainMenu/restauran
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+
+// Increase timeout for long-running requests (especially database queries with populate)
+// Note: Vercel serverless functions have their own timeout limits (10s Hobby, 60s Pro)
+app.use((req, res, next) => {
+  // Set a longer timeout for API requests (30 seconds)
+  req.setTimeout(30000, () => {
+    if (!res.headersSent) {
+      res.status(408).json({ message: 'Request timeout' });
+    }
+  });
+  next();
+});
 
 // Initialize database connection for serverless
 let isConnected = false;

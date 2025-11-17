@@ -7,6 +7,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "build": "echo 'Build completed'",
+    "cleanup:meals": "node src/scripts/cleanupMeals.js",
     "seed:soups": "node src/scripts/seedSoups.js",
     "seed:meals": "node src/scripts/seedMeals.js",
     "seed:all": "node src/scripts/seedSoups.js && node src/scripts/seedMeals.js"

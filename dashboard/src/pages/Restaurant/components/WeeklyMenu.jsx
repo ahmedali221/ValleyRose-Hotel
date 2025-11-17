@@ -69,10 +69,6 @@ const WeeklyMenu = () => {
       setIsLoading(true);
       setError('');
       
-      // Start minimum loading delay timer
-      const minLoadingTime = 5000; // 2 seconds minimum loading time
-      const loadingStartTime = Date.now();
-      
       try {
         // Use Promise.allSettled to handle partial failures gracefully
         const results = await Promise.allSettled([
@@ -156,18 +152,7 @@ const WeeklyMenu = () => {
             setError(`⚠️ Unable to load ${failedItems}. The page will continue to work with available data.`);
           }
         }
-        
-        // Wait for minimum loading time if data loaded quickly
-        const elapsedTime = Date.now() - loadingStartTime;
-        if (elapsedTime < minLoadingTime) {
-          await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
-        }
       } catch (err) {
-        // Wait for minimum loading time before showing error
-        const elapsedTime = Date.now() - loadingStartTime;
-        if (elapsedTime < minLoadingTime) {
-          await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
-        }
         setError(err.message || 'Failed to load meals. Please try refreshing the page.');
       } finally {
         setIsLoading(false);
@@ -234,7 +219,7 @@ const WeeklyMenu = () => {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span>Loading menu data... This may take a moment.</span>
+              <span>Loading menu data...</span>
             </div>
           </div>
         )}

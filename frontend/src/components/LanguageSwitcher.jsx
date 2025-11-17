@@ -10,9 +10,9 @@ const LanguageSwitcher = ({ className = '' }) => {
 
   return (
     <div className={`relative w-full max-w-[140px] sm:max-w-[180px] ${className}`}>
-      <select
-        value={language}
-        onChange={handleLanguageChange}
+    <select 
+      value={language} 
+      onChange={handleLanguageChange}
         className={`
           w-full
           border
@@ -35,10 +35,10 @@ const LanguageSwitcher = ({ className = '' }) => {
           hover:border-purple-400
           shadow-sm
         `}
-      >
+    >
         <option value="en" className="bg-white text-gray-800">English</option>
         <option value="de" className="bg-white text-gray-800">Deutsch</option>
-      </select>
+    </select>
       {/* Custom chevron for better mobile UX */}
       <span className="pointer-events-none absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 text-purple-500 text-xs">
         ▼

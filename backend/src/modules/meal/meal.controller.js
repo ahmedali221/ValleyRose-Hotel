@@ -30,16 +30,31 @@ async function createMeal(req, res) {
 }
 
 async function listMeals(req, res) {
+  const startTime = Date.now();
   try {
     const { type, recommended, menuCategory } = req.query;
     const q = {};
     if (type) q.type = type;
     if (recommended !== undefined) q.isRecommended = recommended === 'true';
     if (menuCategory) q.menuCategory = menuCategory;
-    const items = await Meal.find(q).sort({ createdAt: -1 });
+    
+    console.log(`[Meal Controller] Querying meals with filters:`, q);
+    
+    // Use lean() for better performance and limit fields if needed
+    const items = await Meal.find(q)
+      .select('_id title name_de name_en description thumbnail type menuCategory isRecommended createdAt updatedAt')
+      .sort({ createdAt: -1 })
+      .lean();
+    
+    const queryTime = Date.now() - startTime;
+    console.log(`[Meal Controller] Found ${items.length} meals in ${queryTime}ms`);
+    
     res.json(items);
   } catch (err) {
-    console.error('Error listing meals:', err);
+    const queryTime = Date.now() - startTime;
+    console.error(`[Meal Controller] Error listing meals after ${queryTime}ms:`, err);
+    console.error('Query params:', { type: req.query.type, recommended: req.query.recommended, menuCategory: req.query.menuCategory });
+    console.error('Error stack:', err.stack);
     res.status(500).json({ message: 'Failed to fetch meals', error: err.message });
   }
 }
