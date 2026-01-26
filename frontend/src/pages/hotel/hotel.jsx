@@ -2,18 +2,18 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import StaySection from './components/StaySection';
 import HeaderHero from '../../components/HeaderHero';
-import hotelBanner from '../../assets/banners/hotel.jpg';
+import hotelBanner from '../../assets/image.png';
 
 const Hotel = () => {
   return (
-    <motion.div 
+    <motion.div
       className="hotel-page min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <HeaderHero 
-        backgroundImage={hotelBanner} 
+      <HeaderHero
+        backgroundImage={hotelBanner}
         showButtons={true}
         customTitle={
           <>

@@ -85,17 +85,17 @@ const WeeklyMenu = () => {
   return (
     <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
       {/* Background Image */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 z-0"
         initial={{ opacity: 0, scale: 0.8 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1 }}
       >
-        <img 
-          src={restaurantImage} 
-          alt="restaurant" 
-          className="w-full h-full object-cover opacity-20" 
+        <img
+          src={restaurantImage}
+          alt="restaurant"
+          className="w-full h-full object-cover opacity-20"
         />
       </motion.div>
 
@@ -104,14 +104,14 @@ const WeeklyMenu = () => {
         {/* Mobile Layout - Stacked */}
         <div className="block lg:hidden space-y-6">
           {/* New Taste Every Week Card */}
-          <motion.div 
+          <motion.div
             className="bg-gray-900 bg-opacity-90 p-6 sm:p-8 rounded-lg backdrop-blur-sm shadow-2xl"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <motion.h2 
+            <motion.h2
               className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 title-font"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -120,7 +120,7 @@ const WeeklyMenu = () => {
             >
               <span className="text-white">{t('restaurant.newTasteEveryWeek')}</span>
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-gray-300 leading-relaxed text-sm sm:text-base"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -132,14 +132,14 @@ const WeeklyMenu = () => {
           </motion.div>
 
           {/* Weekly Menu Card */}
-          <motion.div 
+          <motion.div
             className="bg-gray-800 bg-opacity-95 p-6 sm:p-8 rounded-lg backdrop-blur-sm shadow-2xl"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <motion.h2 
+            <motion.h2
               className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 title-font"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -151,7 +151,7 @@ const WeeklyMenu = () => {
 
             {/* Loading State */}
             {loading && (
-              <motion.div 
+              <motion.div
                 className="flex justify-center items-center py-12"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -163,7 +163,7 @@ const WeeklyMenu = () => {
 
             {/* Error State */}
             {error && (
-              <motion.div 
+              <motion.div
                 className="bg-red-900 bg-opacity-50 border border-red-500 rounded-lg p-4 text-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -175,7 +175,7 @@ const WeeklyMenu = () => {
 
             {/* Menu Items */}
             {!loading && !error && (
-              <motion.div 
+              <motion.div
                 className="space-y-4 lg:space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -183,7 +183,7 @@ const WeeklyMenu = () => {
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
                 {weeklyMenuItems.length === 0 ? (
-                  <motion.div 
+                  <motion.div
                     className="text-center py-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -193,8 +193,8 @@ const WeeklyMenu = () => {
                   </motion.div>
                 ) : (
                   weeklyMenuItems.map((dayMenu, index) => (
-                    <motion.div 
-                      key={dayMenu._id || index} 
+                    <motion.div
+                      key={dayMenu._id || index}
                       className="border-b border-gray-700 pb-4 lg:pb-6 last:border-b-0"
                       initial={{ opacity: 0, x: 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
@@ -204,7 +204,7 @@ const WeeklyMenu = () => {
                       {/* Day and Date */}
                       <div className="flex justify-between items-center mb-3">
                         <h3 className="text-purple-400 text-lg lg:text-xl font-semibold">
-                          {dayMenu.day}
+                          {t(`days.${dayMenu.day.toLowerCase()}`)}
                         </h3>
                         <span className="text-gray-400 text-xs lg:text-sm">
                           {currentWeekDates.find(d => d.fullName === dayMenu.day)?.date || ''}
@@ -269,11 +269,11 @@ const WeeklyMenu = () => {
                       )}
 
                       {/* Empty state for day */}
-                      {(!dayMenu.menu_1 || dayMenu.menu_1.length === 0) && 
-                       (!dayMenu.menu_2 || dayMenu.menu_2.length === 0) && 
-                       (!dayMenu.soups || dayMenu.soups.length === 0) && (
-                        <p className="text-gray-500 text-sm italic">{t('restaurant.noItemsForDay')}</p>
-                      )}
+                      {(!dayMenu.menu_1 || dayMenu.menu_1.length === 0) &&
+                        (!dayMenu.menu_2 || dayMenu.menu_2.length === 0) &&
+                        (!dayMenu.soups || dayMenu.soups.length === 0) && (
+                          <p className="text-gray-500 text-sm italic">{t('restaurant.noItemsForDay')}</p>
+                        )}
                     </motion.div>
                   ))
                 )}
@@ -285,7 +285,7 @@ const WeeklyMenu = () => {
         {/* Desktop Layout - Complex positioning */}
         <div className="hidden lg:block relative min-h-[600px] lg:min-h-[700px]">
           {/* Left Side - New Taste Every Week */}
-          <motion.div 
+          <motion.div
             className="absolute -top-15 -left-10 w-[45%] bg-gray-900 bg-opacity-90 p-8 lg:p-12 rounded-lg backdrop-blur-sm shadow-2xl"
             initial={{ opacity: 0, x: -100, y: -50 }}
             whileInView={{ opacity: 1, x: 0, y: 0 }}
@@ -293,7 +293,7 @@ const WeeklyMenu = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             whileHover={{ scale: 1.02 }}
           >
-            <motion.h2 
+            <motion.h2
               className="text-3xl lg:text-4xl font-bold mb-6 title-font"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -302,7 +302,7 @@ const WeeklyMenu = () => {
             >
               <span className="text-white">{t('restaurant.newTasteEveryWeek')}</span>
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-gray-300 leading-relaxed text-sm lg:text-base"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -314,7 +314,7 @@ const WeeklyMenu = () => {
           </motion.div>
 
           {/* Right Side - Weekly Menu */}
-          <motion.div 
+          <motion.div
             className="absolute -bottom-10 -right-15 w-[50%] bg-gray-800 bg-opacity-95 p-8 lg:p-10 rounded-lg backdrop-blur-sm shadow-2xl"
             initial={{ opacity: 0, x: 100, y: 50 }}
             whileInView={{ opacity: 1, x: 0, y: 0 }}
@@ -322,7 +322,7 @@ const WeeklyMenu = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             whileHover={{ scale: 1.02 }}
           >
-            <motion.h2 
+            <motion.h2
               className="text-3xl lg:text-4xl font-bold mb-6 lg:mb-8 title-font"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -334,7 +334,7 @@ const WeeklyMenu = () => {
 
             {/* Loading State */}
             {loading && (
-              <motion.div 
+              <motion.div
                 className="flex justify-center items-center py-12"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -346,7 +346,7 @@ const WeeklyMenu = () => {
 
             {/* Error State */}
             {error && (
-              <motion.div 
+              <motion.div
                 className="bg-red-900 bg-opacity-50 border border-red-500 rounded-lg p-4 text-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -358,7 +358,7 @@ const WeeklyMenu = () => {
 
             {/* Menu Items */}
             {!loading && !error && (
-              <motion.div 
+              <motion.div
                 className="space-y-4 lg:space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -366,7 +366,7 @@ const WeeklyMenu = () => {
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
                 {weeklyMenuItems.length === 0 ? (
-                  <motion.div 
+                  <motion.div
                     className="text-center py-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -376,8 +376,8 @@ const WeeklyMenu = () => {
                   </motion.div>
                 ) : (
                   weeklyMenuItems.map((dayMenu, index) => (
-                    <motion.div 
-                      key={dayMenu._id || index} 
+                    <motion.div
+                      key={dayMenu._id || index}
                       className="border-b border-gray-700 pb-4 lg:pb-6 last:border-b-0"
                       initial={{ opacity: 0, x: 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
@@ -387,7 +387,7 @@ const WeeklyMenu = () => {
                       {/* Day and Date */}
                       <div className="flex justify-between items-center mb-3">
                         <h3 className="text-purple-400 text-lg lg:text-xl font-semibold">
-                          {dayMenu.day}
+                          {t(`days.${dayMenu.day.toLowerCase()}`)}
                         </h3>
                         <span className="text-gray-400 text-xs lg:text-sm">
                           {currentWeekDates.find(d => d.fullName === dayMenu.day)?.date || ''}
@@ -452,11 +452,11 @@ const WeeklyMenu = () => {
                       )}
 
                       {/* Empty state for day */}
-                      {(!dayMenu.menu_1 || dayMenu.menu_1.length === 0) && 
-                       (!dayMenu.menu_2 || dayMenu.menu_2.length === 0) && 
-                       (!dayMenu.soups || dayMenu.soups.length === 0) && (
-                        <p className="text-gray-500 text-sm italic">{t('restaurant.noItemsForDay')}</p>
-                      )}
+                      {(!dayMenu.menu_1 || dayMenu.menu_1.length === 0) &&
+                        (!dayMenu.menu_2 || dayMenu.menu_2.length === 0) &&
+                        (!dayMenu.soups || dayMenu.soups.length === 0) && (
+                          <p className="text-gray-500 text-sm italic">{t('restaurant.noItemsForDay')}</p>
+                        )}
                     </motion.div>
                   ))
                 )}

@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import HeaderHero from '../../components/HeaderHero'
-import contactBanner from '../../assets/banners/contact.jpg'
+import contactBanner from '../../assets/image.png'
 import { useTranslation } from '../../locales'
 
 const ContactUs = () => {
@@ -70,14 +70,14 @@ const ContactUs = () => {
   ];
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen content-section  text-gray-200 font-sans"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <HeaderHero 
-        backgroundImage={contactBanner} 
+      <HeaderHero
+        backgroundImage={contactBanner}
         showButtons={false}
         customTitle={
           <>
@@ -86,7 +86,7 @@ const ContactUs = () => {
         }
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
-        <motion.h1 
+        <motion.h1
           className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black mb-2 title-font text-center sm:text-left"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -94,7 +94,7 @@ const ContactUs = () => {
         >
           {t('contact.title')}
         </motion.h1>
-        <motion.p 
+        <motion.p
           className="text-base sm:text-lg text-gray-400 mb-4 sm:mb-6 lg:mb-8 text-center sm:text-left"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -102,7 +102,7 @@ const ContactUs = () => {
         >
           {t('contact.subtitle')}
         </motion.p>
-        <motion.p 
+        <motion.p
           className="text-base sm:text-lg text-gray-400 mb-6 sm:mb-8 text-center sm:text-left"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,18 +113,18 @@ const ContactUs = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {contactCards.map((card, index) => (
-            <motion.div 
+            <motion.div
               key={card.id}
               className="bg-gray-800 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md flex flex-col items-center text-center"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: index * 0.2 }}
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
                 boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
               }}
             >
-              <motion.div 
+              <motion.div
                 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -132,12 +132,12 @@ const ContactUs = () => {
               >
                 {card.title}
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full btn-primary flex items-center justify-center mb-4 sm:mb-6"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: index * 0.2 + 0.4 }}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.1,
                   backgroundColor: "var(--primary-hover)"
                 }}
@@ -157,7 +157,7 @@ const ContactUs = () => {
           ))}
         </div>
 
-      
+
       </div>
     </motion.div>
   )

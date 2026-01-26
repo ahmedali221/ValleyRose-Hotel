@@ -7,7 +7,7 @@ import Confirmation from './components/Confirmation';
 import Payment from './components/Payment';
 import FinalReview from './components/FinalReview';
 import HeaderHero from '../../components/HeaderHero';
-import bookingBanner from '../../assets/banners/booking.jpg';
+import bookingBanner from '../../assets/image.png';
 import { useTranslation } from '../../locales';
 
 const BookingPage = () => {
@@ -67,8 +67,8 @@ const BookingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeaderHero 
-        backgroundImage={bookingBanner} 
+      <HeaderHero
+        backgroundImage={bookingBanner}
         showButtons={false}
         customTitle={
           <>
@@ -82,7 +82,7 @@ const BookingPage = () => {
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-12">
-            
+
             {/* Left Column - Information */}
             <div className="lg:col-span-1 space-y-6 lg:space-y-8 order-2 lg:order-1">
               {/* Online Room Reservations */}
@@ -111,7 +111,7 @@ const BookingPage = () => {
                 <p className="text-sm sm:text-base text-gray-600 mb-4 lg:mb-6">
                   {t('booking.specialDescription')}
                 </p>
-                
+
                 <div className="space-y-2 lg:space-y-3">
                   <div className="flex items-center space-x-2 lg:space-x-3">
                     <svg className="w-4 h-4 lg:w-5 lg:h-5 valley-rose-text flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -119,7 +119,7 @@ const BookingPage = () => {
                     </svg>
                     <span className="text-sm sm:text-base text-gray-700 break-all">+43 1 20 43 969</span>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2 lg:space-x-3">
                     <svg className="w-4 h-4 lg:w-5 lg:h-5 valley-rose-text flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -147,19 +147,18 @@ const BookingPage = () => {
                       {steps.map((step, index) => (
                         <div key={step.id} className="flex-shrink-0 flex flex-col items-center min-w-[80px]">
                           <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${
-                              currentStep > step.id
+                            className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${currentStep > step.id
                                 ? 'bg-green-500 text-white'
                                 : currentStep === step.id
-                                ? 'bg-purple-600 text-white'
-                                : 'bg-gray-200 text-gray-600'
-                            }`}
+                                  ? 'bg-purple-600 text-white'
+                                  : 'bg-gray-200 text-gray-600'
+                              }`}
                             style={{
-                              backgroundColor: currentStep > step.id 
-                                ? '#2ABF00' 
-                                : currentStep === step.id 
-                                ? '#9962B9' 
-                                : '#E5E7EB'
+                              backgroundColor: currentStep > step.id
+                                ? '#2ABF00'
+                                : currentStep === step.id
+                                  ? '#9962B9'
+                                  : '#E5E7EB'
                             }}
                           >
                             {currentStep > step.id ? (
@@ -183,19 +182,18 @@ const BookingPage = () => {
                         <div key={step.id} className="flex items-center">
                           <div className="flex flex-col items-center">
                             <div
-                              className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
-                                currentStep > step.id
+                              className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${currentStep > step.id
                                   ? 'bg-green-500 text-white'
                                   : currentStep === step.id
-                                  ? 'bg-purple-600 text-white'
-                                  : 'bg-gray-200 text-gray-600'
-                              }`}
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-gray-200 text-gray-600'
+                                }`}
                               style={{
-                                backgroundColor: currentStep > step.id 
-                                  ? '#2ABF00' 
-                                  : currentStep === step.id 
-                                  ? '#9962B9' 
-                                  : '#E5E7EB'
+                                backgroundColor: currentStep > step.id
+                                  ? '#2ABF00'
+                                  : currentStep === step.id
+                                    ? '#9962B9'
+                                    : '#E5E7EB'
                               }}
                             >
                               {currentStep > step.id ? (
@@ -210,9 +208,8 @@ const BookingPage = () => {
                           </div>
                           {index < steps.length - 1 && (
                             <div
-                              className={`flex-1 h-0.5 mx-6 transition-colors duration-300 ${
-                                currentStep > step.id ? 'bg-green-500' : 'bg-gray-300'
-                              }`}
+                              className={`flex-1 h-0.5 mx-6 transition-colors duration-300 ${currentStep > step.id ? 'bg-green-500' : 'bg-gray-300'
+                                }`}
                               style={{
                                 backgroundColor: currentStep > step.id ? '#10B981' : '#D1D5DB'
                               }}

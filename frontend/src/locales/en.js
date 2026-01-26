@@ -10,6 +10,17 @@ export const en = {
     checkReservation: 'Check Reservation'
   },
 
+  // Days
+  days: {
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday',
+    sunday: 'Sunday'
+  },
+
   // Header Hero
   hero: {
     title: 'Valley Rose Hotel - Restaurant',

@@ -7,18 +7,18 @@ import WeeklyMenu from './components/WeeklyMenu';
 import Gallery from './components/Gallery';
 import EventsSection from './components/EventsSection';
 import HeaderHero from '../../components/HeaderHero';
-import restaurantBanner from '../../assets/banners/restaurant.jpg';
+import restaurantBanner from '../../assets/image.png';
 
 const Restaurant = () => {
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen content-section"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <HeaderHero 
-        backgroundImage={restaurantBanner} 
+      <HeaderHero
+        backgroundImage={restaurantBanner}
         showButtons={false}
         customTitle={
           <>

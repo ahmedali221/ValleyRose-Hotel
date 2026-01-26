@@ -30,7 +30,7 @@ const RoomDetailsPage = () => {
       setLoading(true);
       setError(null);
       const response = await roomService.getRoomById(id, language);
-      
+
       if (response.success) {
         setRoom(response.data);
       } else {
@@ -79,13 +79,13 @@ const RoomDetailsPage = () => {
       {/* Hero Section */}
       <div className="relative">
         {/* Background Image Container */}
-        <div 
-          className="w-full min-h-[80vh] bg-cover bg-center relative" 
+        <div
+          className="w-full min-h-[80vh] bg-cover bg-center relative"
           style={{ backgroundImage: `url(${room?.coverImage?.url || room?.thumbnailImage?.url || '/placeholder-room.jpg'})` }}
         >
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/50"></div>
-          
+          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/20"></div>
+
           {/* Header/Navigation - Positioned absolutely on top of the background */}
           <header className="absolute top-0 left-0 w-full z-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -112,24 +112,24 @@ const RoomDetailsPage = () => {
 
                 {/* Mobile menu button */}
                 <div className="md:hidden flex items-center">
-                  <button 
+                  <button
                     onClick={toggleMenu}
                     className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-purple-300 focus:outline-none"
                   >
-                    <svg 
-                      className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`} 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
-                    <svg 
-                      className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`} 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -157,7 +157,7 @@ const RoomDetailsPage = () => {
           <div className="relative z-10 h-full flex items-center pt-25">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-                
+
                 {/* Left Side - Content */}
                 <motion.div
                   initial={{ opacity: 0, x: -50 }}
@@ -167,27 +167,27 @@ const RoomDetailsPage = () => {
                 >
                   {/* Price and Rating */}
                   <div className="mb-6">
-                      €{room.pricePerNight} {t('room.perNight')}
-                    
-                      <span className="text-yellow-400 ml-3">★</span>
-                      <span className="text-lg">({room.ratingSuggestion || '4.8'})</span>
-                    
+                    €{room.pricePerNight} {t('room.perNight')}
+
+                    <span className="text-yellow-400 ml-3">★</span>
+                    <span className="text-lg">({room.ratingSuggestion || '4.8'})</span>
+
                   </div>
 
                   {/* Description */}
                   <div className="mb-8 space-y-4">
                     <p className="text-lg leading-relaxed">
-                      {language === 'de' 
+                      {language === 'de'
                         ? (room.description?.german || room.description?.english || `Spacious, bright, and perfect for families or small groups, our ${room.type.toLowerCase()} offers a comfortable stay with everything you need to feel at home. It includes cozy bedrooms, a welcoming living area, a private bathroom, and large windows with a beautiful view of the surrounding area.`)
                         : (room.description?.english || `Spacious, bright, and perfect for families or small groups, our ${room.type.toLowerCase()} offers a comfortable stay with everything you need to feel at home. It includes cozy bedrooms, a welcoming living area, a private bathroom, and large windows with a beautiful view of the surrounding area.`)
                       }
                     </p>
-                   
+
                   </div>
 
                   {/* Room Title */}
                   <h1 className="text-2xl sm:text-3xl font-bold mb-8 title-font">
-                    {language === 'de' 
+                    {language === 'de'
                       ? (room.title?.german || room.title?.english || room.type)
                       : (room.title?.english || room.type)
                     }
@@ -214,7 +214,7 @@ const RoomDetailsPage = () => {
                   <div className="absolute top-30 -right-20 z-10   border-2 border-white rounded-lg shadow-2xl ">
                     <img
                       src={room.thumbnailImage?.url || room.coverImage?.url || '/placeholder-room.jpg'}
-                      alt={language === 'de' 
+                      alt={language === 'de'
                         ? (room.title?.german || room.title?.english || room.type)
                         : (room.title?.english || room.type)
                       }
@@ -262,10 +262,10 @@ const RoomDetailsPage = () => {
               >
                 <img
                   src={image.url}
-                  alt={`${language === 'de' 
+                  alt={`${language === 'de'
                     ? (room.title?.german || room.title?.english || room.type)
                     : (room.title?.english || room.type)
-                  } - ${t('room.image')} ${index + 1}`}
+                    } - ${t('room.image')} ${index + 1}`}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
                     e.target.src = '/placeholder-room.jpg';
@@ -286,10 +286,10 @@ const RoomDetailsPage = () => {
               >
                 <img
                   src="/placeholder-room.jpg"
-                  alt={`${language === 'de' 
+                  alt={`${language === 'de'
                     ? (room.title?.german || room.title?.english || room.type)
                     : (room.title?.english || room.type)
-                  } - ${t('room.image')} ${index + 1}`}
+                    } - ${t('room.image')} ${index + 1}`}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import logo from '../../assets/Header/Vector.png';
 import character from '../../assets/reservations/chracter.png';
 import HeaderHero from '../../components/HeaderHero';
-import checkBanner from '../../assets/banners/check.jpg';
+import checkBanner from '../../assets/image.png';
 import { reservationService } from '../../services/reservationService';
 import { useTranslation } from '../../locales';
 
@@ -24,7 +24,7 @@ const CheckReservation = () => {
 
     setLoading(true);
     setError('');
-    
+
     try {
       const response = await reservationService.searchReservation(reservationCode);
       setReservation(response.data);
@@ -38,7 +38,7 @@ const CheckReservation = () => {
 
   const handleCancelReservation = async () => {
     if (!reservation) return;
-    
+
     if (window.confirm(t('checkReservation.confirmCancel'))) {
       try {
         await reservationService.cancelReservation(reservation._id);
@@ -58,14 +58,14 @@ const CheckReservation = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen content-section"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <HeaderHero 
-        backgroundImage={checkBanner} 
+      <HeaderHero
+        backgroundImage={checkBanner}
         showButtons={false}
         customTitle={
           <>
@@ -78,7 +78,7 @@ const CheckReservation = () => {
       <div className="container mx-auto py-6 sm:py-8 lg:py-12 pb-16 sm:pb-20 px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* Left Column - Search Form */}
-          <motion.div 
+          <motion.div
             className="space-y-6 sm:space-y-8"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -90,8 +90,8 @@ const CheckReservation = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <motion.h2 
-                className="text-2xl sm:text-3xl lg:text-4xl title-font text-gray-800 mb-3 sm:mb-4 text-center lg:text-left" 
+              <motion.h2
+                className="text-2xl sm:text-3xl lg:text-4xl title-font text-gray-800 mb-3 sm:mb-4 text-center lg:text-left"
                 style={{ fontFamily: 'serif' }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -99,7 +99,7 @@ const CheckReservation = () => {
               >
                 {t('checkReservation.quickAccess')}
               </motion.h2>
-              <motion.p 
+              <motion.p
                 className="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6 text-center lg:text-left"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -107,9 +107,9 @@ const CheckReservation = () => {
               >
                 {t('checkReservation.description')}
               </motion.p>
-              
-              <motion.form 
-                onSubmit={handleSearch} 
+
+              <motion.form
+                onSubmit={handleSearch}
                 className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -135,7 +135,7 @@ const CheckReservation = () => {
               </motion.form>
 
               {error && (
-                <motion.div 
+                <motion.div
                   className="text-red-600 text-xs sm:text-sm mb-3 sm:mb-4"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -152,8 +152,8 @@ const CheckReservation = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.0 }}
             >
-              <motion.h3 
-                className="text-xl sm:text-2xl lg:text-3xl title-font text-gray-800 mb-3 sm:mb-4 text-center lg:text-left" 
+              <motion.h3
+                className="text-xl sm:text-2xl lg:text-3xl title-font text-gray-800 mb-3 sm:mb-4 text-center lg:text-left"
                 style={{ fontFamily: 'serif' }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -161,7 +161,7 @@ const CheckReservation = () => {
               >
                 {t('checkReservation.support')}
               </motion.h3>
-              <motion.p 
+              <motion.p
                 className="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6 text-center lg:text-left"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -169,14 +169,14 @@ const CheckReservation = () => {
               >
                 {t('checkReservation.supportDescription')}
               </motion.p>
-              
-              <motion.div 
+
+              <motion.div
                 className="space-y-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.6 }}
               >
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3"
                   whileHover={{ x: 10 }}
                   transition={{ duration: 0.3 }}
@@ -188,8 +188,8 @@ const CheckReservation = () => {
                   </div>
                   <span className="text-gray-700 text-sm sm:text-base">+43 1 20 43 969</span>
                 </motion.div>
-                
-                <motion.div 
+
+                <motion.div
                   className="flex items-center gap-3"
                   whileHover={{ x: 10 }}
                   transition={{ duration: 0.3 }}
@@ -207,7 +207,7 @@ const CheckReservation = () => {
           </motion.div>
 
           {/* Right Column - Results or Illustration */}
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center order-first lg:order-last"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -215,14 +215,14 @@ const CheckReservation = () => {
           >
             {reservation ? (
               /* Reservation Details */
-              <motion.div 
+              <motion.div
                 className="w-full max-w-md bg-purple-50 rounded-lg p-4 sm:p-6"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6 }}
                 whileHover={{ scale: 1.02 }}
               >
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3 mb-4 sm:mb-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -235,7 +235,7 @@ const CheckReservation = () => {
                   </div>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   className="space-y-3 sm:space-y-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -245,56 +245,55 @@ const CheckReservation = () => {
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.fullName')}</span>
                     <span className="font-medium text-sm sm:text-base">{reservation.customer.firstName} {reservation.customer.lastName}</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.emailAddress')}</span>
                     <span className="font-medium text-sm sm:text-base break-all">{reservation.customer.email}</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.phoneNumber')}</span>
                     <span className="font-medium text-sm sm:text-base">{reservation.customer.phoneNumber}</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.roomType')}</span>
                     <span className="font-medium text-sm sm:text-base">{reservation.roomType}</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.numberOfGuests')}</span>
                     <span className="font-medium text-sm sm:text-base">{reservation.numberOfGuests} {t('common.guests')}</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.checkInDate')}</span>
                     <span className="font-medium text-sm sm:text-base">{formatDate(reservation.checkInDate)}</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.checkOutDate')}</span>
                     <span className="font-medium text-sm sm:text-base">{formatDate(reservation.checkOutDate)}</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.cost')}</span>
                     <span className="font-medium text-sm sm:text-base">{reservation.cost}€</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.paymentMethod')}</span>
                     <span className="font-medium text-sm sm:text-base">{reservation.paymentMethod}</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.status')}</span>
-                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
-                      reservation.status === 'Confirmed' 
-                        ? 'bg-green-500 text-white' 
+                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${reservation.status === 'Confirmed'
+                        ? 'bg-green-500 text-white'
                         : reservation.status === 'Cancelled'
-                        ? 'bg-red-500 text-white'
-                        : 'bg-blue-500 text-white'
-                    }`}>
+                          ? 'bg-red-500 text-white'
+                          : 'bg-blue-500 text-white'
+                      }`}>
                       {reservation.status === 'Confirmed' ? t('checkReservation.successful') : reservation.status}
                     </span>
                   </div>
@@ -303,11 +302,10 @@ const CheckReservation = () => {
                 <motion.button
                   onClick={handleCancelReservation}
                   disabled={reservation.status === 'Cancelled'}
-                  className={`w-full mt-4 sm:mt-6 py-2 sm:py-3 rounded-lg font-medium transition-colors duration-200 text-sm sm:text-base ${
-                    reservation.status === 'Cancelled' 
-                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                  className={`w-full mt-4 sm:mt-6 py-2 sm:py-3 rounded-lg font-medium transition-colors duration-200 text-sm sm:text-base ${reservation.status === 'Cancelled'
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                       : 'bg-red-600 hover:bg-red-700 text-white'
-                  }`}
+                    }`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
@@ -319,20 +317,20 @@ const CheckReservation = () => {
               </motion.div>
             ) : (
               /* Illustration */
-              <motion.div 
+              <motion.div
                 className="text-center"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
-                <motion.div 
+                <motion.div
                   className="mb-4 sm:mb-6"
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
                 >
                   <img src={character} alt="Reservation Check" className="mx-auto max-w-xs sm:max-w-sm" />
                 </motion.div>
-                <motion.p 
+                <motion.p
                   className="text-gray-600 text-base sm:text-lg"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

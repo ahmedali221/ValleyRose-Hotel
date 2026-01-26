@@ -1,7 +1,7 @@
 import About from './components/about'
 import RestaurantSection from './components/restaurant'
 import HeaderHero from '../../components/HeaderHero'
-import homeBanner from '../../assets/banners/home.jpg'
+import homeBanner from '../../assets/image.png'
 import { motion } from 'framer-motion'
 
 function HomePage() {
@@ -14,8 +14,8 @@ function HomePage() {
     >
       <HeaderHero backgroundImage={homeBanner} />
       <div className="space-y-0 overflow-x-hidden">
-        <About/>
-        <RestaurantSection/>
+        <About />
+        <RestaurantSection />
       </div>
     </motion.div>
   )
