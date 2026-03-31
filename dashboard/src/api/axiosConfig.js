@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: "https://valley-rose-hotel-git-main-ahmed-alis-projects-588ffe47.vercel.app/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000/api",
   headers: {
     'Content-Type': 'application/json',
   },

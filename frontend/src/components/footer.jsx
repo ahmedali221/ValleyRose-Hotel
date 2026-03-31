@@ -1,10 +1,14 @@
 import { Mail, Phone, MessageCircle, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import logo from "../assets/Header/logo.png";
+import defaultLogo from "../assets/Header/logo.png";
 import { useTranslation } from '../locales';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function Footer() {
   const { t } = useTranslation();
+  const { settings } = useSiteSettings();
+
+  const logoUrl = settings.logo || defaultLogo;
 
   return (
     <footer className="bg-gray-900 text-white py-8 sm:py-12">
@@ -12,7 +16,7 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row items-center justify-between space-y-6 lg:space-y-0 lg:space-x-8">
           {/* Logo */}
           <div className="flex-shrink-0 order-1 lg:order-1">
-            <img src={logo} alt="Valley Rose" className="h-12 sm:h-16 lg:h-20" />
+            <img src={logoUrl} alt="Valley Rose" className="h-12 sm:h-16 lg:h-20" />
           </div>
 
           {/* Description */}

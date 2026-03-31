@@ -53,6 +53,14 @@ const WebsiteImagesPage = () => {
     );
   }
 
+  // Group settings by page
+  const groupedSettings = settings.reduce((acc, setting) => {
+    const page = setting.page || 'Global';
+    if (!acc[page]) acc[page] = [];
+    acc[page].push(setting);
+    return acc;
+  }, {});
+
   return (
     <div className="p-6">
       <div className="flex items-center mb-8">
@@ -78,11 +86,15 @@ const WebsiteImagesPage = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-8">
-        {settings.map((setting) => (
-          <div key={setting.key} className="content-section-heavy p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex flex-col md:flex-row md:items-center gap-6">
-              {/* Info section */}
+      <div className="grid grid-cols-1 gap-12">
+        {Object.keys(groupedSettings).map((page) => (
+            <div key={page} className="space-y-6">
+              <h2 className="text-2xl font-semibold text-gray-800 border-b pb-2">{page}</h2>
+              <div className="grid grid-cols-1 gap-8">
+                {groupedSettings[page].map((setting) => (
+                  <div key={setting.key} className="content-section-heavy p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div className="flex flex-col md:flex-row md:items-center gap-6">
+                      {/* Info section */}
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{setting.label}</h3>
                 <p className="text-gray-600 mb-4">{setting.description || 'Manage this image section'}</p>
@@ -126,9 +138,12 @@ const WebsiteImagesPage = () => {
                   <span className="text-xs text-center text-gray-400">JPG, PNG or WEBP</span>
                 </div>
               </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
         {settings.length === 0 && !loading && (
           <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">

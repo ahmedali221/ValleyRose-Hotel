@@ -4,6 +4,7 @@ import { weeklyMenuService } from '../../../services';
 import restaurantImage from '../../../assets/restaurant/restaurant.png';
 import { useTranslation } from '../../../locales';
 import { useLanguage } from '../../../context/LanguageContext';
+import { useSiteSettings } from '../../../context/SiteSettingsContext';
 
 const WeeklyMenu = () => {
   const [weeklyMenuItems, setWeeklyMenuItems] = useState([]);
@@ -11,6 +12,9 @@ const WeeklyMenu = () => {
   const [error, setError] = useState(null);
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const { settings } = useSiteSettings();
+
+  const weeklyImage = settings.restaurant_weekly_menu || restaurantImage;
 
   // Helper function to get meal name based on language
   const getMealName = (meal) => {
@@ -98,7 +102,7 @@ const WeeklyMenu = () => {
         transition={{ duration: 1 }}
       >
         <img
-          src={restaurantImage}
+          src={weeklyImage}
           alt="restaurant"
           className="w-full h-full object-cover opacity-20"
         />

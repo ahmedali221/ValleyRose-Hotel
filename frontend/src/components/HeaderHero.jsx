@@ -1,5 +1,9 @@
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from '../locales';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import defaultLogo from "../assets/Header/logo.png"
 import banner from "../assets/Header/banner.png"
 
 const HeaderHero = ({ 
@@ -19,6 +23,9 @@ const HeaderHero = ({
   // Use dynamic image if imageKey is provided and found in settings, 
   // otherwise fallback to backgroundImage (which defaults to banner)
   const displayImage = (imageKey && settings[imageKey]) ? settings[imageKey] : backgroundImage;
+  
+  // Dynamic logo
+  const logoUrl = settings['logo'] || defaultLogo;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -40,7 +47,7 @@ const HeaderHero = ({
               {/* Logo */}
               <div className="flex-shrink-0">
                 <a href="/" className="flex items-center">
-                  <img src={logo} alt="Valley Rose" className="h-8 sm:h-10 lg:h-12 mr-2" />
+                  <img src={logoUrl} alt="Valley Rose" className="h-8 sm:h-10 lg:h-12 mr-2" />
                 </a>
               </div>
 

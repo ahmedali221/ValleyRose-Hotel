@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import logo from '../../assets/Header/Vector.png';
-import character from '../../assets/reservations/chracter.png';
+import defaultLogo from '../../assets/Header/Vector.png';
+import defaultCharacter from '../../assets/reservations/chracter.png';
 import HeaderHero from '../../components/HeaderHero';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 import checkBanner from '../../assets/image.png';
 import { reservationService } from '../../services/reservationService';
 import { useTranslation } from '../../locales';
@@ -14,6 +15,10 @@ const CheckReservation = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { t } = useTranslation();
+  const { settings } = useSiteSettings();
+
+  const logoUrl = settings.check_reservation_logo_vector || defaultLogo;
+  const characterUrl = settings.check_reservation_character || defaultCharacter;
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -66,6 +71,7 @@ const CheckReservation = () => {
     >
       <HeaderHero
         backgroundImage={checkBanner}
+        imageKey="check_reservation_hero"
         showButtons={false}
         customTitle={
           <>
@@ -228,7 +234,7 @@ const CheckReservation = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                  <img src={logo} alt="Valley Rose" className="h-6 sm:h-8" />
+                  <img src={logoUrl} alt="Valley Rose" className="h-6 sm:h-8" />
                   <div>
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.reservation')}</span>
                     <span className="valley-rose-text font-semibold ml-2 text-sm sm:text-base">{reservation.reservationNumber}</span>
@@ -328,7 +334,7 @@ const CheckReservation = () => {
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <img src={character} alt="Reservation Check" className="mx-auto max-w-xs sm:max-w-sm" />
+                  <img src={characterUrl} alt="Reservation Check" className="mx-auto max-w-xs sm:max-w-sm" />
                 </motion.div>
                 <motion.p
                   className="text-gray-600 text-base sm:text-lg"

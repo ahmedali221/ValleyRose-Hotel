@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import right from "../../../assets/Header/right.png";
 import { useTranslation } from '../../../locales';
 import { useSiteSettings } from '../../../context/SiteSettingsContext';

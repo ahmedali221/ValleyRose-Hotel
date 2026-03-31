@@ -2,12 +2,17 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import eventImage from '../../../assets/events/event-space.svg';
-import hotel1 from "../../../assets/hotel/hotel1.png"
-import hotel2 from "../../../assets/hotel/hotel2.png"
+import defaultHotel1 from "../../../assets/hotel/hotel1.png"
+import defaultHotel2 from "../../../assets/hotel/hotel2.png"
 import { useTranslation } from '../../../locales';
+import { useSiteSettings } from '../../../context/SiteSettingsContext';
 
 const EventsSection = () => {
   const { t } = useTranslation();
+  const { settings } = useSiteSettings();
+
+  const hotel1 = settings.hotel_image_1 || defaultHotel1;
+  const hotel2 = settings.hotel_image_2 || defaultHotel2;
 
   return (
     <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 content-section-light bg-gray-50">

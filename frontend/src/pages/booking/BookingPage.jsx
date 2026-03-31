@@ -69,6 +69,7 @@ const BookingPage = () => {
     <div className="min-h-screen bg-gray-50">
       <HeaderHero
         backgroundImage={bookingBanner}
+        imageKey="booking_hero"
         showButtons={false}
         customTitle={
           <>

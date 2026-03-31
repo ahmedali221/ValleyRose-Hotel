@@ -28,8 +28,9 @@ async function updateSetting(req, res) {
     const { key } = req.params;
     const { label, description } = req.body;
     
-    let updateData = { label, description };
-    
+    let updateData = {};
+    if (label !== undefined) updateData.label = label;
+    if (description !== undefined) updateData.description = description;
     // If a new image was uploaded via multer/cloudinary
     if (req.file) {
       updateData.imageUrl = req.file.path;

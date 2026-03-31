@@ -3,10 +3,15 @@ import food1 from "../../../assets/food/food1.png";
 import { motion } from 'framer-motion';
 import { useTranslation } from '../../../locales';
 import { Link, useLocation } from 'react-router-dom';
+import { useSiteSettings } from '../../../context/SiteSettingsContext';
 
 
 const RestaurantSection = () => {
   const { t } = useTranslation();
+  const { settings } = useSiteSettings();
+
+  const foodImage1 = settings.home_restaurant_food2 || food1;
+  const foodImage2 = settings.home_restaurant_food1 || food;
 
   return (
     <section className="content-section text-white py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8 bg-white overflow-x-hidden">
@@ -28,7 +33,7 @@ const RestaurantSection = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <motion.img
-              src={food1}
+              src={foodImage1}
               alt="Delicious dishes at Valley Rose"
               className="w-full h-64 sm:h-80 lg:h-96 object-cover shadow-lg rounded-lg"
               whileHover={{ scale: 1.05 }}
@@ -143,7 +148,7 @@ const RestaurantSection = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <motion.img
-              src={food}
+              src={foodImage2}
               alt="Valley Rose food spread"
               className="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-lg"
               transition={{ duration: 0.3 }}
