@@ -1,15 +1,24 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import logo from "../assets/Header/logo.png"
-import banner from "../assets/Header/banner.png"
-import { useTranslation } from '../locales';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import banner from "../assets/Header/banner.png"
 
-const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle = null, customSubtitle = null, customButtons = null }) => {
+const HeaderHero = ({ 
+  backgroundImage = banner, 
+  imageKey = null,
+  showButtons = true, 
+  customTitle = null, 
+  customSubtitle = null, 
+  customButtons = null 
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
   const { t } = useTranslation();
+  const { settings } = useSiteSettings();
+
+  // Use dynamic image if imageKey is provided and found in settings, 
+  // otherwise fallback to backgroundImage (which defaults to banner)
+  const displayImage = (imageKey && settings[imageKey]) ? settings[imageKey] : backgroundImage;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -20,7 +29,7 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
       {/* Background Image Container */}
       <div
         className="w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[80vh] bg-cover bg-center relative"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
+        style={{ backgroundImage: `url(${displayImage})` }}
       >
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/20"></div>
@@ -38,9 +47,11 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex space-x-6 xl:space-x-8">
                 <Link to="/" className={`${currentPath === '/' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.home')}</Link>
-                <Link to="/hotel" className={`${currentPath === '/hotel' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.hotel')}</Link>
+                {/* <Link to="/hotel" className={`${currentPath === '/hotel' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.hotel')}</Link> */}
                 <Link to="/restaurant" className={`${currentPath === '/restaurant' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.restaurant')}</Link>
                 <Link to="/contact" className={`${currentPath === '/contact' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.contact')}</Link>
+                <Link to="/terms" className={`${currentPath === '/terms' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.terms')}</Link>
+                <Link to="/legal" className={`${currentPath === '/legal' ? 'text-purple-300 font-bold border-b-2 border-purple-300' : 'text-white'} hover:text-purple-300 px-3 py-2 text-sm font-medium transition-all duration-200`}>{t('nav.legal')}</Link>
               </nav>
 
               {/* Language Selector */}
@@ -93,7 +104,7 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
                 </svg>
                 {t('nav.home')}
               </Link>
-              <Link
+              {/* <Link
                 to="/hotel"
                 className={`flex items-center px-3 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${currentPath === '/hotel'
                   ? 'bg-purple-100 text-purple-700 border-l-4 border-purple-500'
@@ -105,7 +116,7 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
                 {t('nav.hotel')}
-              </Link>
+              </Link> */}
               <Link
                 to="/restaurant"
                 className={`flex items-center px-3 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${currentPath === '/restaurant'
@@ -131,6 +142,32 @@ const HeaderHero = ({ backgroundImage = banner, showButtons = true, customTitle 
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 {t('nav.contact')}
+              </Link>
+              <Link
+                to="/terms"
+                className={`flex items-center px-3 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${currentPath === '/terms'
+                  ? 'bg-purple-100 text-purple-700 border-l-4 border-purple-500'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-purple-600'
+                  }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                {t('nav.terms')}
+              </Link>
+              <Link
+                to="/legal"
+                className={`flex items-center px-3 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${currentPath === '/legal'
+                  ? 'bg-purple-100 text-purple-700 border-l-4 border-purple-500'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-purple-600'
+                  }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+                {t('nav.legal')}
               </Link>
             </div>
             <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">

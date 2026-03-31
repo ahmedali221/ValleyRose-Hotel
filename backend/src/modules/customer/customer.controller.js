@@ -6,12 +6,15 @@ const createValidators = [
   body('lastName').notEmpty().trim(),
   body('email').isEmail().normalizeEmail(),
   body('phoneNumber').optional().trim(),
+  body('agreedToTerms')
+    .isBoolean().withMessage('agreedToTerms must be a boolean')
+    .custom((value) => value === true).withMessage('Must agree to terms and conditions'),
 ];
 
 async function createCustomer(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  
+
   // Log the customer data being sent for creation
   console.log('Creating customer with data:', {
     firstName: req.body.firstName,
@@ -20,9 +23,9 @@ async function createCustomer(req, res) {
     phoneNumber: req.body.phoneNumber,
     timestamp: new Date().toISOString()
   });
-  
+
   const doc = await Customer.create(req.body);
-  
+
   // Log successful customer creation
   console.log('Customer created successfully:', {
     customerId: doc._id,
@@ -31,7 +34,7 @@ async function createCustomer(req, res) {
     email: doc.email,
     createdAt: doc.createdAt
   });
-  
+
   res.status(201).json(doc);
 }
 
@@ -61,9 +64,13 @@ async function deleteCustomer(req, res) {
 async function createCustomerPublic(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  
+
   try {
-    const doc = await Customer.create(req.body);
+    const customerData = {
+      ...req.body,
+      agreedToTermsAt: req.body.agreedToTerms ? new Date() : undefined,
+    };
+    const doc = await Customer.create(customerData);
     res.status(201).json(doc);
   } catch (error) {
     console.error('Public customer creation error:', error);

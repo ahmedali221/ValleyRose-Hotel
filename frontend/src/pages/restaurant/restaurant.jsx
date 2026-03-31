@@ -19,6 +19,7 @@ const Restaurant = () => {
     >
       <HeaderHero
         backgroundImage={restaurantBanner}
+        imageKey="restaurant_hero"
         showButtons={false}
         customTitle={
           <>

@@ -6,6 +6,8 @@ const CustomerSchema = new mongoose.Schema(
     lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, lowercase: true, trim: true },
     phoneNumber: { type: String, trim: true },
+    agreedToTerms: { type: Boolean, required: true, default: false },
+    agreedToTermsAt: { type: Date },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

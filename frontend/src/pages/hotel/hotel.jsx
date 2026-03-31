@@ -14,6 +14,7 @@ const Hotel = () => {
     >
       <HeaderHero
         backgroundImage={hotelBanner}
+        imageKey="hotel_hero"
         showButtons={true}
         customTitle={
           <>

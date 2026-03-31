@@ -23,6 +23,7 @@ const FinalReview = ({ bookingData, setBookingData }) => {
         lastName: bookingData.lastName,
         email: bookingData.email,
         phoneNumber: `+43${bookingData.phone}`,
+        agreedToTerms: bookingData.agreedToTerms || false,
       };
 
       const customer = await bookingService.createCustomer(customerData);
@@ -39,12 +40,12 @@ const FinalReview = ({ bookingData, setBookingData }) => {
 
       const reservation = await bookingService.createReservation(reservationData);
       setReservationNumber(reservation.reservationNumber);
-      
+
       // Update booking data with reservation info
-      setBookingData(prev => ({ 
-        ...prev, 
+      setBookingData(prev => ({
+        ...prev,
         reservationId: reservation._id,
-        reservationNumber: reservation.reservationNumber 
+        reservationNumber: reservation.reservationNumber
       }));
 
     } catch (err) {
@@ -139,7 +140,7 @@ const FinalReview = ({ bookingData, setBookingData }) => {
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800">
           Your Reservation is Confirmed!
         </h2>
-        
+
         {/* Reservation Number */}
         <div className="space-y-1 sm:space-y-2">
           <p className="text-lg sm:text-xl text-gray-700">Reservation Number: {reservationNumber}</p>
@@ -154,8 +155,8 @@ const FinalReview = ({ bookingData, setBookingData }) => {
         className="max-w-2xl mx-auto px-4"
       >
         <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
-          You can view the details on <Link to="/check" className="text-[#9962B9] font-medium">this page</Link>, 
-          If you have any questions or need assistance, feel free to <span className="text-[#9962B9] font-medium">contact us</span>, 
+          You can view the details on <Link to="/check" className="text-[#9962B9] font-medium">this page</Link>,
+          If you have any questions or need assistance, feel free to <span className="text-[#9962B9] font-medium">contact us</span>,
           We can't wait to see you!
         </p>
       </motion.div>

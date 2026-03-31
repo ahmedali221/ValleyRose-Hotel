@@ -12,6 +12,7 @@ import RestaurantPage from '../pages/Restaurant/RestaurantPage';
 import OfflineReservationPage from '../pages/OfflineReservation/OfflineReservationPage';
 import ManageBookingsPage from '../pages/ManageBookings/ManageBookingsPage';
 import SettingsPage from '../pages/Settings/SettingsPage';
+import WebsiteImagesPage from '../pages/WebsiteImages/WebsiteImagesPage';
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: 'settings',
         element: <SettingsPage />,
+      },
+      {
+        path: 'website-images',
+        element: <WebsiteImagesPage />,
       },
     ],
   },

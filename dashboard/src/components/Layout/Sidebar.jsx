@@ -8,8 +8,9 @@ const Sidebar = () => {
 
   const navigationItems = [
     { name: 'Home', href: '/' },
-    { name: 'Hotel', href: '/hotel' },
+    // { name: 'Hotel', href: '/hotel' },
     { name: 'Restaurant', href: '/restaurant' },
+    { name: 'Website Images', href: '/website-images' },
     { name: 'Offline Reservation', href: '/offline-reservation' },
     { name: 'Manage Bookings', href: '/manage-bookings' },
   ];
@@ -38,16 +39,15 @@ const Sidebar = () => {
               <li key={item.name}>
                 <Link
                   to={item.href}
-                  className={`block px-4 py-3 rounded-lg transition-colors duration-200 ${
-                    active
+                  className={`block px-4 py-3 rounded-lg transition-colors duration-200 ${active
                       ? 'text-black'
                       : 'text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                   style={
                     active
                       ? {
-                          backgroundColor: 'rgba(153, 98, 185, 0.15)' // 15% opacity of var(--primary-color)
-                        }
+                        backgroundColor: 'rgba(153, 98, 185, 0.15)' // 15% opacity of var(--primary-color)
+                      }
                       : {}
                   }
                 >
@@ -62,18 +62,17 @@ const Sidebar = () => {
         <div className="space-y-1 px-0 py-5">
           <Link
             to="/settings"
-            className={`block px-4 py-3 rounded-lg transition-colors duration-200 ${
-              isActive('/settings')
+            className={`block px-4 py-3 rounded-lg transition-colors duration-200 ${isActive('/settings')
                 ? 'text-black'
                 : 'text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
             style={isActive('/settings') ? {
               backgroundColor: 'rgba(153, 98, 185, 0.15)' // 15% opacity of var(--primary-color)
             } : {}}
           >
             Settings
           </Link>
-          <button 
+          <button
             onClick={logout}
             className="block w-full px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200 text-left"
           >

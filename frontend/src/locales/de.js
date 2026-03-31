@@ -6,6 +6,9 @@ export const de = {
     hotel: 'Hotel',
     restaurant: 'Restaurant',
     contact: 'Kontakt',
+    terms: 'AGB',
+    legal: 'Impressum',
+    privacy: 'Datenschutz',
     bookRoom: 'Zimmer buchen',
     checkReservation: 'Reservierung prüfen'
   },
@@ -144,6 +147,9 @@ export const de = {
     cost: 'Kosten',
     pleaseFillAll: 'Bitte füllen Sie alle Felder aus',
     pleaseCheckAvailability: 'Bitte prüfen Sie zuerst die Verfügbarkeit',
+    agreeToTerms: 'Ich stimme den',
+    termsLink: 'AGB',
+    termsRequired: 'Sie müssen den AGB zustimmen, um fortzufahren',
     days: {
       sun: 'So',
       mon: 'Mo',
@@ -221,6 +227,154 @@ export const de = {
     glimpseIntoStay: 'Ein Blick in Ihren Aufenthalt',
     roomGalleryDescription: 'Schauen Sie sich unsere Zimmer, das Restaurant und den friedlichen Charme des Valley Rose genauer an.',
     image: 'Bild'
+  },
+
+  // Terms and Conditions (AGB)
+  terms: {
+    title: 'Allgemeine Geschäftsbedingungen',
+    subtitle: 'Bitte lesen Sie diese Bedingungen vor der Buchung sorgfältig durch.',
+    lastUpdated: 'Zuletzt aktualisiert: März 2026',
+    sections: {
+      scope: {
+        title: '§ 1 Geltungsbereich',
+        content: '1.1 Diese Geschäftsbedingungen gelten für Verträge über die mietweise Überlassung von Hotelzimmern zur Beherbergung, sowie alle für den Vertragspartner (Gast) erbrachten weiteren Leistungen und Lieferungen des Hotels.\n1.2 Die Geschäftsbedingungen schließen Sondervereinbarungen nicht aus. Sie sind gegenüber im Einzelnen getroffenen Vereinbarungen subsidiär.'
+      },
+      definitions: {
+        title: '§ 2 Begriffsdefinitionen',
+        content: 'Beherberger: Ist eine juristische Person, die Gäste gegen Entgelt beherbergt.\nGast: Ist eine natürliche Person, die Beherbergung in Anspruch nimmt. Als Gast gelten auch jene Personen, die – aus welchem Grund immer - mit dem Vertragspartner anreisen (z.B. Familienmitglieder, Freunde, Kollegen, etc).\nVertragspartner: Ist eine natürliche oder juristische Person des In- oder Auslandes, die als Gast oder für einen Gast einen Beherbergungsvertrag abschließt. Konsument und Unternehmer: Die Begriffe sind im Sinne des Konsumentenschutzgesetzes 1979 idgF zu verstehen.\nBeherbergungsvertrag: Ist der zwischen dem Beherberger und dem Vertragspartner abgeschlossene Vertrag, dessen Inhalt in der Folge näher geregelt wird.'
+      },
+      contractDeposit: {
+        title: '§ 3 Vertragsabschluss – Anzahlung',
+        content: '3.1 Der Beherbergungsvertrag kommt durch die übereinstimmende Willenserklärung zwischen dem Vertragspartner und dem Beherberger zustande...\n3.2 Der Beherberger ist berechtigt, den Beherbergungsvertrag unter der einseitig auflösenden Bedingung abzuschließen, dass der Vertragspartner bis zu einem bestimmten Zeitpunkt eine Anzahlung leistet...\n3.3 Ist nichts anderes vereinbart, so ist der Vertragspartner verpflichtet, die Anzahlung spätestens 7 Tage (einlangend) vor der Beherbergung zu bezahlen.\n3.4 Die Anzahlung ist eine Teilzahlung auf das vereinbarte Entgelt.'
+      },
+      contractValue: {
+        title: '§ 3.a Vertragsabschluss – Wertbeständigkeit',
+        content: 'Vereinbart wird die Wertbeständigkeit der diesem Vertrag zugrundeliegenden Preise. Verändert sich der von der Bundesanstalt Statistik Austria verlautbarte Verbraucherpreisindex VPI 2020 um mehr als 3% gegenüber dem Basisindex, so werden die Preise entsprechend dieser Erhöhung angepasst.'
+      },
+      startEnd: {
+        title: '§ 4 Beginn und Ende der Beherbergung',
+        content: '4.1 Der Beherberger legt jeweils die für ihn geltenden Tageszeiten fest, zu denen die gebuchten Zimmer bezogen werden können bzw. bis zu welchem Zeitpunkt sie vom Vertragspartner zu verlassen sind...\n4.2 Wird ein Zimmer erstmalig vor 7.00 Uhr Früh in Anspruch genommen, so zählt die vorhergegangene Nacht als erste Übernachtung.\n4.3 Der Beherberger ist berechtigt, einen weiteren Tag in Rechnung zu stellen, wenn die gemieteten Räume nicht fristgerecht frei gemacht sind.'
+      },
+      cancellation: {
+        title: '§ 5 Rücktritt vom Beherbergungsvertrag – Stornogebühr',
+        content: '5.1 Sieht der Beherbergungsvertrag eine Anzahlung vor und wurde die Anzahlung vom Vertragspartner nicht fristgerecht geleistet, kann der Beherberger ohne Nachfrist vom Beherbergungsvertrag zurücktreten.\n5.5 Sofern nichts anderes ausdrücklich vereinbart ist, kann der Beherbergungsvertrag bis spätestens einen Monat vor dem vereinbarten Ankunftstag des Gastes ohne Entrichtung einer Stornogebühr durch einseitige Erklärung des Vertragspartners aufgelöst werden.\n5.8 Kann der Vertragspartner am Tag der Anreise nicht im Beherbergungsbetrieb erscheinen, weil durch unvorhersehbare außergewöhnliche Umstände i.S. von höherer Gewalt sämtliche Anreisemöglichkeiten unmöglich sind, ist der Vertragspartner nicht verpflichtet, das vereinbarte Entgelt für die Dauer der Behinderung der Anreise zu bezahlen...'
+      },
+      substituteAccommodation: {
+        title: '§ 6 Beistellung einer Ersatzunterkunft',
+        content: '6.1 Der Beherberger kann dem Vertragspartner bzw. den Gästen eine adäquate Ersatzunterkunft (gleicher Qualität) zur Verfügung stellen, wenn dies dem Vertragspartner zumutbar ist.'
+      },
+      rightsGuest: {
+        title: '§ 7 Rechte des Vertragspartners/Gastes',
+        content: '7.1 Durch den Abschluss eines Beherbergungsvertrages erwirbt der Vertragspartner/Gast das Recht auf den üblichen Gebrauch der gemieteten Räume, der Einrichtungen des Beherbergungsbetriebes, die üblicherweise und ohne besondere Bedingungen den Gästen zur Benützung zugänglich sind.'
+      },
+      obligationsGuest: {
+        title: '§ 8 Pflichten des Vertragspartners',
+        content: '8.1 Der Vertragspartner ist verpflichtet, spätestens zum Zeitpunkt des Check Outs das vereinbarte Entgelt zuzüglich etwaiger Mehrbeträge zuzüglich gesetzlicher Umsatzsteuern zu bezahlen.\n8.5. Er verpflichtet sich weiters, gekennzeichnete Rauchverbote zu beachten. Bei Verstoß wird eine Pönale von € 100,-- im Standardzimmer bzw. bis zu € 500,-- in der Suite für die Schadensbeseitigung in Rechnung gestellt.'
+      },
+      rightsHotel: {
+        title: '§ 9 Rechte des Beherbergers',
+        content: '9.1 Verweigert der Vertragspartner die Bezahlung des bedungenen Entgelts, so steht dem Beherberger das gesetzliche Zurückbehaltungsrecht sowie das gesetzliche Pfandrecht an den vom Vertragspartner eingebrachten Sachen zu.\n9.2 Im Verzugsfall werden Verzugszinsen in Höhe von 10% ab Fälligkeit vereinbart.'
+      },
+      obligationsHotel: {
+        title: '§ 10 Pflichten des Beherbergers',
+        content: '10.1 Der Beherberger ist verpflichtet, die vereinbarten Leistungen in einem seinem Standard entsprechenden Umfang zu erbringen.'
+      },
+      liabilityItems: {
+        title: '§ 11 Haftung des Beherbergers für Schäden an eingebrachten Sachen',
+        content: '11.1 Der Beherberger haftet gemäß §§ 970 ff ABGB für die vom Vertragspartner eingebrachten Sachen. Die Haftung des Beherbergers ist für leichte Fahrlässigkeit ausgeschlossen.\n11.3 Für Kostbarkeiten, Geld und Wertpapiere haftet der Beherberger nur bis zum Betrag von derzeit € 550,--.'
+      },
+      pets: {
+        title: '§ 12 Tierhaltung',
+        content: '12.1 Tiere dürfen nur nach vorheriger Zustimmung des Beherbergers und gegen eine besondere Vergütung in der Höhe von derzeit € 15,--/Tier und Tag in den Beherbergungsbetrieb gebracht werden. In diesem Betrag ist das Futter nicht enthalten.\n12.5 In die Gesellschafts-, Restauranträume und in den Fitness- /Wellnessbereich dürfen Tiere nicht mitgenommen werden.'
+      },
+      extension: {
+        title: '§ 13 Verlängerung der Beherbergung',
+        content: '13.1 Der Vertragspartner hat keinen Anspruch darauf, dass sein Aufenthalt verlängert wird.'
+      },
+      termination: {
+        title: '§ 14 Beendigung des Beherbergungsvertrages – Vorzeitige Auflösung',
+        content: '14.1 Wurde der Beherbergungsvertrag auf bestimmte Zeit abgeschlossen, so endet er mit Zeitablauf.\n14.2 Reist der Vertragspartner vorzeitig ab, so ist der Beherberger berechtigt, das volle vereinbarte Entgelt zu verlangen.'
+      },
+      illness: {
+        title: '§ 15 Erkrankung oder Tod des Gastes',
+        content: '15.1 Erkrankt ein Gast während seines Aufenthaltes im Beherbergungsbetrieb, so wird der Beherberger über Wunsch des Gastes für ärztliche Betreuung sorgen.'
+      },
+      jurisdiction: {
+        title: '§ 16 Gerichtsstand und Rechtswahl',
+        content: '16.1 Dieser Vertrag unterliegt österreichischem formellem und materiellem Recht.\n16.2 Als Gerichtsstand wird gemäß § 104 JN Wien, Innere Stadt, vereinbart.'
+      },
+      miscellaneous: {
+        title: '§ 17 Sonstiges',
+        content: '17.4 Im Falle von Regelungslücken gelten die entsprechenden gesetzlichen Bestimmungen.'
+      }
+    }
+  },
+
+  // Datenschutzerklärung (Privacy Policy)
+  privacy: {
+    title: 'Datenschutzerklärung',
+    subtitle: 'Informationen über die Erhebung und Verarbeitung Ihrer personenbezogenen Daten',
+    lastUpdated: 'Zuletzt aktualisiert: März 2026',
+    sections: {
+      overview: {
+        title: '1. Datenschutz auf einen Blick',
+        content: 'Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen...\nVerantwortliche Stelle: Nachat Dawd KG, Erzherzog Karl Straße 98a, 1220 Wien. \nMail: valleyrose@speed.at, Tel: +43 1 204 38 88.'
+      },
+      hosting: {
+        title: '2. Hosting',
+        content: 'Wir hosten die Inhalte unserer Website bei folgendem Anbieter: HostProfis ISP Telekom GmbH, Hans-Sittenberger-Str. 13, A-9500 Villach, Austria. Wir haben einen Vertrag über Auftragsverarbeitung (AVV) geschlossen.'
+      },
+      general: {
+        title: '3. Allgemeine Hinweise und Pflichtinformationen',
+        content: 'Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend den gesetzlichen Datenschutzvorschriften.\nSie haben jederzeit das Recht auf unentgeltliche Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten. Des Weiteren haben Sie das Recht auf Datenübertragbarkeit und ein Beschwerderecht bei der zuständigen Aufsichtsbehörde.\nWenn die Datenübertragung in die USA oder sonstige Drittstaaten erfolgt, weisen wir darauf hin, dass in diesen Ländern kein mit der EU vergleichbares Datenschutzniveau garantiert werden kann.'
+      },
+      dataCollection: {
+        title: '4. Datenerfassung auf dieser Website',
+        content: 'Unsere Internetseiten verwenden so genannte „Cookies“. Session-Cookies werden nach Ende Ihres Besuchs automatisch gelöscht, permanente Cookies bleiben gespeichert.\nZudem erfasst der Provider automatisch Server-Log-Dateien.\nWenn Sie uns per Kontaktformular, Telefon oder E-Mail kontaktieren, werden Ihre Angaben inklusive Kontaktdaten zwecks Bearbeitung der Anfrage bei uns gespeichert (Art. 6 Abs. 1 lit. b bzw. f DSGVO).'
+      },
+      analytics: {
+        title: '5. Analyse-Tools und Werbung',
+        content: 'Wir setzen den Google Tag Manager, Google Analytics, Google Ads, Google Ads Remarketing und Google Conversion-Tracking ein (Anbieter: Google Ireland Limited). Die Nutzung dieser Dienste erfolgt auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Sie können diese Technologien jederzeit über die Einstellungen Ihres Browsers oder per Opt-Out-Plugin deaktivieren.'
+      },
+      plugins: {
+        title: '6. Plugins und Tools',
+        content: 'Diese Website bindet Videos von YouTube und Vimeo ein. Die Nutzung erfolgt im Interesse einer ansprechenden Darstellung unserer Online-Angebote (Art. 6 Abs. 1 lit. f DSGVO). Bei Vimeo verwenden wir die No-Tracking-Version (Do-Not-Track).'
+      },
+      ecommerce: {
+        title: '7. eCommerce und Zahlungsanbieter',
+        content: 'Wir erheben, verarbeiten und nutzen personenbezogene Kunden- und Vertragsdaten zur Begründung, inhaltlichen Ausgestaltung und Änderung unserer Vertragsbeziehungen (Art. 6 Abs. 1 lit. b DSGVO).\nDer Zahlungsverkehr erfolgt ausschließlich über eine verschlüsselte SSL- bzw. TLS-Verbindung.'
+      }
+    }
+  },
+
+  // Impressum (Legal Disclosure)
+  legal: {
+    title: 'Impressum',
+    subtitle: 'Rechtliche Informationen gemäß § 5 TMG',
+    sections: {
+      companyInfo: {
+        title: 'Angaben',
+        name: 'Nachat Dawd KG',
+        address: 'Erzherzog Karl Straße 98a',
+        city: '1220 Wien, Österreich',
+        representedBy: 'Vertreten durch: Herr Nachat Dawd',
+        phone: 'Telefon: +43 1 204 38 88',
+        email: 'E-Mail: valleyrose@speed.at',
+        vat: 'Umsatzsteuernummer: ATU 62085335'
+      },
+      liabilityLinks: {
+        title: 'Haftung für Links',
+        content: 'Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.'
+      },
+      liabilityContent: {
+        title: 'Haftung für Inhalt',
+        content: 'Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach § 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.'
+      },
+      copyright: {
+        title: 'Urheberrecht',
+        content: 'Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.'
+      }
+    }
   },
 
   // Common

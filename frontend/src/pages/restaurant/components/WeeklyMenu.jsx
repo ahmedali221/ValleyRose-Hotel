@@ -26,18 +26,17 @@ const WeeklyMenu = () => {
   // Calculate current week dates dynamically
   const getCurrentWeekDates = () => {
     const today = new Date();
-    const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-
-    // Calculate the start of the week (Saturday)
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - currentDay - 1); // Go back to Saturday
+    const day = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    // Calculate Monday of the current week
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(today.setDate(diff));
 
     const daysArray = [];
-    const dayNames = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
 
       const fullName = dayNames[i];
       const dateStr = date.toLocaleDateString('en-GB', {
@@ -63,7 +62,13 @@ const WeeklyMenu = () => {
         setLoading(true);
         setError(null);
         const menuData = await weeklyMenuService.getWeeklyMenu();
-        setWeeklyMenuItems(menuData);
+        // Filter and sort to only include Monday - Friday
+        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        const filteredMenu = menuData
+          .filter(item => weekDays.includes(item.day))
+          .sort((a, b) => weekDays.indexOf(a.day) - weekDays.indexOf(b.day));
+        
+        setWeeklyMenuItems(filteredMenu);
       } catch (err) {
         console.error('Error fetching weekly menu:', err);
         setError(err.message);

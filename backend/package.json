@@ -10,7 +10,9 @@
     "cleanup:meals": "node src/scripts/cleanupMeals.js",
     "seed:soups": "node src/scripts/seedSoups.js",
     "seed:meals": "node src/scripts/seedMeals.js",
-    "seed:all": "node src/scripts/seedSoups.js && node src/scripts/seedMeals.js",
+    "seed:admin": "node src/scripts/seedAdmin.js",
+    "seed:settings": "node src/scripts/seedSiteSettings.js",
+    "seed:all": "node src/scripts/seedSoups.js && node src/scripts/seedMeals.js && node src/scripts/seedAdmin.js && node src/scripts/seedSiteSettings.js",
     "indexes": "node src/scripts/ensureIndexes.js"
   },
   "keywords": [],

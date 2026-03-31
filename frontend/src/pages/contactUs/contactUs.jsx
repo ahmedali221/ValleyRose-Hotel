@@ -78,6 +78,7 @@ const ContactUs = () => {
     >
       <HeaderHero
         backgroundImage={contactBanner}
+        imageKey="contact_hero"
         showButtons={false}
         customTitle={
           <>

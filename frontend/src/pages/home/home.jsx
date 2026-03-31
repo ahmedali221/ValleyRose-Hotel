@@ -12,7 +12,7 @@ function HomePage() {
       transition={{ duration: 0.5 }}
       className="min-h-screen overflow-x-hidden"
     >
-      <HeaderHero backgroundImage={homeBanner} />
+      <HeaderHero backgroundImage={homeBanner} imageKey="home_hero" />
       <div className="space-y-0 overflow-x-hidden">
         <About />
         <RestaurantSection />

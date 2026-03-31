@@ -13,6 +13,7 @@ const mealRoutes = require('./modules/meal/meal.routes');
 const weeklyMenuRoutes = require('./modules/weeklyMenu/weeklyMenu.routes');
 const restaurantGalleryRoutes = require('./modules/restaurantGallery/restaurantGallery.routes');
 const restaurantMainMenuRoutes = require('./modules/restaurantMainMenu/restaurantMainMenu.routes');
+const siteSettingsRoutes = require('./modules/siteSettings/siteSettings.routes');
 
 const app = express();
 app.use(cors());
@@ -94,6 +95,7 @@ app.use('/api/meals', mealRoutes);
 app.use('/api/weekly-menu', weeklyMenuRoutes);
 app.use('/api/restaurant-gallery', restaurantGalleryRoutes);
 app.use('/api/restaurant-main-menu', restaurantMainMenuRoutes);
+app.use('/api/site-settings', siteSettingsRoutes);
 
 // For Vercel deployment
 module.exports = app;
