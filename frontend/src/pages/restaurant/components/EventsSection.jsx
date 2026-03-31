@@ -11,8 +11,8 @@ const EventsSection = () => {
   const { t } = useTranslation();
   const { settings } = useSiteSettings();
 
-  const img1 = settings.restaurant_hotel_1 || hotel1;
-  const img2 = settings.restaurant_hotel_2 || hotel2;
+  const hotel1 = settings.restaurant_hotel_1 || defaultHotel1;
+  const hotel2 = settings.restaurant_hotel_2 || defaultHotel2;
 
   return (
     <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 content-section-light bg-gray-50">

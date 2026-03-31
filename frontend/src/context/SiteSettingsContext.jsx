@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axiosConfig';
 
 const SiteSettingsContext = createContext();
 
@@ -18,9 +18,7 @@ export const SiteSettingsProvider = ({ children }) => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        // Using the same base URL pattern as other frontend services
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
-        const response = await axios.get(`${apiUrl}/site-settings`);
+        const response = await api.get('/site-settings');
         if (response.data.success) {
           setSettings(response.data.map || {});
         }

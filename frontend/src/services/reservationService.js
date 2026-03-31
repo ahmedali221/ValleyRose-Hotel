@@ -1,4 +1,4 @@
-import axios from '../api/axiosConfig';
+import api from '../api/axiosConfig';
 
 const reservationService = {
   // Search reservation by reservation number
@@ -9,7 +9,7 @@ const reservationService = {
         ? reservationNumber 
         : `#${reservationNumber}`;
       
-      const response = await axios.get(`/offline-reservations/search/${encodeURIComponent(formattedReservationNumber)}`);
+      const response = await api.get(`/offline-reservations/search/${encodeURIComponent(formattedReservationNumber)}`);
       return response.data;
     } catch (error) {
       if (error.response?.status === 404) {
@@ -22,7 +22,7 @@ const reservationService = {
   // Cancel reservation
   cancelReservation: async (reservationId) => {
     try {
-      const response = await axios.patch(`/offline-reservations/public/${reservationId}/status`, {
+      const response = await api.patch(`/offline-reservations/public/${reservationId}/status`, {
         status: 'Cancelled'
       });
       return response.data;
