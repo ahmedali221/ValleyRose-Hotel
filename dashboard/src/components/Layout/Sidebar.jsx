@@ -13,6 +13,7 @@ const Sidebar = () => {
     { name: 'Website Images', href: '/website-images' },
     { name: 'Offline Reservation', href: '/offline-reservation' },
     { name: 'Manage Bookings', href: '/manage-bookings' },
+    { name: 'Payment Settings', href: '/payment-settings' },
   ];
 
   const isActive = (path) => {

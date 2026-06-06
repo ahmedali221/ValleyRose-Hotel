@@ -187,6 +187,9 @@ export const en = {
     cancelReservation: 'Cancel Reservation',
     reservationCancelled: 'Reservation Cancelled',
     confirmCancel: 'Are you sure you want to cancel this reservation?',
+    confirmCancelBtn: 'Yes, cancel it',
+    keepReservation: 'No, keep it',
+    cancelling: 'Cancelling...',
     cancelledSuccessfully: 'Reservation cancelled successfully',
     cancelFailed: 'Failed to cancel reservation:',
     enterReservationCode: 'Please enter a reservation code'
@@ -375,6 +378,26 @@ export const en = {
         content: 'The contents and works on these pages created by the site operators are subject to German copyright law. The duplication, editing, distribution, and any kind of use outside the limits of copyright law require the written consent of the respective author or creator. Downloads and copies of this site are only permitted for private, non-commercial use. Insofar as the content on this site was not created by the operator, the copyrights of third parties are respected. In particular, third-party content is identified as such. Should you nonetheless become aware of a copyright infringement, please inform us accordingly. If we become aware of any infringements, we will remove such content immediately.'
       }
     }
+  },
+
+  // Payment step
+  payment: {
+    title: 'Payment',
+    subtitle: 'Choose how you would like to pay for your stay.',
+    room: 'Room',
+    checkIn: 'Check-in',
+    checkOut: 'Check-out',
+    nights: 'Nights',
+    totalCost: 'Total Cost',
+    choosePaymentOption: 'Choose a payment option',
+    payFull: 'Pay Full Amount',
+    payFullDesc: 'Pay the full stay amount now. No remaining balance at check-in.',
+    payCheckinFee: 'Pay Check-in Fee',
+    payCheckinFeeDesc: 'Pay now to secure your booking. Remaining {{remaining}} due at check-in.',
+    payNow: 'Pay',
+    processing: 'Processing...',
+    preparingPayment: 'Preparing secure payment form...',
+    securePayment: 'Secured by Stripe — your card details are never stored on our servers.',
   },
 
   // Common

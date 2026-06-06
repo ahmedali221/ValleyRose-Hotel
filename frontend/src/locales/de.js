@@ -187,6 +187,9 @@ export const de = {
     cancelReservation: 'Reservierung stornieren',
     reservationCancelled: 'Reservierung storniert',
     confirmCancel: 'Sind Sie sicher, dass Sie diese Reservierung stornieren möchten?',
+    confirmCancelBtn: 'Ja, stornieren',
+    keepReservation: 'Nein, behalten',
+    cancelling: 'Wird storniert...',
     cancelledSuccessfully: 'Reservierung erfolgreich storniert',
     cancelFailed: 'Stornierung der Reservierung fehlgeschlagen:',
     enterReservationCode: 'Bitte geben Sie einen Reservierungscode ein'
@@ -375,6 +378,26 @@ export const de = {
         content: 'Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.'
       }
     }
+  },
+
+  // Payment step
+  payment: {
+    title: 'Zahlung',
+    subtitle: 'Wählen Sie, wie Sie Ihren Aufenthalt bezahlen möchten.',
+    room: 'Zimmer',
+    checkIn: 'Anreise',
+    checkOut: 'Abreise',
+    nights: 'Nächte',
+    totalCost: 'Gesamtkosten',
+    choosePaymentOption: 'Zahlungsoption wählen',
+    payFull: 'Gesamtbetrag zahlen',
+    payFullDesc: 'Zahlen Sie jetzt den vollen Betrag. Kein Restbetrag bei der Anreise.',
+    payCheckinFee: 'Check-in Gebühr zahlen',
+    payCheckinFeeDesc: 'Jetzt zahlen, um Ihre Buchung zu sichern. Verbleibende {{remaining}} bei Anreise.',
+    payNow: 'Zahlen',
+    processing: 'Wird verarbeitet...',
+    preparingPayment: 'Sicheres Zahlungsformular wird vorbereitet...',
+    securePayment: 'Gesichert durch Stripe – Ihre Kartendaten werden nie auf unseren Servern gespeichert.',
   },
 
   // Common

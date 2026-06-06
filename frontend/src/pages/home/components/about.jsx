@@ -2,12 +2,13 @@ import { motion } from 'framer-motion';
 import right from "../../../assets/Header/right.png";
 import { useTranslation } from '../../../locales';
 import { useSiteSettings } from '../../../context/SiteSettingsContext';
+import DynamicImage from '../../../components/DynamicImage';
 
 export default function About() {
   const { t } = useTranslation();
   const { settings } = useSiteSettings();
 
-  const aboutImage = settings.about_image || right;
+
 
   return (
     <div className="content-section p-4 sm:p-6 lg:p-8 bg-gray-50 overflow-x-hidden">
@@ -109,8 +110,9 @@ export default function About() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 1.4 }}
                   >
-                    <img 
-                      src={aboutImage} 
+                    <DynamicImage 
+                      settingsKey="about_image" 
+                      defaultImage={right} 
                       alt={t('home.roomImageAlt')} 
                       className="absolute inset-0 w-full h-full object-cover"
                       style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}

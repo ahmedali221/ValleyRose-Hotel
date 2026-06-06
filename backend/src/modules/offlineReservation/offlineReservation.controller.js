@@ -314,14 +314,14 @@ async function createReservationPublic(req, res) {
       checkInDate, 
       checkOutDate, 
       customerId, 
-      numberOfGuests, 
+      numberOfGuests,
       reservationNumber,
       cost,
       nights,
       paymentMethod: 'Credit Card',
-      paymentStatus: 'Paid'
+      paymentStatus: 'Pending'
     });
-    
+
     res.status(201).json(doc);
   } catch (error) {
     console.error('Public reservation creation error:', error);

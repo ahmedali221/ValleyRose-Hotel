@@ -13,6 +13,7 @@ import OfflineReservationPage from '../pages/OfflineReservation/OfflineReservati
 import ManageBookingsPage from '../pages/ManageBookings/ManageBookingsPage';
 import SettingsPage from '../pages/Settings/SettingsPage';
 import WebsiteImagesPage from '../pages/WebsiteImages/WebsiteImagesPage';
+import PaymentSettingsPage from '../pages/PaymentSettings/PaymentSettingsPage';
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
       {
         path: 'website-images',
         element: <WebsiteImagesPage />,
+      },
+      {
+        path: 'payment-settings',
+        element: <PaymentSettingsPage />,
       },
     ],
   },

@@ -5,6 +5,7 @@ import restaurantImage from '../../../assets/restaurant/restaurant.png';
 import { useTranslation } from '../../../locales';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useSiteSettings } from '../../../context/SiteSettingsContext';
+import DynamicImage from '../../../components/DynamicImage';
 
 const WeeklyMenu = () => {
   const [weeklyMenuItems, setWeeklyMenuItems] = useState([]);
@@ -14,7 +15,7 @@ const WeeklyMenu = () => {
   const { language } = useLanguage();
   const { settings } = useSiteSettings();
 
-  const weeklyImage = settings.restaurant_weekly_menu || restaurantImage;
+
 
   // Helper function to get meal name based on language
   const getMealName = (meal) => {
@@ -101,10 +102,17 @@ const WeeklyMenu = () => {
         viewport={{ once: true }}
         transition={{ duration: 1 }}
       >
-        <img
-          src={weeklyImage}
+        <DynamicImage
+          settingsKey="restaurant_weekly_menu"
+          defaultImage={restaurantImage}
           alt="restaurant"
           className="w-full h-full object-cover opacity-20"
+          motionProps={{
+            initial: { opacity: 0, scale: 0.8 },
+            whileInView: { opacity: 1, scale: 1 },
+            viewport: { once: true },
+            transition: { duration: 1 }
+          }}
         />
       </motion.div>
 

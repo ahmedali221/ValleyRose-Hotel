@@ -6,13 +6,13 @@ import defaultHotel1 from "../../../assets/hotel/hotel1.png"
 import defaultHotel2 from "../../../assets/hotel/hotel2.png"
 import { useTranslation } from '../../../locales';
 import { useSiteSettings } from '../../../context/SiteSettingsContext';
+import DynamicImage from '../../../components/DynamicImage';
 
 const EventsSection = () => {
   const { t } = useTranslation();
   const { settings } = useSiteSettings();
 
-  const hotel1 = settings.hotel_image_1 || defaultHotel1;
-  const hotel2 = settings.hotel_image_2 || defaultHotel2;
+
 
   return (
     <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 content-section-light bg-gray-50">
@@ -73,8 +73,9 @@ const EventsSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.0 }}
               >
-                <img 
-                  src={hotel2} 
+                <DynamicImage 
+                  settingsKey="hotel_image_2" 
+                  defaultImage={defaultHotel2} 
                   alt={t('hotel.outdoorSeating')} 
                   className="w-full h-48 sm:h-64 object-cover rounded-lg shadow-xl"
                 />
@@ -86,8 +87,9 @@ const EventsSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.2 }}
               >
-                <img 
-                  src={hotel1} 
+                <DynamicImage 
+                  settingsKey="hotel_image_1" 
+                  defaultImage={defaultHotel1} 
                   alt={t('hotel.indoorVenue')} 
                   className="w-full h-48 sm:h-64 object-cover rounded-lg shadow-xl"
                 />
@@ -249,8 +251,9 @@ const EventsSection = () => {
                 transition={{ duration: 0.8, delay: 1.2 }}
                 whileHover={{ scale: 1.05, rotate: 2 }}
               >
-                <img 
-                  src={hotel2} 
+                <DynamicImage 
+                  settingsKey="hotel_image_2" 
+                  defaultImage={defaultHotel2} 
                   alt={t('hotel.outdoorSeating')} 
                   className="w-full h-auto rounded-lg shadow-xl"
                 />
@@ -265,8 +268,9 @@ const EventsSection = () => {
                 transition={{ duration: 0.8, delay: 1.4 }}
                 whileHover={{ scale: 1.05, rotate: -2 }}
               >
-                <img 
-                  src={hotel1} 
+                <DynamicImage 
+                  settingsKey="hotel_image_1" 
+                  defaultImage={defaultHotel1} 
                   alt={t('hotel.indoorVenue')} 
                   className="w-full h-auto rounded-lg shadow-xl"
                 />

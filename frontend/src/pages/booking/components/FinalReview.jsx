@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import bookingService from '../../../services/bookingService';
@@ -7,17 +7,26 @@ const FinalReview = ({ bookingData, setBookingData }) => {
   const [reservationNumber, setReservationNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const hasFired = useRef(false);
 
   useEffect(() => {
+    // Guard against React Strict Mode double-invoke and accidental remounts
+    if (hasFired.current) return;
+    hasFired.current = true;
     createReservation();
   }, []);
 
   const createReservation = async () => {
+    if (!bookingData.paymentResult) {
+      setError('Payment was not completed. Please go back and complete payment.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      // First create customer
+      // Create customer
       const customerData = {
         firstName: bookingData.firstName,
         lastName: bookingData.lastName,
@@ -28,7 +37,7 @@ const FinalReview = ({ bookingData, setBookingData }) => {
 
       const customer = await bookingService.createCustomer(customerData);
 
-      // Then create reservation
+      // Create reservation (paymentStatus starts as 'Pending', updated below)
       const reservationData = {
         roomId: bookingData.roomId,
         roomType: bookingData.roomType,
@@ -39,13 +48,22 @@ const FinalReview = ({ bookingData, setBookingData }) => {
       };
 
       const reservation = await bookingService.createReservation(reservationData);
-      setReservationNumber(reservation.reservationNumber);
 
-      // Update booking data with reservation info
+      // Link the Stripe payment to the reservation record
+      await bookingService.confirmPayment({
+        paymentIntentId: bookingData.paymentIntentId,
+        reservationId: reservation._id,
+        customerId: customer._id,
+        amount: Math.round(bookingData.amountCharged * 100),
+        paymentType: bookingData.paymentType,
+        totalCost: bookingData.cost,
+      });
+
+      setReservationNumber(reservation.reservationNumber);
       setBookingData(prev => ({
         ...prev,
         reservationId: reservation._id,
-        reservationNumber: reservation.reservationNumber
+        reservationNumber: reservation.reservationNumber,
       }));
 
     } catch (err) {
@@ -62,10 +80,6 @@ const FinalReview = ({ bookingData, setBookingData }) => {
     return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
-  const getGuestText = (count) => {
-    return count === 1 ? 'Guest' : 'Guests';
-  };
-
   if (loading) {
     return (
       <motion.div
@@ -80,6 +94,7 @@ const FinalReview = ({ bookingData, setBookingData }) => {
   }
 
   if (error) {
+    const isPaidButFailed = bookingData.paymentIntentId && error !== 'Payment was not completed. Please go back and complete payment.';
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -90,14 +105,24 @@ const FinalReview = ({ bookingData, setBookingData }) => {
           <svg className="w-10 h-10 sm:w-12 sm:h-12 text-red-500 mx-auto mb-3 sm:mb-4" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
           </svg>
-          <h3 className="text-base sm:text-lg font-semibold text-red-800 mb-2">Reservation Failed</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-red-800 mb-2">
+            {isPaidButFailed ? 'Reservation Error' : 'Reservation Failed'}
+          </h3>
           <p className="text-red-700 mb-3 sm:mb-4 text-sm sm:text-base">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
-          >
-            Try Again
-          </button>
+          {isPaidButFailed ? (
+            <p className="text-red-600 text-xs sm:text-sm mb-4">
+              Your payment was processed successfully. Please contact us at{' '}
+              <strong>valleyrose@speed.at</strong> with your payment reference:{' '}
+              <strong>{bookingData.paymentIntentId}</strong>
+            </p>
+          ) : (
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
+            >
+              Try Again
+            </button>
+          )}
         </div>
       </motion.div>
     );
@@ -118,9 +143,7 @@ const FinalReview = ({ bookingData, setBookingData }) => {
         className="flex justify-center"
       >
         <div className="relative">
-          {/* Outer ring */}
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-[#9962B9] flex items-center justify-center">
-            {/* Inner circle */}
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#9962B9] rounded-full flex items-center justify-center">
               <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -141,9 +164,16 @@ const FinalReview = ({ bookingData, setBookingData }) => {
           Your Reservation is Confirmed!
         </h2>
 
-        {/* Reservation Number */}
         <div className="space-y-1 sm:space-y-2">
           <p className="text-lg sm:text-xl text-gray-700">Reservation Number: {reservationNumber}</p>
+          <p className="text-sm text-gray-500">
+            Paid: €{bookingData.amountCharged}
+            {bookingData.paymentType === 'checkin_fee' && (
+              <span className="ml-2 text-amber-600">
+                · €{Math.round((bookingData.cost - bookingData.amountCharged) * 100) / 100} remaining due at check-in
+              </span>
+            )}
+          </p>
         </div>
       </motion.div>
 

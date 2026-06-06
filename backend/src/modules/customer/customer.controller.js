@@ -66,8 +66,17 @@ async function createCustomerPublic(req, res) {
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   try {
+    const email = req.body.email?.toLowerCase().trim();
+
+    // Return existing customer if this email has already booked (idempotent on retry/double-fire)
+    const existing = await Customer.findOne({ email });
+    if (existing) {
+      return res.status(200).json(existing);
+    }
+
     const customerData = {
       ...req.body,
+      email,
       agreedToTermsAt: req.body.agreedToTerms ? new Date() : undefined,
     };
     const doc = await Customer.create(customerData);

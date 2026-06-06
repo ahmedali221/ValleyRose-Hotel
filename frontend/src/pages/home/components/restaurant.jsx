@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 import { useTranslation } from '../../../locales';
 import { Link, useLocation } from 'react-router-dom';
 import { useSiteSettings } from '../../../context/SiteSettingsContext';
+import DynamicImage from '../../../components/DynamicImage';
 
 
 const RestaurantSection = () => {
   const { t } = useTranslation();
   const { settings } = useSiteSettings();
 
-  const foodImage1 = settings.home_restaurant_food2 || food1;
-  const foodImage2 = settings.home_restaurant_food1 || food;
+
 
   return (
     <section className="content-section text-white py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8 bg-white overflow-x-hidden">
@@ -32,12 +32,15 @@ const RestaurantSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <motion.img
-              src={foodImage1}
+            <DynamicImage
+              settingsKey="home_restaurant_food2"
+              defaultImage={food1}
               alt="Delicious dishes at Valley Rose"
               className="w-full h-64 sm:h-80 lg:h-96 object-cover shadow-lg rounded-lg"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
+              motionProps={{
+                whileHover: { scale: 1.05 },
+                transition: { duration: 0.3 }
+              }}
             />
           </motion.div>
 
@@ -147,11 +150,14 @@ const RestaurantSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <motion.img
-              src={foodImage2}
+            <DynamicImage
+              settingsKey="home_restaurant_food1"
+              defaultImage={food}
               alt="Valley Rose food spread"
               className="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-lg"
-              transition={{ duration: 0.3 }}
+              motionProps={{
+                transition: { duration: 0.3 }
+              }}
             />
           </motion.div>
         </motion.div>

@@ -12,7 +12,9 @@
     "seed:meals": "node src/scripts/seedMeals.js",
     "seed:admin": "node src/scripts/seedAdmin.js",
     "seed:settings": "node src/scripts/seedSiteSettings.js",
-    "seed:all": "node src/scripts/seedSoups.js && node src/scripts/seedMeals.js && node src/scripts/seedAdmin.js && node src/scripts/seedSiteSettings.js",
+    "seed:app-settings": "node src/scripts/seedAppSettings.js",
+    "seed:rooms": "node src/scripts/seedRooms.js",
+    "seed:all": "node src/scripts/seedSoups.js && node src/scripts/seedMeals.js && node src/scripts/seedAdmin.js && node src/scripts/seedSiteSettings.js && node src/scripts/seedRooms.js",
     "indexes": "node src/scripts/ensureIndexes.js"
   },
   "keywords": [],
@@ -24,13 +26,15 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.5.2",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.3",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
     "pdf-parse": "^2.1.8",
-    "pdf2pic": "^3.2.0"
+    "pdf2pic": "^3.2.0",
+    "stripe": "^17.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

@@ -3,20 +3,38 @@ const express = require('express');
 const cors = require('cors');
 const { connect } = require('./setup/db');
 
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY environment variable is required');
+}
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  console.warn('Warning: STRIPE_WEBHOOK_SECRET is not set — webhook signature verification will fail');
+}
+
 const authRoutes = require('./modules/auth/auth.routes');
 const roomRoutes = require('./modules/room/room.routes');
 const customerRoutes = require('./modules/customer/customer.routes');
 const offlineReservationRoutes = require('./modules/offlineReservation/offlineReservation.routes');
 const paymentRoutes = require('./modules/payment/payment.routes');
+const paymentCtrl = require('./modules/payment/payment.controller');
 const analyticsRoutes = require('./modules/analytics/analytics.routes');
 const mealRoutes = require('./modules/meal/meal.routes');
 const weeklyMenuRoutes = require('./modules/weeklyMenu/weeklyMenu.routes');
 const restaurantGalleryRoutes = require('./modules/restaurantGallery/restaurantGallery.routes');
 const restaurantMainMenuRoutes = require('./modules/restaurantMainMenu/restaurantMainMenu.routes');
 const siteSettingsRoutes = require('./modules/siteSettings/siteSettings.routes');
+const appSettingsRoutes = require('./modules/appSettings/appSettings.routes');
 
 const app = express();
 app.use(cors());
+
+// Webhook MUST be registered before express.json() — Stripe requires the raw body Buffer
+// for HMAC signature verification. express.json() would destroy it.
+app.post(
+  '/api/payments/webhook',
+  express.raw({ type: 'application/json' }),
+  paymentCtrl.handleWebhook
+);
+
 app.use(express.json({ limit: '10mb' }));
 
 // Increase timeout for long-running requests (especially database queries with populate)
@@ -96,6 +114,7 @@ app.use('/api/weekly-menu', weeklyMenuRoutes);
 app.use('/api/restaurant-gallery', restaurantGalleryRoutes);
 app.use('/api/restaurant-main-menu', restaurantMainMenuRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
+app.use('/api/app-settings', appSettingsRoutes);
 
 // For Vercel deployment
 module.exports = app;

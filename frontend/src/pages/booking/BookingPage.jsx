@@ -15,20 +15,26 @@ const BookingPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isRoomTypePreSelected, setIsRoomTypePreSelected] = useState(false);
   const [bookingData, setBookingData] = useState({
+    // Step 1
     roomType: '',
     checkInDate: '',
     checkOutDate: '',
+    cost: 0,
+    roomId: null,
+    // Step 2
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
     numberOfGuests: '',
-    cost: 0,
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardholderName: '',
+    agreedToTerms: false,
+    // Step 4 - Stripe payment fields
+    paymentIntentId: null,
+    paymentClientSecret: null,
+    paymentType: null,
+    amountCharged: 0,
     paymentResult: null,
+    // Step 5
     reservationId: null,
     reservationNumber: ''
   });

@@ -13,7 +13,7 @@ const OfflineReservationSchema = new mongoose.Schema(
     cost: { type: Number, required: true, min: 0 },
     nights: { type: Number, required: true, min: 1 },
     paymentMethod: { type: String, default: 'Credit Card' },
-    paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed', 'Refunded'], default: 'Paid' },
+    paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed', 'Refunded', 'PartiallyPaid'], default: 'Pending' },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

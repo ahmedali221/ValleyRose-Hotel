@@ -1,24 +1,125 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import defaultLogo from '../../assets/Header/Vector.png';
 import defaultCharacter from '../../assets/reservations/chracter.png';
 import HeaderHero from '../../components/HeaderHero';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
+import DynamicImage from '../../components/DynamicImage';
 import checkBanner from '../../assets/image.png';
 import { reservationService } from '../../services/reservationService';
 import { useTranslation } from '../../locales';
+
+// ─── Cancel Confirmation Modal ────────────────────────────────────────────────
+
+function CancelModal({ reservation, onConfirm, onClose, loading, error, t }) {
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        {/* Backdrop */}
+        <motion.div
+          className="absolute inset-0 bg-black/50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={!loading ? onClose : undefined}
+        />
+
+        {/* Dialog */}
+        <motion.div
+          className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6 sm:p-8"
+          initial={{ opacity: 0, scale: 0.92, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.92, y: 16 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 disabled:opacity-40 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          {/* Warning icon */}
+          <div className="flex justify-center mb-4">
+            <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
+              <svg className="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+          </div>
+
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 text-center mb-2">
+            {t('checkReservation.confirmCancel')}
+          </h3>
+
+          <p className="text-sm text-gray-500 text-center mb-1">
+            {t('checkReservation.reservation')}{' '}
+            <span className="font-semibold text-gray-700">{reservation.reservationNumber}</span>
+          </p>
+          <p className="text-sm text-gray-500 text-center mb-6">
+            {reservation.roomType} &middot; {reservation.customer?.firstName} {reservation.customer?.lastName}
+          </p>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-4">
+              {error}
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              disabled={loading}
+              className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 text-sm sm:text-base"
+            >
+              {t('checkReservation.keepReservation')}
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={loading}
+              className="flex-1 py-2.5 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  {t('checkReservation.cancelling')}
+                </span>
+              ) : (
+                t('checkReservation.confirmCancelBtn')
+              )}
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 const CheckReservation = () => {
   const [reservationCode, setReservationCode] = useState('');
   const [reservation, setReservation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState('');
   const { t } = useTranslation();
   const { settings } = useSiteSettings();
-
-  const logoUrl = settings.check_reservation_logo_vector || defaultLogo;
-  const characterUrl = settings.check_reservation_character || defaultCharacter;
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -43,17 +144,29 @@ const CheckReservation = () => {
 
   const handleCancelReservation = async () => {
     if (!reservation) return;
+    setCancelling(true);
+    setCancelError('');
 
-    if (window.confirm(t('checkReservation.confirmCancel'))) {
-      try {
-        await reservationService.cancelReservation(reservation._id);
-        setReservation(null);
-        setReservationCode('');
-        alert(t('checkReservation.cancelledSuccessfully'));
-      } catch (err) {
-        alert(t('checkReservation.cancelFailed') + ' ' + err.message);
-      }
+    try {
+      await reservationService.cancelReservation(reservation._id);
+      setShowCancelModal(false);
+      setReservation((prev) => ({ ...prev, status: 'Cancelled' }));
+    } catch (err) {
+      setCancelError(t('checkReservation.cancelFailed') + ' ' + err.message);
+    } finally {
+      setCancelling(false);
     }
+  };
+
+  const openCancelModal = () => {
+    setCancelError('');
+    setShowCancelModal(true);
+  };
+
+  const closeCancelModal = () => {
+    if (cancelling) return;
+    setShowCancelModal(false);
+    setCancelError('');
   };
 
   const formatDate = (dateString) => {
@@ -220,7 +333,6 @@ const CheckReservation = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             {reservation ? (
-              /* Reservation Details */
               <motion.div
                 className="w-full max-w-md bg-purple-50 rounded-lg p-4 sm:p-6"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -234,7 +346,12 @@ const CheckReservation = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                  <img src={logoUrl} alt="Valley Rose" className="h-6 sm:h-8" />
+                  <DynamicImage
+                    settingsKey="check_reservation_logo_vector"
+                    defaultImage={defaultLogo}
+                    alt="Valley Rose"
+                    className="h-6 sm:h-8"
+                  />
                   <div>
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.reservation')}</span>
                     <span className="valley-rose-text font-semibold ml-2 text-sm sm:text-base">{reservation.reservationNumber}</span>
@@ -294,35 +411,36 @@ const CheckReservation = () => {
 
                   <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 sm:gap-0">
                     <span className="text-gray-600 text-xs sm:text-sm">{t('checkReservation.status')}</span>
-                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${reservation.status === 'Confirmed'
+                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
+                      reservation.status === 'Confirmed'
                         ? 'bg-green-500 text-white'
                         : reservation.status === 'Cancelled'
                           ? 'bg-red-500 text-white'
                           : 'bg-blue-500 text-white'
-                      }`}>
+                    }`}>
                       {reservation.status === 'Confirmed' ? t('checkReservation.successful') : reservation.status}
                     </span>
                   </div>
                 </motion.div>
 
                 <motion.button
-                  onClick={handleCancelReservation}
+                  onClick={openCancelModal}
                   disabled={reservation.status === 'Cancelled'}
-                  className={`w-full mt-4 sm:mt-6 py-2 sm:py-3 rounded-lg font-medium transition-colors duration-200 text-sm sm:text-base ${reservation.status === 'Cancelled'
+                  className={`w-full mt-4 sm:mt-6 py-2 sm:py-3 rounded-lg font-medium transition-colors duration-200 text-sm sm:text-base ${
+                    reservation.status === 'Cancelled'
                       ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                       : 'bg-red-600 hover:bg-red-700 text-white'
-                    }`}
+                  }`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: reservation.status === 'Cancelled' ? 1 : 1.02 }}
+                  whileTap={{ scale: reservation.status === 'Cancelled' ? 1 : 0.98 }}
                 >
                   {reservation.status === 'Cancelled' ? t('checkReservation.reservationCancelled') : t('checkReservation.cancelReservation')}
                 </motion.button>
               </motion.div>
             ) : (
-              /* Illustration */
               <motion.div
                 className="text-center"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -334,7 +452,12 @@ const CheckReservation = () => {
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <img src={characterUrl} alt="Reservation Check" className="mx-auto max-w-xs sm:max-w-sm" />
+                  <DynamicImage
+                    settingsKey="check_reservation_character"
+                    defaultImage={defaultCharacter}
+                    alt="Reservation Check"
+                    className="mx-auto max-w-xs sm:max-w-sm"
+                  />
                 </motion.div>
                 <motion.p
                   className="text-gray-600 text-base sm:text-lg"
@@ -350,6 +473,17 @@ const CheckReservation = () => {
         </div>
       </div>
 
+      {/* Cancel Confirmation Modal */}
+      {showCancelModal && reservation && (
+        <CancelModal
+          reservation={reservation}
+          onConfirm={handleCancelReservation}
+          onClose={closeCancelModal}
+          loading={cancelling}
+          error={cancelError}
+          t={t}
+        />
+      )}
     </motion.div>
   );
 };

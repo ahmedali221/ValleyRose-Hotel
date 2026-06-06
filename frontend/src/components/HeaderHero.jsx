@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '../locales';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import DynamicImage from './DynamicImage';
 import defaultLogo from "../assets/Header/logo.png"
 import banner from "../assets/Header/banner.png"
 
@@ -18,7 +19,7 @@ const HeaderHero = ({
   const location = useLocation();
   const currentPath = location.pathname;
   const { t } = useTranslation();
-  const { settings } = useSiteSettings();
+  const { settings, loading } = useSiteSettings();
 
   // Use dynamic image if imageKey is provided and found in settings, 
   // otherwise fallback to backgroundImage (which defaults to banner)
@@ -35,9 +36,14 @@ const HeaderHero = ({
     <div className="relative">
       {/* Background Image Container */}
       <div
-        className="w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[80vh] bg-cover bg-center relative"
-        style={{ backgroundImage: `url(${displayImage})` }}
+        className="w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[80vh] bg-cover bg-center relative flex items-center justify-center"
+        style={{ backgroundImage: !loading ? `url(${displayImage})` : 'none', backgroundColor: loading ? '#f3f4f6' : 'transparent' }}
       >
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-100 bg-opacity-50">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+          </div>
+        )}
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/20"></div>
         {/* Header/Navigation - Positioned absolutely on top of the background */}
@@ -47,7 +53,12 @@ const HeaderHero = ({
               {/* Logo */}
               <div className="flex-shrink-0">
                 <a href="/" className="flex items-center">
-                  <img src={logoUrl} alt="Valley Rose" className="h-8 sm:h-10 lg:h-12 mr-2" />
+                  <DynamicImage 
+                    settingsKey="logo" 
+                    defaultImage={defaultLogo} 
+                    alt="Valley Rose" 
+                    className="h-8 sm:h-10 lg:h-12 mr-2" 
+                  />
                 </a>
               </div>
 

@@ -21,6 +21,12 @@ const RoomDetails = ({ onNext, bookingData, setBookingData, isRoomTypePreSelecte
   }, []);
 
   useEffect(() => {
+    if (roomTypes.length > 0 && !bookingData.roomType) {
+      setBookingData(prev => ({ ...prev, roomType: roomTypes[0] }));
+    }
+  }, [roomTypes]);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (checkInRef.current && !checkInRef.current.contains(event.target)) {
         setShowCheckInPicker(false);
