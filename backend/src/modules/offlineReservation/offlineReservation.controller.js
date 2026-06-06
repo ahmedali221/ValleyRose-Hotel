@@ -290,30 +290,41 @@ async function searchReservationByNumber(req, res) {
 async function createReservationPublic(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  
+
   const { roomId, roomType, checkInDate, checkOutDate, customerId, numberOfGuests } = req.body;
-  
+
   try {
+    // Idempotency guard — return existing reservation if one was already created
+    // for this customer + room + dates (handles double-fire and network retries)
+    const existing = await OfflineReservation.findOne({
+      customerId,
+      roomId,
+      checkInDate: new Date(checkInDate),
+      checkOutDate: new Date(checkOutDate),
+      status: { $ne: 'Cancelled' },
+    });
+    if (existing) return res.status(200).json(existing);
+
     const room = await Room.findById(roomId);
     if (!room) return res.status(404).json({ message: 'Room not found' });
     if (room.type !== roomType) return res.status(400).json({ message: 'Room type mismatch' });
-    
+
     const available = await isRoomAvailable(roomId, checkInDate, checkOutDate);
     if (!available) return res.status(409).json({ message: 'Room not available for selected dates' });
-    
+
     // Calculate cost and nights
     const startDate = new Date(checkInDate);
     const endDate = new Date(checkOutDate);
     const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
     const cost = room.pricePerNight * nights;
-    
+
     const reservationNumber = generateReservationNumber();
-    const doc = await OfflineReservation.create({ 
-      roomId, 
-      roomType, 
-      checkInDate, 
-      checkOutDate, 
-      customerId, 
+    const doc = await OfflineReservation.create({
+      roomId,
+      roomType,
+      checkInDate,
+      checkOutDate,
+      customerId,
       numberOfGuests,
       reservationNumber,
       cost,
